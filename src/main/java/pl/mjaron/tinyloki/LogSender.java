@@ -1,11 +1,13 @@
 package pl.mjaron.tinyloki;
 
+import pl.mjaron.tinyloki.third_party.Base64Coder;
+
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.util.Base64;
+//import java.util.Base64;
 
 public class LogSender {
     final LogSenderSettings settings;
@@ -49,7 +51,9 @@ public class LogSender {
 
             if (settings.getUser() != null && settings.getPassword() != null) {
                 final String authHeaderContentString = settings.getUser() + ":" + settings.getPassword();
-                final String authHeaderEncoded = Base64.getEncoder().encodeToString(authHeaderContentString.getBytes(StandardCharsets.UTF_8));
+                //final byte[] authHeaderBytes = authHeaderContentString.getBytes(StandardCharsets.UTF_8);
+                //Base64.getEncoder().encodeToString();
+                final String authHeaderEncoded = Base64Coder.encodeString(authHeaderContentString);
                 connection.setRequestProperty("Authorization", "Basic " + authHeaderEncoded);
             }
 

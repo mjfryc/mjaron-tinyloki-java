@@ -8,8 +8,7 @@ on:
     types: [created]
 
 jobs:
-  build:
-
+  publish:
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -35,3 +34,4 @@ jobs:
       env:
         USERNAME: ${{ github.actor }}
         TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

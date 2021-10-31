@@ -1,5 +1,6 @@
 plugins {
     id 'java'
+    id 'maven-publish'
 }
 
 group 'pl.mjaron'
@@ -16,4 +17,26 @@ dependencies {
 
 test {
     useJUnitPlatform()
+}
+
+// Source: https://docs.github.com/en/actions/guides/publishing-java-packages-with-gradle
+publishing {
+    repositories {
+//        maven {
+//            name = "OSSRH"
+//            url = "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
+//            credentials {
+//                username = System.getenv("MAVEN_USERNAME")
+//                password = System.getenv("MAVEN_PASSWORD")
+//            }
+//        }
+        maven {
+            name = "GitHubPackages"
+            url = "https://maven.pkg.github.com/mjfryc/mjaron-tinyloki-java"
+            credentials {
+                username = System.getenv("GITHUB_ACTOR")
+                password = System.getenv("GITHUB_TOKEN")
+            }
+        }
+    }
 }

@@ -39,7 +39,7 @@ class LogCollectorTest {
                 new LogSender(LogSenderSettings.create()
                         .setUrl("http://localhost/loki/api/v1/push")
                         .setUser("user")
-                        .setPassword("pass"))).start();
+                        .setPassword("pass")), new ErrorLogMonitor()).start();
         Map<String, String> labels = new TreeMap<>();
         labels.put("level", "INFO");
         labels.put("host", "ZEUS");

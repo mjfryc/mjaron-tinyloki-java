@@ -26,4 +26,12 @@ public class Utils {
             }
         }
     }
+
+    public static void sleep(final long milliseconds) {
+        try {
+            Thread.sleep(milliseconds);
+        } catch (InterruptedException e) {
+            throw new RuntimeException("Thread.sleep() has failed.", e);
+        }
+    }
 }

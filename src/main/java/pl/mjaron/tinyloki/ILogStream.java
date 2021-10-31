@@ -7,10 +7,19 @@ public interface ILogStream {
 
     /**
      * Thread-safe method used to write log messages to a stream.
+     *
      * @param timestampMs Usually System.currentTimeMillis().
-     * @param line Log content.
+     * @param line        Log content.
      */
     void log(final long timestampMs, final String line);
+
+    /**
+     * Log line with current time.
+     * @param line Log content.
+     */
+    default void log(final String line) {
+        log(System.currentTimeMillis(), line);
+    }
 
     /**
      * Release log stream, so it isn't longer managed by its log collector.

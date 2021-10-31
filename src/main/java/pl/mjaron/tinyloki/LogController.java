@@ -9,13 +9,16 @@ public class LogController {
 
     private final ILogCollector logCollector;
     private final LogSender logSender;
+    private final ILogMonitor logMonitor;
     private Thread workerThread = null;
     private boolean softFinishing = false;
 
-    public LogController(final ILogCollector logCollector, final LogSender logSender) {
+    public LogController(final ILogCollector logCollector, final LogSender logSender, final ILogMonitor logMonitor) {
         this.logCollector = logCollector;
         this.logSender = logSender;
+        this.logMonitor = logMonitor;
         this.logSender.getSettings().setContentType(logCollector.contentType());
+        this.logSender.setLogMonitor(logMonitor);
     }
 
     public ILogStream createStream(Map<String, String> labels) {
@@ -48,7 +51,7 @@ public class LogController {
             workerThread.join(timeout);
             return (workerThread.getState() == Thread.State.TERMINATED);
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            logMonitor.onException(e);
             return false;
         }
     }
@@ -56,31 +59,32 @@ public class LogController {
     public void workerLoop() {
         boolean doLastCheck = false;
         while (true) {
-            synchronized (this) {
-                if (softFinishing) {
-                    doLastCheck = true;
-                }
-            }
-            boolean anyLogs = false;
             try {
+                synchronized (this) {
+                    if (softFinishing) {
+                        doLastCheck = true;
+                    }
+                }
+                boolean anyLogs;
                 if (doLastCheck) {
                     anyLogs = logCollector.waitForLogs(1);
-                }
-                else {
+                } else {
                     anyLogs = logCollector.waitForLogs(LOG_WAIT_TIME);
                 }
-            } catch (InterruptedException e) {
-                return;
-            }
-
-            if (anyLogs) {
-                final byte[] logs = logCollector.collect();
-                if (logs != null) {
-                    logSender.send(logs);
+                if (anyLogs) {
+                    final byte[] logs = logCollector.collect();
+                    if (logs != null) {
+                        logSender.send(logs);
+                    }
                 }
-            }
-            if (doLastCheck) {
+                if (doLastCheck) {
+                    return;
+                }
+            } catch (final InterruptedException e) {
                 return;
+            }
+            catch (final Exception e) {
+                logMonitor.onException(e);
             }
         }
     }

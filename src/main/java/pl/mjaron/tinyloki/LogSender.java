@@ -9,14 +9,14 @@ import java.util.Base64;
 
 public class LogSender {
     final LogSenderSettings settings;
-    URL url;
+    private ILogMonitor logMonitor = null;
+    private URL url;
 
     public LogSender(final LogSenderSettings settings) {
         this.settings = settings;
         try {
             this.url = new URL(settings.getUrl());
         } catch (final MalformedURLException e) {
-            e.printStackTrace();
             throw new RuntimeException("Failed to initialize URL with: [" + settings.getUrl() + "].", e);
         }
     }
@@ -25,7 +25,16 @@ public class LogSender {
         return settings;
     }
 
+    public ILogMonitor getLogMonitor() {
+        return logMonitor;
+    }
+
+    public void setLogMonitor(ILogMonitor logMonitor) {
+        this.logMonitor = logMonitor;
+    }
+
     void send(final byte[] message) {
+        logMonitor.send(message);
         HttpURLConnection connection = null;
         OutputStream outputStream = null;
         try {
@@ -54,17 +63,19 @@ public class LogSender {
             final int responseCode = connection.getResponseCode();
             if (responseCode != HttpURLConnection.HTTP_OK && responseCode != HttpURLConnection.HTTP_NO_CONTENT) {
                 final String responseMessage = connection.getResponseMessage();
-                System.out.println("Unexpected response: " + responseCode + ": " + responseMessage);
+                logMonitor.sendErr(responseCode, responseMessage);
+            }
+            else {
+                logMonitor.sendOk(responseCode);
             }
         } catch (IOException e) {
-            e.printStackTrace();
             throw new RuntimeException("Failed to prepare connection.", e);
         } finally {
             if (outputStream != null) {
                 try {
                     outputStream.close();
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    logMonitor.onException(e);
                 }
             }
         }

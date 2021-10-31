@@ -5,8 +5,9 @@
 
 Tiny implementation of Loki client compatible with Java 1.8 without any external dependencies.
 
-* Implements JSON variant of [Loki API](https://grafana.com/docs/loki/latest/api/#post-lokiapiv1push).
-* Thread safe.
+* Implements JSON variant of [Loki API](https://grafana.com/docs/loki/latest/api/#post-lokiapiv1push)
+* Works with **Android** and **Java SE**
+* Thread safe
 
 ## API description
 

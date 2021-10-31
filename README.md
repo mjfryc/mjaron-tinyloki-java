@@ -2,7 +2,8 @@
 
 Tiny implementation of Loki client compatible with Java 1.8 without any external dependencies.
 
-It implements JSON variant of [Loki API](https://grafana.com/docs/loki/latest/api/#post-lokiapiv1push).
+* Implements JSON variant of [Loki API](https://grafana.com/docs/loki/latest/api/#post-lokiapiv1push).
+* Thread safe.
 
 [![Java CI with Gradle](https://github.com/mjfryc/mjaron-tinyloki-java/actions/workflows/gradle.yml/badge.svg)](https://github.com/mjfryc/mjaron-tinyloki-java/actions/workflows/gradle.yml)
 [![Gradle Package](https://github.com/mjfryc/mjaron-tinyloki-java/actions/workflows/gradle-publish.yml/badge.svg)](https://github.com/mjfryc/mjaron-tinyloki-java/actions/workflows/gradle-publish.yml)

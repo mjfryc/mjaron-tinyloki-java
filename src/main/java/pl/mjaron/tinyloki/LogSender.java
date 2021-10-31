@@ -8,7 +8,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 
 public class LogSender {
-
     final LogSenderSettings settings;
     URL url;
 
@@ -22,13 +21,17 @@ public class LogSender {
         }
     }
 
+    public LogSenderSettings getSettings() {
+        return settings;
+    }
+
     void send(final byte[] message) {
         HttpURLConnection connection = null;
         OutputStream outputStream = null;
-        InputStream inputStream = null;
         try {
             connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("POST");
+            connection.setRequestProperty("connection", "close");
             //connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
             //connection.setRequestProperty("Content-Type", "application/json");
             connection.setRequestProperty("Content-Type", settings.getContentType());
@@ -44,25 +47,15 @@ public class LogSender {
             connection.setAllowUserInteraction(false);
             connection.setDoOutput(true);
             connection.setDoInput(true);
-
             outputStream = connection.getOutputStream();
             outputStream.write(message);
             outputStream.close();
             outputStream = null;
-
             final int responseCode = connection.getResponseCode();
-            final String responseMessage = connection.getResponseMessage();
-            System.out.println("Response: " + responseCode + ": " + responseMessage);
-            inputStream = connection.getInputStream();
-            BufferedReader rd = new BufferedReader(new InputStreamReader(inputStream));
-            StringBuilder response = new StringBuilder(); // or StringBuffer if Java version 5+
-            String line;
-            while ((line = rd.readLine()) != null) {
-                response.append(line);
-                response.append('\r');
+            if (responseCode != HttpURLConnection.HTTP_OK && responseCode != HttpURLConnection.HTTP_NO_CONTENT) {
+                final String responseMessage = connection.getResponseMessage();
+                System.out.println("Unexpected response: " + responseCode + ": " + responseMessage);
             }
-            rd.close();
-            System.out.println("Response: " + response);
         } catch (IOException e) {
             e.printStackTrace();
             throw new RuntimeException("Failed to prepare connection.", e);
@@ -74,14 +67,6 @@ public class LogSender {
                     e.printStackTrace();
                 }
             }
-            if (inputStream != null) {
-                try {
-                    inputStream.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
         }
     }
-
 }

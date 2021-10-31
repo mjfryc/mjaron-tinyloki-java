@@ -12,9 +12,10 @@ public class LogController {
     private Thread workerThread = null;
     private boolean softFinishing = false;
 
-    public LogController(final ILogCollector logCollector, final LogSenderSettings logSenderSettings) {
+    public LogController(final ILogCollector logCollector, final LogSender logSender) {
         this.logCollector = logCollector;
-        this.logSender = new LogSender(logSenderSettings.setContentType(logCollector.contentType()));
+        this.logSender = logSender;
+        this.logSender.getSettings().setContentType(logCollector.contentType());
     }
 
     public ILogStream createStream(Map<String, String> labels) {

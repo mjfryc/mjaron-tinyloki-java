@@ -8,18 +8,20 @@ HTTP sender requires http URL, optionally basic authentication credentials may b
 Below sample use case:
 
 ```java
-LogController logController = new LogController(new JsonLogCollector(),
-        LogSenderSettings.create()
-                .setUrl("http://localhost/loki/api/v1/push")
-                .setUser("user")
-                .setPassword("pass")).start();
-Map<String, String> labels = new TreeMap<>();
-labels.put("level", "INFO");
-labels.put("host", "ZEUS");
-ILogStream stream = logController.createStream(labels);
-
-stream.log(System.currentTimeMillis(), "Hello world.");
-
-// Optionally
-logController.softStop().waitForStop();
+public class Sample {
+    public static void main(String[] args) {
+        LogController logController = new LogController(new JsonLogCollector(),
+                new LogSender(LogSenderSettings.create()
+                        .setUrl("http://localhost/loki/api/v1/push")
+                        .setUser("user")
+                        .setPassword("pass"))).start();
+        Map<String, String> labels = new TreeMap<>();
+        labels.put("level", "INFO");
+        labels.put("host", "ZEUS");
+        ILogStream stream = logController.createStream(labels);
+        stream.log(System.currentTimeMillis(), "Hello world.");
+        logController.softStop().
+        waitForStop();
+    }
+}
 ```

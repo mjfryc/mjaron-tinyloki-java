@@ -4,7 +4,7 @@ plugins {
 }
 
 group 'io.github.mjfryc'
-version '0.1.12'
+version '0.1.13'
 
 repositories {
     mavenCentral()
@@ -24,16 +24,19 @@ java {
     withJavadocJar()
 }
 
-def hasSigningKey = System.getEnv("GPG_PASSWORD") != null && System.getEnv("GPG_PRIVATE_KEY") != null
+def hasSigningKey = System.getenv("GPG_PASSWORD") != null && System.getenv("GPG_PRIVATE_KEY") != null
 if(hasSigningKey) {
+        System.out.println("GPG key and password found. Signing maven publications.")
 	sign(project)
+}
+else {
+	System.out.println("GPG key or password not found. Signing is skipped.")
 }
 void sign(Project project) {
 	project.signing {
-        System.out.println("GPG key and password found. Signing maven publications.")
-		required { project.gradle.taskGraph.hasTask("required") }
-        def signingKey = System.getEnv("GPG_PRIVATE_KEY")
-        def signingPassword = project.findProperty("GPG_PASSWORD")
+	required { project.gradle.taskGraph.hasTask("required") }
+        def signingKey = System.getenv("GPG_PRIVATE_KEY")
+        def signingPassword = System.getenv("GPG_PASSWORD")
         useInMemoryPgpKeys(signingKey, signingPassword)
 		sign publishing.publications.maven
 	}
@@ -45,7 +48,7 @@ project.plugins.withType(MavenPublishPlugin).all {
 		mavenPublication.pom {
 			name = "${project.group}:${project.name}"
 			description = name
-			url = "https://github.com/rwinch/gradle-publish-ossrh-sample"
+			url = "https://github.com/mjfryc/mjaron-tinyloki-java"
 			licenses {
 				license {
 					name = "MIT License"

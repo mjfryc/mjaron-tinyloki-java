@@ -3,8 +3,8 @@ plugins {
     id 'maven-publish'
 }
 
-group 'pl.mjaron'
-version '0.1.3'
+group 'io.github.mjfryc'
+version '0.1.4'
 
 repositories {
     mavenCentral()

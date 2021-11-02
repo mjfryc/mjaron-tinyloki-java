@@ -1,8 +1,8 @@
 package pl.mjaron.tinyloki;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.Assertions;
 
 import java.util.Map;
 import java.util.TreeMap;
@@ -35,16 +35,10 @@ class LogCollectorTest {
     @Test
     @Disabled
     void logController() {
-        LogController logController = new LogController(new JsonLogCollector(),
-                new LogSender(LogSenderSettings.create()
-                        .setUrl("http://localhost/loki/api/v1/push")
-                        .setUser("user")
-                        .setPassword("pass")), new ErrorLogMonitor()).start();
-        Map<String, String> labels = new TreeMap<>();
-        labels.put("level", "INFO");
-        labels.put("host", "ZEUS");
-        ILogStream stream = logController.createStream(labels);
-        stream.log(System.currentTimeMillis(), "Hello world.");
+        LogController logController = TinyLoki.createAndStart("http://localhost/loki/api/v1/push", "user", "pass");
+        ILogStream stream = logController.createStream(TinyLoki.l(Labels.LEVEL, Labels.INFO).l("host", "ZEUS"));
+        stream.log("Hello world.");
+        // ... new streams and other logs here.
         logController.softStop().waitForStop();
     }
 }

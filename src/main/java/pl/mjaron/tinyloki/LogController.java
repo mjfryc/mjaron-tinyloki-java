@@ -21,8 +21,12 @@ public class LogController {
         this.logSender.setLogMonitor(logMonitor);
     }
 
-    public ILogStream createStream(Map<String, String> labels) {
+    public ILogStream createStream(final Map<String, String> labels) {
         return logCollector.createStream(labels);
+    }
+
+    public ILogStream createStream(final Labels labels) {
+        return logCollector.createStream(labels.getMap());
     }
 
     public LogController start() {

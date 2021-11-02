@@ -16,23 +16,15 @@ HTTP sender requires http URL, optionally basic authentication credentials may b
 Below sample use case:
 
 ```java
-import pl.mjaron.tinyloki.*
+import pl.mjaron.tinyloki.*;
 
 public class Sample {
     public static void main(String[] args) {
-        LogController logController = new LogController(new JsonLogCollector(),
-                new LogSender(LogSenderSettings.create()
-                        .setUrl("http://localhost/loki/api/v1/push")
-                        .setUser("user")
-                        .setPassword("pass")),
-                new VerboseLogMonitor()).start();
-        Map<String, String> labels = new TreeMap<>();
-        labels.put("level", "INFO");
-        labels.put("host", "ZEUS");
-        ILogStream stream = logController.createStream(labels);
-        stream.log(System.currentTimeMillis(), "Hello world.");
-        logController.softStop().
-        waitForStop();
+        LogController logController = TinyLoki.createAndStart("http://localhost/loki/api/v1/push", "user", "pass");
+        ILogStream stream = logController.createStream(TinyLoki.l(Labels.LEVEL, Labels.INFO).l("host", "ZEUS"));
+        stream.log("Hello world.");
+        // ... new streams and other logs here.
+        logController.softStop().waitForStop();
     }
 }
 ```
@@ -47,5 +39,5 @@ dependencies {
 ```
 3. Use library in your project.
 ```java
-import pl.mjaron.tinyloki.*
+import pl.mjaron.tinyloki.*;
 ```

@@ -28,19 +28,20 @@ java {
 def hasSigningKey = System.getenv("GPG_PASSWORD") != null && System.getenv("GPG_PRIVATE_KEY") != null
 if (hasSigningKey) {
     System.out.println("GPG key and password found. Signing maven publications.")
-    sign(project)
+    doSign(project)
 } else {
     System.out.println("GPG key or password not found. Signing is skipped.")
 }
 
-void sign(Project project) {
+void doSign(Project project) {
     project.signing {
         required { project.gradle.taskGraph.hasTask("required") }
         def signingKey = System.getenv("GPG_PRIVATE_KEY")
         def signingPassword = System.getenv("GPG_PASSWORD")
         useInMemoryPgpKeys(signingKey, signingPassword)
+        sign configurations.archives
         //sign publishing.publications.maven
-        sign project
+        //sign project
     }
 }
 

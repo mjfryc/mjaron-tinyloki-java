@@ -5,7 +5,7 @@ plugins {
 }
 
 group 'io.github.mjfryc'
-version '0.1.20'
+version '0.1.21'
 
 repositories {
     mavenCentral()
@@ -41,7 +41,7 @@ void doSign(Project project) {
         useInMemoryPgpKeys(signingKey, signingPassword)
         //sign configurations.archives
         //sign publishing.publications.maven
-        sign publishing.publications.mavenJava
+        sign publishing.publications.gpr
         //sign project
     }
 }

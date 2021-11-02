@@ -5,7 +5,7 @@ plugins {
 }
 
 group 'io.github.mjfryc'
-version '0.1.19'
+version '0.1.20'
 
 repositories {
     mavenCentral()
@@ -40,7 +40,8 @@ void doSign(Project project) {
         def signingPassword = System.getenv("GPG_PASSWORD")
         useInMemoryPgpKeys(signingKey, signingPassword)
         //sign configurations.archives
-        sign publishing.publications.maven
+        //sign publishing.publications.maven
+        sign publishing.publications.mavenJava
         //sign project
     }
 }

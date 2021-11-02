@@ -5,7 +5,7 @@ plugins {
 }
 
 group 'io.github.mjfryc'
-version '0.1.15'
+version '0.1.16'
 
 repositories {
     mavenCentral()
@@ -26,50 +26,51 @@ java {
 }
 
 def hasSigningKey = System.getenv("GPG_PASSWORD") != null && System.getenv("GPG_PRIVATE_KEY") != null
-if(hasSigningKey) {
-        System.out.println("GPG key and password found. Signing maven publications.")
-	sign(project)
+if (hasSigningKey) {
+    System.out.println("GPG key and password found. Signing maven publications.")
+    sign(project)
+} else {
+    System.out.println("GPG key or password not found. Signing is skipped.")
 }
-else {
-	System.out.println("GPG key or password not found. Signing is skipped.")
-}
+
 void sign(Project project) {
-	project.signing {
-	required { project.gradle.taskGraph.hasTask("required") }
+    project.signing {
+        required { project.gradle.taskGraph.hasTask("required") }
         def signingKey = System.getenv("GPG_PRIVATE_KEY")
         def signingPassword = System.getenv("GPG_PASSWORD")
         useInMemoryPgpKeys(signingKey, signingPassword)
-		sign publishing.publications.maven
-	}
+        //sign publishing.publications.maven
+        sign project
+    }
 }
 
 project.plugins.withType(MavenPublishPlugin).all {
-	PublishingExtension publishing = project.extensions.getByType(PublishingExtension)
-	publishing.publications.withType(MavenPublication).all { mavenPublication ->
-		mavenPublication.pom {
-			name = "${project.group}:${project.name}"
-			description = name
-			url = "https://github.com/mjfryc/mjaron-tinyloki-java"
-			licenses {
-				license {
-					name = "MIT License"
-					url = "https://raw.githubusercontent.com/mjfryc/mjaron-tinyloki-java/main/LICENSE"
-				}
-			}
-			developers {
-				developer {
-					id = "mjfryc"
-					name = "Michał Jaroń"
-					email = "m.jaron@protonmail.com"
-				}
-			}
-			scm {
-				connection = "scm:git:https://github.com/mjfryc/mjaron-tinyloki-java"
-				developerConnection = "scm:git:git@github.com:mjfryc/mjaron-tinyloki-java.git"
-				url = "https://github.com/mjfryc/mjaron-tinyloki-java"
-			}
-		}
-	}
+    PublishingExtension publishing = project.extensions.getByType(PublishingExtension)
+    publishing.publications.withType(MavenPublication).all { mavenPublication ->
+        mavenPublication.pom {
+            name = "${project.group}:${project.name}"
+            description = name
+            url = "https://github.com/mjfryc/mjaron-tinyloki-java"
+            licenses {
+                license {
+                    name = "MIT License"
+                    url = "https://raw.githubusercontent.com/mjfryc/mjaron-tinyloki-java/main/LICENSE"
+                }
+            }
+            developers {
+                developer {
+                    id = "mjfryc"
+                    name = "Michał Jaroń"
+                    email = "m.jaron@protonmail.com"
+                }
+            }
+            scm {
+                connection = "scm:git:https://github.com/mjfryc/mjaron-tinyloki-java"
+                developerConnection = "scm:git:git@github.com:mjfryc/mjaron-tinyloki-java.git"
+                url = "https://github.com/mjfryc/mjaron-tinyloki-java"
+            }
+        }
+    }
 }
 
 // Source: https://docs.github.com/en/actions/guides/publishing-java-packages-with-gradle

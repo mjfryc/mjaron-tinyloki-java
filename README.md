@@ -42,7 +42,7 @@ public class Sample {
 2. Add this jar to project dependencies in build.gradle  
 ```gradle
 dependencies {
-    implementation files(project.rootDir.absolutePath + '/libs/mjaron-tinyloki-java-0.1.1.jar')
+    implementation files(project.rootDir.absolutePath + '/libs/mjaron-tinyloki-java-0.1.3.jar')
 }
 ```
 3. Use library in your project.

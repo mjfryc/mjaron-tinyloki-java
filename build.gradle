@@ -22,14 +22,14 @@ test {
 // Source: https://docs.github.com/en/actions/guides/publishing-java-packages-with-gradle
 publishing {
     repositories {
-/*        maven {
+        maven {
             name = "OSSRH"
             url = "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
             credentials {
                 username = System.getenv("MAVEN_USERNAME")
                 password = System.getenv("MAVEN_PASSWORD")
             }
-        }*/
+        }
         maven {
             name = "GitHubPackages"
             println("GitHubPackages: Publishing package version: $version")
@@ -40,9 +40,9 @@ publishing {
             }
         }
     }
-//    publications {
-//        gpr(MavenPublication) {
-//            from(components.java)
-//        }
-//    }
+    publications {
+        gpr(MavenPublication) {
+            from(components.java)
+        }
+    }
 }

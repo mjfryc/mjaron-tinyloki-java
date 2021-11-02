@@ -24,9 +24,54 @@ java {
     withJavadocJar()
 }
 
+def hasSigningKey = System.getEnv("GPG_PASSWORD") != null && System.getEnv("GPG_PRIVATE_KEY") != null
+if(hasSigningKey) {
+	sign(project)
+}
+void sign(Project project) {
+	project.signing {
+        System.out.println("GPG key and password found. Signing maven publications.")
+		required { project.gradle.taskGraph.hasTask("required") }
+        def signingKey = System.getEnv("GPG_PRIVATE_KEY")
+        def signingPassword = project.findProperty("GPG_PASSWORD")
+        useInMemoryPgpKeys(signingKey, signingPassword)
+		sign publishing.publications.maven
+	}
+}
+
+project.plugins.withType(MavenPublishPlugin).all {
+	PublishingExtension publishing = project.extensions.getByType(PublishingExtension)
+	publishing.publications.withType(MavenPublication).all { mavenPublication ->
+		mavenPublication.pom {
+			name = "${project.group}:${project.name}"
+			description = name
+			url = "https://github.com/rwinch/gradle-publish-ossrh-sample"
+			licenses {
+				license {
+					name = "MIT License"
+					url = "https://raw.githubusercontent.com/mjfryc/mjaron-tinyloki-java/main/LICENSE"
+				}
+			}
+			developers {
+				developer {
+					id = "mjfryc"
+					name = "Michał Jaroń"
+					email = "m.jaron@protonmail.com"
+				}
+			}
+			scm {
+				connection = "scm:git:https://github.com/mjfryc/mjaron-tinyloki-java"
+				developerConnection = "scm:git:git@github.com:mjfryc/mjaron-tinyloki-java.git"
+				url = "https://github.com/mjfryc/mjaron-tinyloki-java"
+			}
+		}
+	}
+}
+
 // Source: https://docs.github.com/en/actions/guides/publishing-java-packages-with-gradle
 // Source: https://github.com/rwinch/gradle-publish-ossrh-sample
 // Source: https://docs.github.com/en/authentication/managing-commit-signature-verification/generating-a-new-gpg-key
+// Source: https://github.com/rwinch/gradle-publish-ossrh-sample
 publishing {
     repositories {
         maven {

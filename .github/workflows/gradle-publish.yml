@@ -35,8 +35,6 @@ jobs:
         USERNAME: ${{ github.actor }}
         TOKEN: ${{ secrets.GITHUB_TOKEN }}
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        MAVEN_USERNAME: ${{ secrets.OSSRH_TOKEN_USERNAME }}
-        MAVEN_PASSWORD: ${{ secrets.OSSRH_TOKEN_PASSWORD }}
   publish_ossrh:
     runs-on: ubuntu-latest
     permissions:

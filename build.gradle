@@ -5,7 +5,7 @@ plugins {
 }
 
 group 'io.github.mjfryc'
-version '0.1.16'
+version '0.1.17'
 
 repositories {
     mavenCentral()
@@ -78,6 +78,7 @@ project.plugins.withType(MavenPublishPlugin).all {
 // Source: https://docs.github.com/en/authentication/managing-commit-signature-verification/generating-a-new-gpg-key
 // Source: https://github.com/rwinch/gradle-publish-ossrh-sample
 publishing {
+    println("Publishing: Package version: $version")
     repositories {
         maven {
             name = "OSSRH"
@@ -89,7 +90,6 @@ publishing {
         }
         maven {
             name = "GitHubPackages"
-            println("GitHubPackages: Publishing package version: $version")
             url = "https://maven.pkg.github.com/mjfryc/mjaron-tinyloki-java"
             credentials {
                 username = System.getenv("GITHUB_ACTOR")

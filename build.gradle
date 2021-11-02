@@ -19,7 +19,13 @@ test {
     useJUnitPlatform()
 }
 
+java {
+    withSourcesJar()
+    withJavadocJar()
+}
+
 // Source: https://docs.github.com/en/actions/guides/publishing-java-packages-with-gradle
+// Source: https://github.com/rwinch/gradle-publish-ossrh-sample
 publishing {
     repositories {
         maven {

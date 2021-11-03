@@ -59,7 +59,7 @@ dependencies {
 
 Click the [Packages section](https://github.com/mjfryc?tab=packages&repo_name=mjaron-tinyloki-java) on the right.
 
-### Download directly.
+### Download directly
 1. Click the [Packages section](https://github.com/mjfryc?tab=packages&repo_name=mjaron-tinyloki-java) on the right.
 2. Find and download jar package from files list to e.g. `your_project_root/libs` dir.
 3. Add this jar to project dependencies in build.gradle, e.g:

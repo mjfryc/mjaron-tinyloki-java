@@ -20,24 +20,51 @@ import pl.mjaron.tinyloki.*;
 
 public class Sample {
     public static void main(String[] args) {
-        LogController logController = TinyLoki.createAndStart("http://localhost/loki/api/v1/push", "user", "pass");
-        ILogStream stream = logController.createStream(TinyLoki.l(Labels.LEVEL, Labels.INFO).l("host", "ZEUS"));
+    
+        // Initialize log controller instance with URL.
+        // Usually more than one instance in application doesn't make sense.
+        // Give Basic Authentication credentials or nulls.
+        // LogController owns separate thread which sends logs periodically.
+        LogController logController = TinyLoki.createAndStart(
+            "https://localhost/loki/api/v1/push", "user", "pass");
+        
+        // Create streams. It is thread-safe.
+        ILogStream stream = logController.createStream(
+            // Define stream labels...
+            TinyLoki.l(Labels.LEVEL, Labels.INFO)
+                    .l("host", "MyComputerName")
+                    .l("custom-label", "custom-value")
+        );
+        
+        // ... new streams and other logs here (thread-safe).
         stream.log("Hello world.");
-        // ... new streams and other logs here.
+        
+        // Optionally flush logs before application exit.
         logController.softStop().waitForStop();
     }
 }
 ```
 ## Integration
 
-1. Download lastest release jar from project releases to e.g. `your_project_root/libs` dir.
-2. Add this jar to project dependencies in build.gradle  
+### Maven Central
+
+[Maven Central page](https://search.maven.org/artifact/io.github.mjfryc/mjaron-tinyloki-java/0.1.22/jar)
+
 ```gradle
 dependencies {
-    implementation files(project.rootDir.absolutePath + '/libs/mjaron-tinyloki-java-0.1.3.jar')
+    implementation 'io.github.mjfryc:mjaron-tinyloki-java:0.1.22'
 }
 ```
-3. Use library in your project.
-```java
-import pl.mjaron.tinyloki.*;
+### GitHub Packages
+
+Click the [Packages section](https://github.com/mjfryc?tab=packages&repo_name=mjaron-tinyloki-java) on the right.
+
+### Download directly.
+1. Click the [Packages section](https://github.com/mjfryc?tab=packages&repo_name=mjaron-tinyloki-java) on the right.
+2. Find and download jar package from files list to e.g. `your_project_root/libs` dir.
+3. Add this jar to project dependencies in build.gradle, e.g:
+```gradle
+dependencies {
+    implementation files(project.rootDir.absolutePath + '/libs/mjaron-tinyloki-java-0.1.22.jar')
+}
 ```

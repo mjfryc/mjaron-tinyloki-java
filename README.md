@@ -3,7 +3,7 @@
 [![Java CI with Gradle](https://github.com/mjfryc/mjaron-tinyloki-java/actions/workflows/gradle.yml/badge.svg)](https://github.com/mjfryc/mjaron-tinyloki-java/actions/workflows/gradle.yml)
 [![Gradle Package](https://github.com/mjfryc/mjaron-tinyloki-java/actions/workflows/gradle-publish.yml/badge.svg)](https://github.com/mjfryc/mjaron-tinyloki-java/actions/workflows/gradle-publish.yml)
 
-Tiny implementation of Loki client written in pure Java 1.8 without any dependencies.
+Tiny [Grafana Loki](https://grafana.com/oss/loki/) client written in pure Java 1.8 without any dependencies to other libraries.
 
 * Implements JSON variant of [Loki API](https://grafana.com/docs/loki/latest/api/#post-lokiapiv1push)
 * Works with **Android** and **Java SE**

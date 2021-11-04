@@ -1,5 +1,8 @@
 package pl.mjaron.tinyloki;
 
+/**
+ * Prints only error messages.
+ */
 public class ErrorLogMonitor implements ILogMonitor {
     @Override
     public void send(final byte[] message) {
@@ -17,5 +20,14 @@ public class ErrorLogMonitor implements ILogMonitor {
     @Override
     public void onException(Exception exception) {
         exception.printStackTrace();
+    }
+
+    @Override
+    public void onWorkerThreadExit(final boolean isSoft) {
+        if (isSoft) {
+            System.out.println("Worker thread exited correctly.");
+        } else {
+            System.err.println("Worker thread exited by interrupting.");
+        }
     }
 }

@@ -2,18 +2,25 @@ package pl.mjaron.tinyloki;
 
 import pl.mjaron.tinyloki.third_party.Base64Coder;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
-//import java.util.Base64;
 
+/**
+ * Implementation of sending bytes to HTTP server.
+ */
 public class LogSender {
     final LogSenderSettings settings;
     private ILogMonitor logMonitor = null;
-    private URL url;
+    private final URL url;
 
+    /**
+     * Creates and configures a new LogSender object.
+     *
+     * @param settings Parameters required for sending HTTP requests.
+     */
     public LogSender(final LogSenderSettings settings) {
         this.settings = settings;
         try {
@@ -23,36 +30,55 @@ public class LogSender {
         }
     }
 
+    /**
+     * Getter of {@link LogSenderSettings}.
+     *
+     * @return {@link LogSenderSettings} used by this log sender.
+     */
     public LogSenderSettings getSettings() {
         return settings;
     }
 
+    /**
+     * Getter of {@link ILogMonitor}.
+     *
+     * @return {@link ILogMonitor} used by this log sender.
+     */
+    @SuppressWarnings("unused")
     public ILogMonitor getLogMonitor() {
         return logMonitor;
     }
 
+    /**
+     * Setter of {@link ILogMonitor}.
+     * {@link ILogMonitor} object must be set (and not a null) before sending any data with {@link #send(byte[])}.
+     *
+     * @param logMonitor {@link ILogMonitor} reference.
+     */
     public void setLogMonitor(ILogMonitor logMonitor) {
         this.logMonitor = logMonitor;
     }
 
+    /**
+     * Creates connection and sends given data by HTTP request.
+     * Calls several {@link ILogMonitor} methods pointing what's the request data and HTTP response result.
+     *
+     * @param message Data to send in HTTP request content.
+     */
     void send(final byte[] message) {
         logMonitor.send(message);
-        HttpURLConnection connection = null;
+        HttpURLConnection connection;
         OutputStream outputStream = null;
         try {
             connection = (HttpURLConnection) url.openConnection();
+            connection.setConnectTimeout(settings.getConnectTimeout());
             connection.setRequestMethod("POST");
             connection.setRequestProperty("connection", "close");
-            //connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-            //connection.setRequestProperty("Content-Type", "application/json");
             connection.setRequestProperty("Content-Type", settings.getContentType());
             connection.setRequestProperty("Content-Length", Integer.toString(message.length));
-            //connection.setRequestProperty("Content-Language", "en-US");
 
             if (settings.getUser() != null && settings.getPassword() != null) {
                 final String authHeaderContentString = settings.getUser() + ":" + settings.getPassword();
-                //final byte[] authHeaderBytes = authHeaderContentString.getBytes(StandardCharsets.UTF_8);
-                //Base64.getEncoder().encodeToString();
                 final String authHeaderEncoded = Base64Coder.encodeString(authHeaderContentString);
                 connection.setRequestProperty("Authorization", "Basic " + authHeaderEncoded);
             }
@@ -68,12 +94,11 @@ public class LogSender {
             if (responseCode != HttpURLConnection.HTTP_OK && responseCode != HttpURLConnection.HTTP_NO_CONTENT) {
                 final String responseMessage = connection.getResponseMessage();
                 logMonitor.sendErr(responseCode, responseMessage);
-            }
-            else {
+            } else {
                 logMonitor.sendOk(responseCode);
             }
         } catch (IOException e) {
-            throw new RuntimeException("Failed to prepare connection.", e);
+            throw new RuntimeException("Failed to send logs.", e);
         } finally {
             if (outputStream != null) {
                 try {

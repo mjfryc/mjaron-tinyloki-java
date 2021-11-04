@@ -34,11 +34,11 @@ class LogCollectorTest {
 
     @Test
     @Disabled
-    void logController() {
-        LogController logController = TinyLoki.createAndStart("http://localhost/loki/api/v1/push", "user", "pass");
+    void tinyLokiTest() {
+        LogController logController = TinyLoki.createAndStart("http://localhost/loki/api/v1/push", "user", "pass", 5000);
         ILogStream stream = logController.createStream(TinyLoki.l(Labels.LEVEL, Labels.INFO).l("host", "ZEUS"));
         stream.log("Hello world.");
         // ... new streams and other logs here.
-        logController.softStop().waitForStop();
+        logController.softStop().hardStop();
     }
 }

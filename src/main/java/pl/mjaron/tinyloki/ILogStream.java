@@ -14,7 +14,8 @@ public interface ILogStream {
     void log(final long timestampMs, final String line);
 
     /**
-     * Log line with current time.
+     * Thread-safe log line with current time.
+     *
      * @param line Log content.
      */
     default void log(final String line) {
@@ -23,7 +24,7 @@ public interface ILogStream {
 
     /**
      * Release log stream, so it isn't longer managed by its log collector.
-     * It is not mandatory to call if log lifetime is the same as application lifetime.
+     * It is not mandatory to call if this stream lifetime is the same as application lifetime.
      */
     void release();
 }

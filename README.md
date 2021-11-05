@@ -31,9 +31,10 @@ public class Sample {
         // Create streams. It is thread-safe.
         ILogStream stream = logController.createStream(
                 // Define stream labels...
-                TinyLoki.l(Labels.LEVEL, Labels.INFO)
-                        .l("host", "MyComputerName")
-                        .l("customLabel", "custom_value")
+                // Initializing log level to info. Short version of TinyLoki.l(Labels.LEVEL, Labels.INFO)
+                TinyLoki.info()
+                        .l("host", "MyComputerName")        // Custom static label.
+                        .l("customLabel", "custom_value")   // Custom static label.
                 // Label names should start with letter
                 //     and contain letters, digits and '_' only.
                 // Bad characters will be replaced by '_'.
@@ -53,11 +54,12 @@ public class Sample {
 
 ### Maven Central
 
-[Maven Central page](https://search.maven.org/artifact/io.github.mjfryc/mjaron-tinyloki-java/0.1.22/jar)
+[Maven Central page](https://search.maven.org/artifact/io.github.mjfryc/mjaron-tinyloki-java/)
+[Maven Central repository URL](https://repo1.maven.org/maven2/io/github/mjfryc/mjaron-tinyloki-java/)
 
 ```gradle
 dependencies {
-    implementation 'io.github.mjfryc:mjaron-tinyloki-java:0.2.0'
+    implementation 'io.github.mjfryc:mjaron-tinyloki-java:0.2.1'
 }
 ```
 
@@ -73,6 +75,6 @@ Click the [Packages section](https://github.com/mjfryc?tab=packages&repo_name=mj
 
 ```gradle
 dependencies {
-    implementation files(project.rootDir.absolutePath + '/libs/mjaron-tinyloki-java-0.2.0.jar')
+    implementation files(project.rootDir.absolutePath + '/libs/mjaron-tinyloki-java-0.2.1.jar')
 }
 ```

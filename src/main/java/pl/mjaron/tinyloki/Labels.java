@@ -56,6 +56,7 @@ public class Labels {
      * Verifies if labelIdentifier is not null and not empty.
      *
      * @param labelIdentifier Label name or labelIdentifier value.
+     * @since 0.2.0
      */
     public static void assertLabelIdentifierNotNullOrEmpty(final String labelIdentifier) {
         if (labelIdentifier == null) {
@@ -72,6 +73,7 @@ public class Labels {
      *
      * @param labelIdentifier Label name or label value to check.
      * @throws RuntimeException when given label identifier is invalid.
+     * @since 0.2.0
      */
     public static void validateLabelIdentifierOrThrow(final String labelIdentifier) {
         assertLabelIdentifierNotNullOrEmpty(labelIdentifier);
@@ -94,6 +96,7 @@ public class Labels {
      *
      * @param labelIdentifier Label name or label value to check.
      * @return True when given label identifier is valid.
+     * @since 0.2.0
      */
     public static boolean checkLabelIdentifierWhenNotEmpty(final String labelIdentifier) {
         final char firstChar = labelIdentifier.charAt(0);
@@ -115,6 +118,7 @@ public class Labels {
      *
      * @param labelIdentifier Label name or label value to check.
      * @return True when given label identifier is valid.
+     * @since 0.2.0
      */
     private static boolean checkLabelIdentifier(final String labelIdentifier) {
         assertLabelIdentifierNotNullOrEmpty(labelIdentifier);
@@ -128,6 +132,7 @@ public class Labels {
      * @param labelIdentifier Label name or value to check.
      * @return Valid labelIdentifier identifier with removed wrong symbols.
      * @throws RuntimeException when given <code>labelIdentifier</code> is null or empty.
+     * @since 0.2.0
      */
     public static String prettifyLabelIdentifier(final String labelIdentifier) {
         assertLabelIdentifierNotNullOrEmpty(labelIdentifier);
@@ -158,6 +163,7 @@ public class Labels {
 
     /**
      * @return Map representation of labels content.
+     * @since 0.1.22
      */
     public Map<String, String> getMap() {
         return map;
@@ -169,6 +175,7 @@ public class Labels {
      * @param labelName  Label name. Valid label identifier starts with letter and contains only letters, digits or '_'.
      * @param labelValue Label value. Valid label identifier starts with letter and contains only letters, digits or '_'.
      * @return This object with added label.
+     * @since 0.1.22
      */
     public Labels l(final String labelName, final String labelValue) {
         final String prettifiedName = prettifyLabelIdentifier(labelName);
@@ -183,11 +190,125 @@ public class Labels {
      *
      * @param map Map containing label key - value pairs.
      * @return This reference.
+     * @since 0.1.22
      */
     public Labels l(final Map<String, String> map) {
         for (Map.Entry<String, String> entry : map.entrySet()) {
             this.l(entry.getKey(), entry.getValue());
         }
         return this;
+    }
+
+    /**
+     * Sets {@link #LEVEL label level} to {@link #FATAL}, the same as {@link #fatal()}.
+     * <p>
+     * Only one level may be assigned to single log stream. Setting other level will override previous value.
+     *
+     * @return This reference.
+     * @see #LEVEL
+     * @see #FATAL
+     * @since 0.2.1
+     */
+    public Labels critical() {
+        return this.l(LEVEL, FATAL);
+    }
+
+    /**
+     * Sets {@link #LEVEL label level} to {@link #FATAL}.
+     * <p>
+     * Only one level may be assigned to single log stream. Setting other level will override previous value.
+     *
+     * @return This reference.
+     * @see #LEVEL
+     * @see #FATAL
+     * @since 0.2.1
+     */
+    public Labels fatal() {
+        return this.l(LEVEL, FATAL);
+    }
+
+    /**
+     * Sets {@link #LEVEL label level} to {@link #WARN}.
+     * <p>
+     * Only one level may be assigned to single log stream. Setting other level will override previous value.
+     *
+     * @return This reference.
+     * @see #LEVEL
+     * @see #WARN
+     * @since 0.2.1
+     */
+    public Labels warning() {
+        return this.l(LEVEL, WARN);
+    }
+
+    /**
+     * Sets {@link #LEVEL label level} to {@link #INFO}.
+     * <p>
+     * Only one level may be assigned to single log stream. Setting other level will override previous value.
+     *
+     * @return This reference.
+     * @see #LEVEL
+     * @see #INFO
+     * @since 0.2.1
+     */
+    public Labels info() {
+        return this.l(LEVEL, INFO);
+    }
+
+    /**
+     * Sets {@link #LEVEL label level} to {@link #DEBUG}.
+     * <p>
+     * Only one level may be assigned to single log stream. Setting other level will override previous value.
+     *
+     * @return This reference.
+     * @see #LEVEL
+     * @see #DEBUG
+     * @since 0.2.1
+     */
+    public Labels debug() {
+        return this.l(LEVEL, DEBUG);
+    }
+
+    /**
+     * Sets {@link #LEVEL label level} to {@link #VERBOSE}.
+     * <p>
+     * Only one level may be assigned to single log stream. Setting other level will override previous value.
+     *
+     * @return This reference.
+     * @see #LEVEL
+     * @see #VERBOSE
+     * @since 0.2.1
+     */
+    public Labels verbose() {
+        return this.l(LEVEL, VERBOSE);
+    }
+
+    /**
+     * Sets {@link #LEVEL label level} to {@link #TRACE}, the same as {@link #VERBOSE}.
+     * <p>
+     * Only one level may be assigned to single log stream. Setting other level will override previous value.
+     *
+     * @return This reference.
+     * @see #LEVEL
+     * @see #TRACE
+     * @see #VERBOSE
+     * @since 0.2.1
+     */
+    public Labels trace() {
+        return this.l(LEVEL, TRACE);
+    }
+
+    /**
+     * Sets {@link #LEVEL label level} to {@link #UNKNOWN}.
+     * <p>
+     * Only one level may be assigned to single log stream. Setting other level will override previous value.
+     *
+     * @return This reference.
+     * @see #LEVEL
+     * @see #UNKNOWN
+     * @since 0.2.1
+     */
+    public Labels unknown() {
+        return this.l(LEVEL, UNKNOWN);
     }
 }

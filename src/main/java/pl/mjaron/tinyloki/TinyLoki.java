@@ -91,4 +91,121 @@ public class TinyLoki {
     public static Labels l(final Map<String, String> map) {
         return new Labels().l(map);
     }
+
+    /**
+     * Creates new {@link Labels} with {@link Labels#LEVEL label level} set to {@link Labels#FATAL}.
+     * <p>
+     * The same as {@link #fatal()}.
+     * <p>
+     * Only one level may be assigned to single log stream. Setting other level will override previous value.
+     *
+     * @return This reference.
+     * @see Labels#LEVEL
+     * @see Labels#FATAL
+     * @since 0.2.1
+     */
+    public static Labels critical() {
+        return new Labels().critical();
+    }
+
+    /**
+     * Creates new {@link Labels} with {@link Labels#LEVEL label level} set to {@link Labels#FATAL}.
+     * <p>
+     * Only one level may be assigned to single log stream. Setting other level will override previous value.
+     *
+     * @return This reference.
+     * @see Labels#LEVEL
+     * @see Labels#FATAL
+     * @since 0.2.1
+     */
+    public static Labels fatal() {
+        return new Labels().fatal();
+    }
+
+    /**
+     * Creates new {@link Labels} with {@link Labels#LEVEL label level} set to {@link Labels#WARN}.
+     * <p>
+     * Only one level may be assigned to single log stream. Setting other level will override previous value.
+     *
+     * @return This reference.
+     * @see Labels#LEVEL
+     * @see Labels#WARN
+     * @since 0.2.1
+     */
+    public static Labels warning() {
+        return new Labels().warning();
+    }
+
+    /**
+     * Creates new {@link Labels} with {@link Labels#LEVEL label level} set to {@link Labels#INFO}.
+     * <p>
+     * Only one level may be assigned to single log stream. Setting other level will override previous value.
+     *
+     * @return This reference.
+     * @see Labels#LEVEL
+     * @see Labels#INFO
+     * @since 0.2.1
+     */
+    public static Labels info() {
+        return new Labels().info();
+    }
+
+    /**
+     * Creates new {@link Labels} with {@link Labels#LEVEL label level} set to {@link Labels#DEBUG}.
+     * <p>
+     * Only one level may be assigned to single log stream. Setting other level will override previous value.
+     *
+     * @return This reference.
+     * @see Labels#LEVEL
+     * @see Labels#DEBUG
+     * @since 0.2.1
+     */
+    public static Labels debug() {
+        return new Labels().debug();
+    }
+
+    /**
+     * Creates new {@link Labels} with {@link Labels#LEVEL label level} set to {@link Labels#VERBOSE}.
+     * <p>
+     * Only one level may be assigned to single log stream. Setting other level will override previous value.
+     *
+     * @return This reference.
+     * @see Labels#LEVEL
+     * @see Labels#VERBOSE
+     * @since 0.2.1
+     */
+    public static Labels verbose() {
+        return new Labels().verbose();
+    }
+
+    /**
+     * Creates new {@link Labels} with {@link Labels#LEVEL label level} set to {@link Labels#TRACE}.
+     * <p>
+     * The same as {@link #verbose()}
+     * <p>
+     * Only one level may be assigned to single log stream. Setting other level will override previous value.
+     *
+     * @return This reference.
+     * @see Labels#LEVEL
+     * @see Labels#TRACE
+     * @see Labels#VERBOSE
+     * @since 0.2.1
+     */
+    public static Labels trace() {
+        return new Labels().trace();
+    }
+
+    /**
+     * Creates new {@link Labels} with {@link Labels#LEVEL label level} set to {@link Labels#UNKNOWN}.
+     * <p>
+     * Only one level may be assigned to single log stream. Setting other level will override previous value.
+     *
+     * @return This reference.
+     * @see Labels#LEVEL
+     * @see Labels#UNKNOWN
+     * @since 0.2.1
+     */
+    public static Labels unknown() {
+        return new Labels().unknown();
+    }
 }

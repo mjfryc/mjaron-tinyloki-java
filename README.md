@@ -57,7 +57,7 @@ public class Sample {
 
 ```gradle
 dependencies {
-    implementation 'io.github.mjfryc:mjaron-tinyloki-java:0.2.1'
+    implementation 'io.github.mjfryc:mjaron-tinyloki-java:0.2.2'
 }
 ```
 
@@ -76,6 +76,6 @@ Click the [Packages section](https://github.com/mjfryc?tab=packages&repo_name=mj
 
 ```gradle
 dependencies {
-    implementation files(project.rootDir.absolutePath + '/libs/mjaron-tinyloki-java-0.2.1.jar')
+    implementation files(project.rootDir.absolutePath + '/libs/mjaron-tinyloki-java-0.2.2.jar')
 }
 ```

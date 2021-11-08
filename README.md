@@ -55,14 +55,14 @@ public class Sample {
 
 ### Maven Central
 
-* [Maven Central page](https://search.maven.org/artifact/io.github.mjfryc/mjaron-tinyloki-java/)
-* [Maven Central repository URL](https://repo1.maven.org/maven2/io/github/mjfryc/mjaron-tinyloki-java/)
-
 ```gradle
 dependencies {
     implementation 'io.github.mjfryc:mjaron-tinyloki-java:0.2.1'
 }
 ```
+
+ _[Maven Central page](https://search.maven.org/artifact/io.github.mjfryc/mjaron-tinyloki-java/),_
+ _[Maven Central repository URL](https://repo1.maven.org/maven2/io/github/mjfryc/mjaron-tinyloki-java/)_
 
 ### GitHub Packages
 

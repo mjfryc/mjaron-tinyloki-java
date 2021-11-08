@@ -93,6 +93,17 @@ public class TinyLoki {
     }
 
     /**
+     * Create a deep copy of given labels.
+     *
+     * @param other Other labels instance.
+     * @return Deep copy of labels.
+     * @since 0.2.2
+     */
+    public static Labels l(final Labels other) {
+        return new Labels(other);
+    }
+
+    /**
      * Creates new {@link Labels} with {@link Labels#LEVEL label level} set to {@link Labels#FATAL}.
      * <p>
      * The same as {@link #fatal()}.

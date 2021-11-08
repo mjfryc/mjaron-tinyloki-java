@@ -10,7 +10,7 @@ import java.util.TreeMap;
  * https://grafana.com/docs/grafana/latest/packages_api/data/loglevel/
  */
 @SuppressWarnings("unused")
-public class Labels {
+public class Labels implements Cloneable {
 
     /**
      * Log level definition.
@@ -159,14 +159,79 @@ public class Labels {
     /**
      * Internal labels container.
      */
-    private final Map<String, String> map = new TreeMap<>();
+    private TreeMap<String, String> map;
 
     /**
-     * @return Map representation of labels content.
+     * Default constructor. Creates empty labels.
+     */
+    public Labels() {
+        this.map = new TreeMap<>();
+    }
+
+    /**
+     * Creates a deep copy of other labels.
+     *
+     * @param other Other labels instance.
+     */
+    public Labels(final Labels other) {
+        this.map = new TreeMap<>(other.map);
+    }
+
+    /**
+     * Creates labels from a given map.
+     *
+     * @param map Given map is copied to internal Labels map.
+     */
+    public Labels(final Map<String, String> map) {
+        this.map = new TreeMap<>(map);
+    }
+
+    /**
+     * @return Internal {@link Map} representation of labels content.
+     * User should not modify given map because modified values will not be checked for validity.
      * @since 0.1.22
      */
     public Map<String, String> getMap() {
         return map;
+    }
+
+    /**
+     * Creates a deep copy of this object.
+     *
+     * @return Deep copy of this object.
+     * @throws RuntimeException When any member doesn't implement Cloneable.
+     * @since 0.2.2
+     */
+    @Override
+    public Labels clone() {
+        try {
+            final Labels cloned = (Labels) super.clone();
+            cloned.map = new TreeMap<>(this.map);
+            return cloned;
+        } catch (final CloneNotSupportedException e) {
+            throw new RuntimeException("Failed to clone.", e);
+        }
+    }
+
+    /**
+     * Compares this instance with other instance.
+     *
+     * @param other Other object instance.
+     * @return True if other object is the same as this object.
+     * @since 0.2.2
+     */
+    public boolean equals(final Object other) {
+        if (other == null) {
+            return false;
+        }
+        if (this == other) {
+            return true;
+        }
+        if (!this.getClass().equals(other.getClass())) {
+            return false;
+        }
+        final Labels otherLabels = (Labels) other;
+        return this.map.equals(otherLabels.map);
     }
 
     /**
@@ -197,6 +262,17 @@ public class Labels {
             this.l(entry.getKey(), entry.getValue());
         }
         return this;
+    }
+
+    /**
+     * Put other labels values.
+     *
+     * @param other Other Labels instance.
+     * @return This reference.
+     * @since 0.2.2
+     */
+    public Labels l(final Labels other) {
+        return this.l(other.map);
     }
 
     /**

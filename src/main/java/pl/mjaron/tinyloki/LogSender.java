@@ -3,6 +3,7 @@ package pl.mjaron.tinyloki;
 import pl.mjaron.tinyloki.third_party.Base64Coder;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
@@ -64,16 +65,18 @@ public class LogSender {
      * Calls several {@link ILogMonitor} methods pointing what's the request data and HTTP response result.
      *
      * @param message Data to send in HTTP request content.
+     * @throws RuntimeException On connection error.
      */
     void send(final byte[] message) {
         logMonitor.send(message);
-        HttpURLConnection connection;
-        OutputStream outputStream = null;
+        HttpURLConnection connection = null;
         try {
+            // Based on: https://docs.oracle.com/javase/7/docs/technotes/guides/net/http-keepalive.html
             connection = (HttpURLConnection) url.openConnection();
+            connection.setDoOutput(true);
+            connection.setDoInput(true);
             connection.setConnectTimeout(settings.getConnectTimeout());
             connection.setRequestMethod("POST");
-            connection.setRequestProperty("connection", "close");
             connection.setRequestProperty("Content-Type", settings.getContentType());
             connection.setRequestProperty("Content-Length", Integer.toString(message.length));
 
@@ -83,13 +86,18 @@ public class LogSender {
                 connection.setRequestProperty("Authorization", "Basic " + authHeaderEncoded);
             }
 
-            connection.setAllowUserInteraction(false);
-            connection.setDoOutput(true);
-            connection.setDoInput(true);
-            outputStream = connection.getOutputStream();
-            outputStream.write(message);
-            outputStream.close();
-            outputStream = null;
+            try (final OutputStream outputStream = connection.getOutputStream()) {
+                outputStream.write(message);
+            }
+
+            try (final InputStream inputStream = connection.getInputStream()) {
+                while (true) {
+                    if (inputStream.read() == -1) {
+                        break;
+                    }
+                }
+            }
+
             final int responseCode = connection.getResponseCode();
             if (responseCode != HttpURLConnection.HTTP_OK && responseCode != HttpURLConnection.HTTP_NO_CONTENT) {
                 final String responseMessage = connection.getResponseMessage();
@@ -97,16 +105,20 @@ public class LogSender {
             } else {
                 logMonitor.sendOk(responseCode);
             }
-        } catch (IOException e) {
-            throw new RuntimeException("Failed to send logs.", e);
-        } finally {
-            if (outputStream != null) {
-                try {
-                    outputStream.close();
-                } catch (IOException e) {
-                    logMonitor.onException(e);
+        } catch (final IOException e) {
+            if (connection != null) {
+                try (final InputStream errorStream = connection.getErrorStream()) {
+                    while (true) {
+                        if (errorStream.read() == -1) {
+                            break;
+                        }
+                    }
+                } catch (final IOException e2) {
+                    e2.printStackTrace();
                 }
             }
+            throw new RuntimeException("Failed to send logs.", e);
         }
     }
 }
+

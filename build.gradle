@@ -23,6 +23,10 @@ test {
 java {
     withSourcesJar()
     withJavadocJar()
+
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(8))
+    }
 }
 
 project.plugins.withType(MavenPublishPlugin).all {

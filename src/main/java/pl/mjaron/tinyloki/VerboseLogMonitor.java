@@ -3,7 +3,7 @@ package pl.mjaron.tinyloki;
 import java.nio.charset.StandardCharsets;
 
 /**
- * This implementation is logging all communication between library and HTTP Loki server.
+ * This implementation prints all communication between this library and HTTP Loki server.
  */
 public class VerboseLogMonitor extends ErrorLogMonitor {
     @Override
@@ -14,5 +14,14 @@ public class VerboseLogMonitor extends ErrorLogMonitor {
     @Override
     public void sendOk(final int status) {
         System.out.println(">>> " + status);
+    }
+
+    @Override
+    public void onWorkerThreadExit(final boolean isSoft) {
+        if (isSoft) {
+            System.out.println("Worker thread exited correctly.");
+        } else {
+            System.err.println("Worker thread exited by interrupting.");
+        }
     }
 }

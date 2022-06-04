@@ -11,6 +11,8 @@ import java.net.URL;
 
 /**
  * Implementation of sending bytes to HTTP server.
+ *
+ * @since 0.3.0
  */
 public class HttpLogSender implements ILogSender {
     private LogSenderSettings settings;

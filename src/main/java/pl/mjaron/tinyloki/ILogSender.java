@@ -2,6 +2,8 @@ package pl.mjaron.tinyloki;
 
 /**
  * Sends the logs.
+ *
+ * @since 0.3.0
  */
 public interface ILogSender {
 

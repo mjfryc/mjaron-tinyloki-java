@@ -26,13 +26,15 @@ public class Sample {
         // Usually more than one instance in application doesn't make sense.
         // Give Basic Authentication credentials or nulls.
         // LogController owns separate thread which sends logs periodically.
-        LogController logController = TinyLoki.createAndStart(
-                "https://localhost/loki/api/v1/push", "user", "pass");
+        LogController logController = TinyLoki
+                .withUrl("http://localhost/loki/api/v1/push")
+                .withBasicAuth("user", "pass")
+                .start();
 
         // Create streams. It is thread-safe.
         ILogStream stream = logController.createStream(
                 // Define stream labels...
-                // Initializing log level to info. Short version of TinyLoki.l(Labels.LEVEL, Labels.INFO)
+                // Initializing log level to info and adding some custom labels.
                 TinyLoki.info()
                         .l("host", "MyComputerName")        // Custom static label.
                         .l("customLabel", "custom_value")   // Custom static label.
@@ -46,7 +48,9 @@ public class Sample {
         stream.log("Hello world.");
 
         // Optionally flush logs before application exit.
-        logController.softStop().hardStop();
+        logController
+                .softStop()     // Try to send logs last time.
+                .hardStop();    // If it doesn't work (soft timeout) - force stop sending thread.
     }
 }
 ```
@@ -56,9 +60,7 @@ public class Sample {
 ### Maven Central
 
 ```gradle
-dependencies {
-    implementation 'io.github.mjfryc:mjaron-tinyloki-java:0.2.2'
-}
+    implementation 'io.github.mjfryc:mjaron-tinyloki-java:0.3.0'
 ```
 
  _[Maven Central page](https://search.maven.org/artifact/io.github.mjfryc/mjaron-tinyloki-java/),_
@@ -75,7 +77,5 @@ Click the [Packages section](https://github.com/mjfryc?tab=packages&repo_name=mj
 3. Add this jar to project dependencies in build.gradle, e.g:
 
 ```gradle
-dependencies {
-    implementation files(project.rootDir.absolutePath + '/libs/mjaron-tinyloki-java-0.2.2.jar')
-}
+    implementation files(project.rootDir.absolutePath + '/libs/mjaron-tinyloki-java-0.3.0.jar')
 ```

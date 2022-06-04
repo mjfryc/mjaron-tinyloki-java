@@ -1,7 +1,7 @@
 package pl.mjaron.tinyloki;
 
 /**
- * Used to configure {@link LogSender}.
+ * Used to configure {@link HttpLogSender}.
  */
 @SuppressWarnings("UnusedReturnValue")
 public class LogSenderSettings {

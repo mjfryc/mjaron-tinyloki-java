@@ -31,14 +31,4 @@ class LogCollectorTest {
 //        logSender.send(collected.getBytes(StandardCharsets.UTF_8));
 //        System.out.println("All done.");
     }
-
-    @Test
-    @Disabled
-    void tinyLokiTest() {
-        LogController logController = TinyLoki.withUrl("http://localhost/loki/api/v1/push").withBasicAuth("user", "pass").withConnectTimeout(5000).start();
-        ILogStream stream = logController.createStream(TinyLoki.info().l("host", "ZEUS"));
-        stream.log("Hello world.");
-        // ... new streams and other logs here.
-        logController.softStop().hardStop();
-    }
 }

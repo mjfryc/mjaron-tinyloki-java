@@ -12,52 +12,20 @@ import java.net.URL;
 /**
  * Implementation of sending bytes to HTTP server.
  */
-public class LogSender {
-    final LogSenderSettings settings;
-    private ILogMonitor logMonitor = null;
-    private final URL url;
+public class HttpLogSender implements ILogSender {
+    private LogSenderSettings settings;
+    private ILogMonitor logMonitor;
+    private URL url;
 
-    /**
-     * Creates and configures a new LogSender object.
-     *
-     * @param settings Parameters required for sending HTTP requests.
-     */
-    public LogSender(final LogSenderSettings settings) {
-        this.settings = settings;
+    @Override
+    public void configure(LogSenderSettings logSenderSettings, ILogMonitor logMonitor) {
+        this.settings = logSenderSettings;
+        this.logMonitor = logMonitor;
         try {
             this.url = new URL(settings.getUrl());
         } catch (final MalformedURLException e) {
             throw new RuntimeException("Failed to initialize URL with: [" + settings.getUrl() + "].", e);
         }
-    }
-
-    /**
-     * Getter of {@link LogSenderSettings}. Allows changing the settings after log sender initialization.
-     *
-     * @return {@link LogSenderSettings} used by this log sender.
-     */
-    public LogSenderSettings getSettings() {
-        return settings;
-    }
-
-    /**
-     * Getter of {@link ILogMonitor}.
-     *
-     * @return {@link ILogMonitor} used by this log sender.
-     */
-    @SuppressWarnings("unused")
-    public ILogMonitor getLogMonitor() {
-        return logMonitor;
-    }
-
-    /**
-     * Setter of {@link ILogMonitor}.
-     * {@link ILogMonitor} object must be set (and not a null) before sending any data with {@link #send(byte[])}.
-     *
-     * @param logMonitor {@link ILogMonitor} reference.
-     */
-    public void setLogMonitor(ILogMonitor logMonitor) {
-        this.logMonitor = logMonitor;
     }
 
     /**
@@ -67,7 +35,7 @@ public class LogSender {
      * @param message Data to send in HTTP request content.
      * @throws RuntimeException On connection error.
      */
-    void send(final byte[] message) {
+    public void send(final byte[] message) {
         logMonitor.send(message);
         HttpURLConnection connection = null;
         try {

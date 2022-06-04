@@ -3,7 +3,7 @@ package pl.mjaron.tinyloki;
 import java.util.Map;
 
 /**
- * Factory methods for common objects.
+ * Top-level class which allows initializing the logging system.
  */
 @SuppressWarnings("unused")
 public class TinyLoki {
@@ -35,6 +35,13 @@ public class TinyLoki {
          * @since 0.3.0
          */
         private ILogMonitor logMonitor = null;
+
+        /**
+         * {@link ILogSender} which is used to send logs.
+         *
+         * @since 0.3.0
+         */
+        private ILogSender logSender = null;
 
         /**
          * Parameters of valid label values.
@@ -107,6 +114,18 @@ public class TinyLoki {
         }
 
         /**
+         * Allows changing the default {@link ILogSender}, which currently is {@link HttpLogSender}.
+         *
+         * @param logSender Instance of custom {@link ILogSender}.
+         * @return This {@link Settings} object reference.
+         * @since 0.3.0
+         */
+        public Settings withLogSender(final ILogSender logSender) {
+            this.logSender = logSender;
+            return this;
+        }
+
+        /**
          * Allows changing the default limits of length of label name and value.
          *
          * @param maxLabelNameLength  Custom value of label name length. Must be positive.
@@ -126,7 +145,7 @@ public class TinyLoki {
         }
 
         /**
-         * Getter of {@link LogSenderSettings}. Used by TinyLoki to initialize the {@link LogSender}.
+         * Getter of {@link LogSenderSettings}. Used by TinyLoki to initialize the {@link HttpLogSender}.
          *
          * @return Reference to {@link LogSenderSettings} instance in this settings object.
          * @since 0.3.0
@@ -146,13 +165,23 @@ public class TinyLoki {
         }
 
         /**
-         * Getter if {@link ILogMonitor}. Used by TinyLoki to obtain selected log monitor.
+         * Getter of {@link ILogMonitor}. Used by TinyLoki to obtain selected log monitor.
          *
          * @return Selected {@link ILogMonitor log monitor}.
          * @since 0.3.0
          */
         public ILogMonitor getLogMonitor() {
             return (logMonitor != null) ? logMonitor : new ErrorLogMonitor();
+        }
+
+        /**
+         * Getter of {@link ILogSender}. Used by TinyLoki to obtain selected log sender.
+         *
+         * @return Selected {@link ILogSender log sender}.
+         * @since 0.3.0
+         */
+        public ILogSender getLogSender() {
+            return (logSender != null) ? logSender : new HttpLogSender();
         }
 
         /**
@@ -201,7 +230,7 @@ public class TinyLoki {
      * @since 0.3.0
      */
     public static LogController createAndStart(final Settings settings) {
-        return new LogController(settings.getLogCollector(), new LogSender(settings.getLogSenderSettings()), settings.getLabelSettings(), settings.getLogMonitor()).start();
+        return new LogController(settings.getLogCollector(), settings.getLogSender(), settings.getLogSenderSettings(), settings.getLabelSettings(), settings.getLogMonitor()).start();
     }
 
     /**

@@ -1,0 +1,30 @@
+package pl.mjaron.tinyloki;
+
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
+
+public class TinyLokiTest {
+
+    @Test
+    void shortLabelTest() {
+        LogController logController = TinyLoki.withUrl("http://localhost/loki/api/v1/push")
+                .withLogSender(new DummyLogSender())
+                .withLogMonitor(new VerboseLogMonitor())
+                .withLabelLength(1, 1)
+                .start();
+        ILogStream abcStream = logController.createStream(TinyLoki.info().l("abc", "bcd"));
+        abcStream.log(1, "Hello world.");
+        logController.softStop().hardStop();
+    }
+
+    @Test
+    @Disabled
+    void tinyLokiTest() {
+        LogController logController = TinyLoki.withUrl("http://localhost/loki/api/v1/push").withBasicAuth("user", "pass").withConnectTimeout(5000).start();
+        ILogStream stream = logController.createStream(TinyLoki.info().l("host", "ZEUS"));
+        stream.log("Hello world.");
+        // ... new streams and other logs here.
+        logController.softStop().hardStop();
+    }
+}

@@ -1,7 +1,8 @@
 package pl.mjaron.tinyloki;
 
 /**
- * Top-level log interface with fixed static labels.
+ * Top-level log interface.
+ * Single stream has fixed label values.
  */
 public interface ILogStream {
 

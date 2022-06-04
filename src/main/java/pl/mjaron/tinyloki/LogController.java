@@ -13,7 +13,7 @@ public class LogController {
     private static final long DEFAULT_HARD_STOP_WAIT_TIME = 1000;
 
     private final ILogCollector logCollector;
-    private final LogSender logSender;
+    private final ILogSender logSender;
     private final LabelSettings labelSettings;
     private final ILogMonitor logMonitor;
     private Thread workerThread = null;
@@ -24,17 +24,18 @@ public class LogController {
      * Main constructor designed for user of this library.
      *
      * @param logCollector  ILogCollector implementation, which is responsible for creating new streams and collecting its logs.
-     * @param logSender     Sends logs collected by log controller.
+     * @param logSender     Sends the logs collected by log controller.
+     * @param logSenderSettings {@link LogSenderSettings} used to initialize the {@link ILogSender log sender}.
      * @param labelSettings Preferences of the {@link Labels}. See {@link LabelSettings}.
      * @param logMonitor    Handles diagnostic events from whole library.
      */
-    public LogController(final ILogCollector logCollector, final LogSender logSender, final LabelSettings labelSettings, final ILogMonitor logMonitor) {
+    public LogController(final ILogCollector logCollector, final ILogSender logSender, final LogSenderSettings logSenderSettings, final LabelSettings labelSettings, final ILogMonitor logMonitor) {
         this.logCollector = logCollector;
         this.logSender = logSender;
         this.labelSettings = labelSettings;
         this.logMonitor = logMonitor;
-        this.logSender.getSettings().setContentType(logCollector.contentType());
-        this.logSender.setLogMonitor(logMonitor);
+        logSenderSettings.setContentType(this.logCollector.contentType());
+        this.logSender.configure(logSenderSettings, logMonitor);
     }
 
     /**

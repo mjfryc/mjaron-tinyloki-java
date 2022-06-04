@@ -78,9 +78,11 @@ public class HttpLogSender implements ILogSender {
         } catch (final IOException e) {
             if (connection != null) {
                 try (final InputStream errorStream = connection.getErrorStream()) {
-                    while (true) {
-                        if (errorStream.read() == -1) {
-                            break;
+                    if (errorStream != null) {
+                        while (true) {
+                            if (errorStream.read() == -1) {
+                                break;
+                            }
                         }
                     }
                 } catch (final IOException e2) {

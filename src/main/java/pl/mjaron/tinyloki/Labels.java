@@ -7,7 +7,7 @@ import java.util.TreeMap;
  * Represents label name - label value mappings.
  * Contains common label constants and its values.
  * Log level constants are defined at:
- * https://grafana.com/docs/grafana/latest/packages_api/data/loglevel/
+ * <a href="https://grafana.com/docs/grafana/latest/packages_api/data/loglevel/">Grafana API Reference</a>
  */
 @SuppressWarnings("unused")
 public class Labels implements Cloneable {
@@ -53,7 +53,7 @@ public class Labels implements Cloneable {
     public static final String UNKNOWN = "unknown";
 
     /**
-     * Verifies if labelIdentifier is not null and not empty.
+     * Verifies if <code>labelIdentifier</code> is not null and not empty.
      *
      * @param labelIdentifier Label name or labelIdentifier value.
      * @since 0.2.0
@@ -74,7 +74,9 @@ public class Labels implements Cloneable {
      * @param labelIdentifier Label name or label value to check.
      * @throws RuntimeException when given label identifier is invalid.
      * @since 0.2.0
+     * @deprecated This method is unnecessary and will be removed in the future.
      */
+    @Deprecated
     public static void validateLabelIdentifierOrThrow(final String labelIdentifier) {
         assertLabelIdentifierNotNullOrEmpty(labelIdentifier);
 
@@ -93,6 +95,7 @@ public class Labels implements Cloneable {
 
     /**
      * Checks whether label contains only letters, digits or '_' and first character is letter.
+     * It doesn't check whether the length of identifier is lower than any length limit.
      *
      * @param labelIdentifier Label name or label value to check.
      * @return True when given label identifier is valid.
@@ -119,7 +122,9 @@ public class Labels implements Cloneable {
      * @param labelIdentifier Label name or label value to check.
      * @return True when given label identifier is valid.
      * @since 0.2.0
+     * @deprecated This method is unnecessary and will be removed in the future.
      */
+    @Deprecated
     private static boolean checkLabelIdentifier(final String labelIdentifier) {
         assertLabelIdentifierNotNullOrEmpty(labelIdentifier);
         return checkLabelIdentifierWhenNotEmpty(labelIdentifier);
@@ -128,19 +133,30 @@ public class Labels implements Cloneable {
     /**
      * Replaces invalid characters with `_` character.
      * If first character is invalid, replaces it with `A`.
+     * <p>
+     * Cuts down identifier if it is too long.
      *
      * @param labelIdentifier Label name or value to check.
+     * @param maxLength       Maximum accepted length of identifier.
      * @return Valid labelIdentifier identifier with removed wrong symbols.
      * @throws RuntimeException when given <code>labelIdentifier</code> is null or empty.
-     * @since 0.2.0
+     * @since 0.3.0
      */
-    public static String prettifyLabelIdentifier(final String labelIdentifier) {
+    public static String prettifyLabelIdentifier(final String labelIdentifier, final int maxLength) {
         assertLabelIdentifierNotNullOrEmpty(labelIdentifier);
-        if (checkLabelIdentifierWhenNotEmpty(labelIdentifier)) { // If identifier is valid, do not clone valid identifier.
-            return labelIdentifier;
+
+        final String validLengthIdentifier;
+        if (labelIdentifier.length() > maxLength) {
+            validLengthIdentifier = labelIdentifier.substring(0, maxLength);
+        } else {
+            validLengthIdentifier = labelIdentifier;
         }
 
-        char[] stringBytes = labelIdentifier.toCharArray();
+        if (checkLabelIdentifierWhenNotEmpty(validLengthIdentifier)) { // If identifier is valid, do not clone valid identifier.
+            return validLengthIdentifier;
+        }
+
+        final char[] stringBytes = validLengthIdentifier.toCharArray();
 
         final char firstChar = stringBytes[0];
         if (!Character.isLetter(firstChar)) {
@@ -153,7 +169,62 @@ public class Labels implements Cloneable {
                 stringBytes[i] = '_';
             }
         }
+
         return new String(stringBytes);
+    }
+
+    /**
+     * Replaces invalid characters with `_` character.
+     * If first character is invalid, replaces it with `A`.
+     * <p>
+     * Doesn't verify max length of identifier.
+     *
+     * @param labelIdentifier Label name or value to check.
+     * @return Valid labelIdentifier identifier with removed wrong symbols.
+     * @throws RuntimeException when given <code>labelIdentifier</code> is null or empty.
+     * @since 0.2.0
+     * @deprecated This method will be removed in the future release. Use {@link #prettifyLabelIdentifier(String, int)} instead.
+     */
+    @Deprecated
+    public static String prettifyLabelIdentifier(final String labelIdentifier) {
+        return prettifyLabelIdentifier(labelIdentifier, Integer.MAX_VALUE);
+    }
+
+    /**
+     * Creates a new {@link Labels} object with corrected label values, so such labels will be accepted by Grafana Loki server.
+     *
+     * @param labels              Labels to prettify.
+     * @param maxLabelNameLength  Max length of valid label name.
+     *                            Based on: <a href="https://grafana.com/docs/loki/latest/configuration/">Grafana Loki server configuration.</a>
+     * @param maxLabelValueLength Max length of valid label value.
+     *                            Based on: <a href="https://grafana.com/docs/loki/latest/configuration/">Grafana Loki server configuration.</a>
+     * @return New {@link Labels} object with corrected label values, so such labels will be accepted by Grafana Loki server.
+     * @since 0.3.0
+     */
+    public static Labels prettify(final Labels labels, final int maxLabelNameLength, final int maxLabelValueLength) {
+        return prettify(labels, new LabelSettings(maxLabelNameLength, maxLabelValueLength));
+    }
+
+    /**
+     * Creates a new {@link Labels} object with corrected label values, so such labels will be accepted by Grafana Loki server.
+     * <p>
+     * Used by {@link LogController} to pass correct labels to the server.
+     *
+     * @param labels        Labels to prettify.
+     *                      Based on: <a href="https://grafana.com/docs/loki/latest/configuration/">Grafana Loki server configuration.</a>
+     * @param labelSettings Label parameters.
+     * @return New {@link Labels} object with corrected label values, so such labels will be accepted by Grafana Loki server.
+     * @since 0.3.0
+     */
+    public static Labels prettify(final Labels labels, final LabelSettings labelSettings) {
+        final Labels prettified = new Labels();
+        for (final Map.Entry<String, String> entry : labels.getMap().entrySet()) {
+            final String name = prettifyLabelIdentifier(entry.getKey(), labelSettings.getMaxLabelNameLength());
+            final String value = prettifyLabelIdentifier(entry.getValue(), labelSettings.getMaxLabelValueLength());
+            prettified.l(name, value);
+        }
+
+        return prettified;
     }
 
     /**
@@ -162,7 +233,7 @@ public class Labels implements Cloneable {
     private TreeMap<String, String> map;
 
     /**
-     * Default constructor. Creates empty labels.
+     * Default constructor. Creates empty labels with default parameters.
      */
     public Labels() {
         this.map = new TreeMap<>();
@@ -178,12 +249,23 @@ public class Labels implements Cloneable {
     }
 
     /**
-     * Creates labels from a given map.
+     * Creates the labels from a given map.
      *
      * @param map Given map is copied to internal Labels map.
      */
     public Labels(final Map<String, String> map) {
-        this.map = new TreeMap<>(map);
+        this.l(map);
+    }
+
+    /**
+     * Creates a new instance of {@link Labels} from given {@link Map} object.
+     *
+     * @param labels Map with label-name mapped to label-value pairs.
+     * @return New instance of {@link Labels}.
+     * @since 0.3.0
+     */
+    public static Labels from(Map<String, String> labels) {
+        return new Labels(labels);
     }
 
     /**
@@ -215,11 +297,14 @@ public class Labels implements Cloneable {
 
     /**
      * Compares this instance with other instance.
+     * <p>
+     * Two instances are equal when its labels are equal. Label's length limits doesn't matter.
      *
      * @param other Other object instance.
      * @return True if other object is the same as this object.
      * @since 0.2.2
      */
+    @Override
     public boolean equals(final Object other) {
         if (other == null) {
             return false;
@@ -234,18 +319,22 @@ public class Labels implements Cloneable {
         return this.map.equals(otherLabels.map);
     }
 
+    @Override
+    public String toString() {
+        return map.toString();
+    }
+
     /**
      * Add a new label and return this object.
      *
      * @param labelName  Label name. Valid label identifier starts with letter and contains only letters, digits or '_'.
      * @param labelValue Label value. Valid label identifier starts with letter and contains only letters, digits or '_'.
      * @return This object with added label.
+     * @throws RuntimeException when given <code>labelName</code> or <code>labelValue</code> is null or empty.
      * @since 0.1.22
      */
     public Labels l(final String labelName, final String labelValue) {
-        final String prettifiedName = prettifyLabelIdentifier(labelName);
-        final String prettifiedValue = prettifyLabelIdentifier(labelValue);
-        map.put(prettifiedName, prettifiedValue);
+        map.put(labelName, labelValue);
         return this;
     }
 
@@ -255,17 +344,18 @@ public class Labels implements Cloneable {
      *
      * @param map Map containing label key - value pairs.
      * @return This reference.
+     * @throws RuntimeException when given <code>map</code> contains null or empty keys or values.
      * @since 0.1.22
      */
     public Labels l(final Map<String, String> map) {
-        for (Map.Entry<String, String> entry : map.entrySet()) {
+        for (final Map.Entry<String, String> entry : map.entrySet()) {
             this.l(entry.getKey(), entry.getValue());
         }
         return this;
     }
 
     /**
-     * Put other labels values.
+     * Put other labels values. New values will override existing values, when label names (keys) are equal.
      *
      * @param other Other Labels instance.
      * @return This reference.

@@ -12,9 +12,9 @@ class LogCollectorTest {
     @Test
     void basicJson() {
         JsonLogCollector collector = new JsonLogCollector();
-        Map<String, String> labels = new TreeMap<>();
-        labels.put("level", "INFO");
-        labels.put("host", "ZEUS");
+        Labels labels = new Labels();
+        labels.l("level", "INFO");
+        labels.l("host", "ZEUS");
         ILogStream stream = collector.createStream(labels);
         stream.log(1635710583043L, "Hello world.");
         final String collected = collector.collectAsString();
@@ -35,7 +35,7 @@ class LogCollectorTest {
     @Test
     @Disabled
     void tinyLokiTest() {
-        LogController logController = TinyLoki.createAndStart("http://localhost/loki/api/v1/push", "user", "pass", 5000);
+        LogController logController = TinyLoki.withUrl("http://localhost/loki/api/v1/push").withBasicAuth("user", "pass").withConnectTimeout(5000).start();
         ILogStream stream = logController.createStream(TinyLoki.info().l("host", "ZEUS"));
         stream.log("Hello world.");
         // ... new streams and other logs here.

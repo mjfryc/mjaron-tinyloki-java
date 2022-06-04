@@ -32,7 +32,7 @@ public class LogSender {
     }
 
     /**
-     * Getter of {@link LogSenderSettings}.
+     * Getter of {@link LogSenderSettings}. Allows changing the settings after log sender initialization.
      *
      * @return {@link LogSenderSettings} used by this log sender.
      */

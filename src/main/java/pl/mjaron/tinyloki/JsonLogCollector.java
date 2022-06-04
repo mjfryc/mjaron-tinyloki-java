@@ -23,7 +23,7 @@ public class JsonLogCollector implements ILogCollector {
      * @return New instance of a stream.
      */
     @Override
-    synchronized public ILogStream createStream(Map<String, String> labels) {
+    synchronized public ILogStream createStream(final Labels labels) {
         JsonLogStream stream = new JsonLogStream(this, labels);
         streams.add(stream);
         return stream;

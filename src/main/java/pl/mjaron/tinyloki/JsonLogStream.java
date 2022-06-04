@@ -18,10 +18,10 @@ public class JsonLogStream implements ILogStream {
      * @param labels    Static labels related to this stream.
      *                  There should not be two streams with the same set of static labels.
      */
-    public JsonLogStream(JsonLogCollector collector, final Map<String, String> labels) {
+    public JsonLogStream(JsonLogCollector collector, final Labels labels) {
         this.collector = collector;
         boolean isFirst = true;
-        for (Map.Entry<String, String> entry : labels.entrySet()) {
+        for (Map.Entry<String, String> entry : labels.getMap().entrySet()) {
             if (isFirst) {
                 isFirst = false;
             } else {

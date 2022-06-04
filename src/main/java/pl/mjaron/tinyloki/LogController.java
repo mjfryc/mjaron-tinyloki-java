@@ -14,6 +14,7 @@ public class LogController {
 
     private final ILogCollector logCollector;
     private final LogSender logSender;
+    private final LabelSettings labelSettings;
     private final ILogMonitor logMonitor;
     private Thread workerThread = null;
     private boolean softFinishing = false;
@@ -22,13 +23,15 @@ public class LogController {
     /**
      * Main constructor designed for user of this library.
      *
-     * @param logCollector ILogCollector implementation, which is responsible for creating new streams and collecting its logs.
-     * @param logSender    Sends logs collected by log controller.
-     * @param logMonitor   Handles diagnostic events from whole library.
+     * @param logCollector  ILogCollector implementation, which is responsible for creating new streams and collecting its logs.
+     * @param logSender     Sends logs collected by log controller.
+     * @param labelSettings Preferences of the {@link Labels}. See {@link LabelSettings}.
+     * @param logMonitor    Handles diagnostic events from whole library.
      */
-    public LogController(final ILogCollector logCollector, final LogSender logSender, final ILogMonitor logMonitor) {
+    public LogController(final ILogCollector logCollector, final LogSender logSender, final LabelSettings labelSettings, final ILogMonitor logMonitor) {
         this.logCollector = logCollector;
         this.logSender = logSender;
+        this.labelSettings = labelSettings;
         this.logMonitor = logMonitor;
         this.logSender.getSettings().setContentType(logCollector.contentType());
         this.logSender.setLogMonitor(logMonitor);
@@ -42,7 +45,7 @@ public class LogController {
      */
     @SuppressWarnings("unused")
     public ILogStream createStream(final Map<String, String> labels) {
-        return logCollector.createStream(labels);
+        return this.createStream(Labels.from(labels));
     }
 
     /**
@@ -51,9 +54,8 @@ public class LogController {
      * @param labels Static labels. There shouldn't be many streams with the same labels combination.
      * @return New stream reference.
      */
-    @SuppressWarnings("unused")
     public ILogStream createStream(final Labels labels) {
-        return logCollector.createStream(labels.getMap());
+        return logCollector.createStream(Labels.prettify(labels, labelSettings));
     }
 
     /**
@@ -131,7 +133,7 @@ public class LogController {
         try {
             this.softStopAsync();
             workerThread.join(softTimeout);
-        } catch (InterruptedException e) {
+        } catch (final InterruptedException e) {
             logMonitor.onException(e);
         }
         return this;
@@ -171,7 +173,7 @@ public class LogController {
                         doLastCheck = true;
                     }
                 }
-                int anyLogs;
+                final int anyLogs;
                 if (doLastCheck) {
                     anyLogs = logCollector.waitForLogs(1);
                 } else {

@@ -13,7 +13,7 @@ public interface ILogCollector {
      * @param labels Unique set of labels.
      * @return New stream instance.
      */
-    ILogStream createStream(final Map<String, String> labels);
+    ILogStream createStream(final Labels labels);
 
     /**
      * Gets data from streams and clears streams state.

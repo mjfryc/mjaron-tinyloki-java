@@ -23,8 +23,7 @@ public class Sample {
     public static void main(String[] args) {
 
         // Initialize log controller instance with URL.
-        // Usually more than one instance in application doesn't make sense.
-        // Give Basic Authentication credentials or nulls.
+        // Usually creating more than one LogController instance doesn't make sense.
         // LogController owns separate thread which sends logs periodically.
         LogController logController = TinyLoki
                 .withUrl("http://localhost/loki/api/v1/push")
@@ -44,12 +43,12 @@ public class Sample {
                 //     If first character is bad, it will be replaced by 'A'.
         );
 
-        // ... new streams and other logs here (thread-safe).
+        // ... new streams and other logs here (thread-safe, non-blocking).
         stream.log("Hello world.");
 
         // Optionally flush logs before application exit.
         logController
-                .softStop()     // Try to send logs last time.
+                .softStop()     // Try to send logs last time. Blocking method.
                 .hardStop();    // If it doesn't work (soft timeout) - force stop sending thread.
     }
 }

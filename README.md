@@ -78,3 +78,61 @@ Click the [Packages section](https://github.com/mjfryc?tab=packages&repo_name=mj
 ```gradle
     implementation files(project.rootDir.absolutePath + '/libs/mjaron-tinyloki-java-0.3.1.jar')
 ```
+
+## API design
+
+```mermaid
+classDiagram
+class Labels {
+    l(name, value) // Add the label
+}
+class ILogStream {
+    <<Interface>>
+    log(content)
+    log(timestamp, content)
+    release()
+}
+class ILogCollector {
+    <<Interface>>
+    createStream(labels)
+    collect()
+    contentType()
+    waitForLogs(timeout)
+}
+class ILogMonitor {
+    <<Interface>>
+}
+class ILogSender {
+    <<Interface>>
+    configure(logSenderSettings, logMonitor)
+    send(bytes)
+}
+
+class LogController {
+    -workerThread: Thread
+    createStream(labels)
+    start()
+    softStop()
+    hardStop()
+}
+
+class JsonLogStream
+class JsonLogCollector
+class Settings {
+    +start(): LogController
+}
+class TinyLoki {
+    withUrl(url): Settings
+}
+
+ILogStream <-- ILogCollector: create
+ILogCollector --* LogController
+Labels <.. ILogCollector : use
+ILogSender --* LogController
+ILogMonitor --* LogController
+JsonLogStream --|>  ILogStream: implements
+JsonLogCollector --|> ILogCollector: implements
+HttpLogSender --|> ILogSender: implements
+Settings <.. TinyLoki: create
+LogController <.. Settings: create
+```

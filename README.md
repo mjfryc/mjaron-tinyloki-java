@@ -116,6 +116,8 @@ class LogController {
     hardStop()
 }
 
+class VerboseLogMonitor
+class ErrorLogmonitor
 class JsonLogStream
 class JsonLogCollector
 class Settings {
@@ -124,6 +126,9 @@ class Settings {
 class TinyLoki {
     +withUrl(url)$
 }
+
+VerboseLogMonitor --|> ILogMonitor: implements
+ErrorLogmonitor --|> ILogMonitor: implements
 
 ILogStream <.. ILogCollector: create
 ILogCollector --* LogController
@@ -134,6 +139,7 @@ JsonLogStream --|>  ILogStream: implements
 JsonLogCollector --|> ILogCollector: implements
 JsonLogStream <.. JsonLogCollector: create
 HttpLogSender --|> ILogSender: implements
+DummyLogSender --|> ILogSender: implements
 Settings <.. TinyLoki: create
 LogController <.. Settings: create
 ```

@@ -125,13 +125,14 @@ class TinyLoki {
     +withUrl(url)$
 }
 
-ILogStream <-- ILogCollector: create
+ILogStream <.. ILogCollector: create
 ILogCollector --* LogController
 Labels <.. ILogCollector : use
 ILogSender --* LogController
 ILogMonitor --* LogController
 JsonLogStream --|>  ILogStream: implements
 JsonLogCollector --|> ILogCollector: implements
+JsonLogStream <.. JsonLogCollector: create
 HttpLogSender --|> ILogSender: implements
 Settings <.. TinyLoki: create
 LogController <.. Settings: create

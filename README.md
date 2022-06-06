@@ -122,7 +122,7 @@ class Settings {
     +start(): LogController
 }
 class TinyLoki {
-    withUrl(url): Settings
+    +withUrl(url)$
 }
 
 ILogStream <-- ILogCollector: create

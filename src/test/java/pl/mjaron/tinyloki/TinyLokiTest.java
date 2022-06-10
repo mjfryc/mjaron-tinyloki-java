@@ -22,7 +22,8 @@ public class TinyLokiTest {
     @Disabled
     void tinyLokiTest() {
         LogController logController = TinyLoki.withUrl("http://localhost/loki/api/v1/push").withBasicAuth("user", "pass").withConnectTimeout(5000).start();
-        ILogStream stream = logController.createStream(TinyLoki.info().l("host", "ZEUS"));
+        ILogStream stream = logController.stream().info().l("host", "ZEUS").build();
+        //Or: ILogStream stream = logController.createStream(TinyLoki.info().l("host", "ZEUS"));
         stream.log("Hello world.");
         // ... new streams and other logs here.
         logController.softStop().hardStop();

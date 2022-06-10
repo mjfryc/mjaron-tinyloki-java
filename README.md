@@ -14,7 +14,33 @@ Tiny [Grafana Loki](https://grafana.com/oss/loki/) client (log sender) written i
 
 HTTP sender requires http URL, optionally basic authentication credentials may be set.
 
-Below sample use case:
+Short example:
+```java
+import pl.mjaron.tinyloki.*;
+
+public class Sample {
+    public static void main(String[] args) {
+
+        LogController logController = TinyLoki
+                .withUrl("http://localhost/loki/api/v1/push")
+                .withBasicAuth("user", "pass")
+                .start();
+
+        ILogStream stream = logController.stream() // Before v0.3.2 use createStream()
+                .info()
+                .l("host", "MyComputerName")
+                .l("customLabel", "custom_value")
+                .build();
+        );
+
+        stream.log("Hello world.");
+
+        logController.softStop().hardStop();
+    }
+}
+```
+
+Verbose example:
 
 ```java
 import pl.mjaron.tinyloki.*;
@@ -33,8 +59,8 @@ public class Sample {
         // Create streams. It is thread-safe.
         ILogStream stream = logController.createStream(
                 // Define stream labels...
-                // Initializing log level to info and adding some custom labels.
-                TinyLoki.info()
+                // Initializing log level to verbose and adding some custom labels.
+                TinyLoki.verbose()
                         .l("host", "MyComputerName")        // Custom static label.
                         .l("customLabel", "custom_value")   // Custom static label.
                 // Label names should start with letter

@@ -23,11 +23,11 @@ public class LogController {
     /**
      * Main constructor designed for user of this library.
      *
-     * @param logCollector  ILogCollector implementation, which is responsible for creating new streams and collecting its logs.
-     * @param logSender     Sends the logs collected by log controller.
+     * @param logCollector      ILogCollector implementation, which is responsible for creating new streams and collecting its logs.
+     * @param logSender         Sends the logs collected by log controller.
      * @param logSenderSettings {@link LogSenderSettings} used to initialize the {@link ILogSender log sender}.
-     * @param labelSettings Preferences of the {@link Labels}. See {@link LabelSettings}.
-     * @param logMonitor    Handles diagnostic events from whole library.
+     * @param labelSettings     Preferences of the {@link Labels}. See {@link LabelSettings}.
+     * @param logMonitor        Handles diagnostic events from whole library.
      */
     public LogController(final ILogCollector logCollector, final ILogSender logSender, final LogSenderSettings logSenderSettings, final LabelSettings labelSettings, final ILogMonitor logMonitor) {
         this.logCollector = logCollector;
@@ -57,6 +57,19 @@ public class LogController {
      */
     public ILogStream createStream(final Labels labels) {
         return logCollector.createStream(Labels.prettify(labels, labelSettings));
+    }
+
+    /**
+     * Provides a {@link StreamBuilder} to initialize the stream. E.g:
+     *
+     * <pre>{@code
+     * ILogStream myStream = logController.stream().info().l("my_custom_label", "value").build();
+     * }</pre>
+     *
+     * @return New instance of {@link StreamBuilder}.
+     */
+    public StreamBuilder stream() {
+        return new StreamBuilder(this);
     }
 
     /**

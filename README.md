@@ -85,7 +85,7 @@ public class Sample {
 ### Maven Central
 
 ```gradle
-    implementation 'io.github.mjfryc:mjaron-tinyloki-java:0.3.1'
+    implementation 'io.github.mjfryc:mjaron-tinyloki-java:0.3.3'
 ```
 
  _[Maven Central page](https://search.maven.org/artifact/io.github.mjfryc/mjaron-tinyloki-java/),_
@@ -102,7 +102,7 @@ Click the [Packages section](https://github.com/mjfryc?tab=packages&repo_name=mj
 3. Add this jar to project dependencies in build.gradle, e.g:
 
 ```gradle
-    implementation files(project.rootDir.absolutePath + '/libs/mjaron-tinyloki-java-0.3.1.jar')
+    implementation files(project.rootDir.absolutePath + '/libs/mjaron-tinyloki-java-0.3.3.jar')
 ```
 
 ## API design

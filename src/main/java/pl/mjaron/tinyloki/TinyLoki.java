@@ -161,7 +161,7 @@ public class TinyLoki {
          * @since 0.3.0
          */
         public ILogCollector getLogCollector() {
-            return (logCollector != null) ? logCollector : new JsonLogCollector();
+            return (logCollector != null) ? logCollector : new GzipLogCollector();
         }
 
         /**

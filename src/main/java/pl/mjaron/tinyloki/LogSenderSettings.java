@@ -34,6 +34,8 @@ public class LogSenderSettings {
     /**
      * Complaint with HTTP Content-Encoding header.
      * Used to send Json compressed with Gzip.
+     *
+     * @since 0.3.4
      */
     private String contentEncoding = null;
 
@@ -141,6 +143,7 @@ public class LogSenderSettings {
      * It may be null when not set.
      *
      * @return HTTP Content-Encoding header value.
+     * @since 0.3.4
      */
     public String getContentEncoding() {
         return contentEncoding;
@@ -151,6 +154,7 @@ public class LogSenderSettings {
      *
      * @param contentEncoding HTTP Content-Encoding header value.
      * @return This reference.
+     * @since 0.3.4
      */
     public LogSenderSettings setContentEncoding(final String contentEncoding) {
         this.contentEncoding = contentEncoding;

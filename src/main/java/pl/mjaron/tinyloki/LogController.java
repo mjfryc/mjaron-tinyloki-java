@@ -45,6 +45,20 @@ public class LogController {
     }
 
     /**
+     * Maintenance constructor designed for user of this library.
+     * @deprecated Use {@link LogController#LogController(ILogCollector, ILogEncoder, LogSenderSettings, ILogSender, LabelSettings, ILogMonitor)} instead, where logEncoder parameter should be specified explicitly.
+     * @param logCollector      ILogCollector implementation, which is responsible for creating new streams and collecting its logs.
+     * @param logSenderSettings {@link LogSenderSettings} used to initialize the {@link ILogSender log sender}.
+     *                          Some settings will be overridden by this constructor.
+     * @param logSender         Sends the logs collected by log controller.
+     * @param labelSettings     Preferences of the {@link Labels}. See {@link LabelSettings}.
+     * @param logMonitor        Handles diagnostic events from whole library.
+     */
+    public LogController(final ILogCollector logCollector, final LogSenderSettings logSenderSettings, final ILogSender logSender, final LabelSettings labelSettings, final ILogMonitor logMonitor) {
+        this(logCollector, null, logSenderSettings, logSender, labelSettings, logMonitor);
+    }
+
+    /**
      * Creates new stream from log collector.
      *
      * @param labels Static labels. There shouldn't be many streams with the same labels combination.

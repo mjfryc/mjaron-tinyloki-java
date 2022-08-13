@@ -1,20 +1,36 @@
 package pl.mjaron.tinyloki;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Objects;
 
 /**
  * This implementation prints all communication between this library and HTTP Loki server.
  */
 public class VerboseLogMonitor extends ErrorLogMonitor {
 
+    private String contentType = null;
+    private String contentEncoding = null;
+
     @Override
-    public void encode(final byte[] in, final byte[] out) {
+    public void onConfigured(final String contentType, final String contentEncoding) {
+        System.out.println("LogController configured.");
+        this.contentType = contentType;
+        this.contentEncoding = contentEncoding;
+    }
+
+    @Override
+    public void onEncoded(final byte[] in, final byte[] out) {
         System.out.println("<|> " + in.length + " bytes encoded to " + out.length + " bytes");
     }
 
     @Override
     public void send(final byte[] message) {
-        System.out.println("<<< " + new String(message, StandardCharsets.UTF_8));
+        if (contentEncoding == null && contentType.equals(JsonLogCollector.CONTENT_TYPE)) {
+            System.out.println("<<< " + new String(message, StandardCharsets.UTF_8));
+        }
+        else {
+            System.out.println("<<< " + message.length + " bytes sent");
+        }
     }
 
     @Override

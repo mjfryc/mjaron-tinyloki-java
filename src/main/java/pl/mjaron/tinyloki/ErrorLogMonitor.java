@@ -6,7 +6,11 @@ package pl.mjaron.tinyloki;
 public class ErrorLogMonitor implements ILogMonitor {
 
     @Override
-    public void encode(byte[] in, byte[] out) {
+    public void onConfigured(final String contentType, final String contentEncoding) {
+    }
+
+    @Override
+    public void onEncoded(byte[] in, byte[] out) {
     }
 
     @Override

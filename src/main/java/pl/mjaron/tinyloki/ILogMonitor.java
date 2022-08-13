@@ -6,11 +6,20 @@ package pl.mjaron.tinyloki;
 public interface ILogMonitor {
 
     /**
+     * Called when {@link LogController} is set up and ready to work.
+     *
+     * @param contentType     Content type used by {@link ILogCollector}.
+     * @param contentEncoding Content encoding used by {@link ILogEncoder}.
+     */
+    void onConfigured(final String contentType, final String contentEncoding);
+
+    /**
      * Called when HTTP message content has been encoded.
-     * @param in Data before encoding.
+     *
+     * @param in  Data before encoding.
      * @param out Data after encoding.
      */
-    void encode(final byte[] in, final byte[] out);
+    void onEncoded(final byte[] in, final byte[] out);
 
     /**
      * Called before sending given data to HTTP server.

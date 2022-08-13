@@ -11,6 +11,8 @@ import java.util.Map;
  */
 public class JsonLogCollector implements ILogCollector {
 
+    public static final String CONTENT_TYPE = "application/json";
+
     private final List<JsonLogStream> streams = new ArrayList<>();
     private int logEntriesCount = 0;
     private final Object logEntriesLock = new Object();
@@ -91,7 +93,7 @@ public class JsonLogCollector implements ILogCollector {
      */
     @Override
     public String contentType() {
-        return "application/json";
+        return CONTENT_TYPE;
     }
 
     /**

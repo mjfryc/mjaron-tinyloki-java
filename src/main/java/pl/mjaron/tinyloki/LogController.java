@@ -45,6 +45,7 @@ public class LogController {
             logSenderSettings.setContentEncoding(this.logEncoder.contentEncoding());
         }
         this.logSender.configure(logSenderSettings, logMonitor);
+        this.logMonitor.onConfigured(this.logCollector.contentType(), this.logEncoder.contentEncoding());
     }
 
     /**
@@ -222,7 +223,7 @@ public class LogController {
                     if (logs != null) {
                         if (logEncoder != null) {
                             final byte[] encodedLogs = logEncoder.encode(logs);
-                            logMonitor.encode(logs, encodedLogs);
+                            logMonitor.onEncoded(logs, encodedLogs);
                             logSender.send(encodedLogs);
                         } else {
                             logSender.send(logs);

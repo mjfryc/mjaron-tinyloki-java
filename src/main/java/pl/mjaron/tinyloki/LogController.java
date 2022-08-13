@@ -13,6 +13,7 @@ public class LogController {
     private static final long DEFAULT_HARD_STOP_WAIT_TIME = 1000;
 
     private final ILogCollector logCollector;
+    private final ILogEncoder logEncoder;
     private final ILogSender logSender;
     private final LabelSettings labelSettings;
     private final ILogMonitor logMonitor;
@@ -22,19 +23,24 @@ public class LogController {
 
     /**
      * Main constructor designed for user of this library.
-     *
      * @param logCollector      ILogCollector implementation, which is responsible for creating new streams and collecting its logs.
-     * @param logSender         Sends the logs collected by log controller.
+     * @param logEncoder        Optional (may be null) log encoder which is responsible for encode whole log message.
      * @param logSenderSettings {@link LogSenderSettings} used to initialize the {@link ILogSender log sender}.
+     *                          Some settings will be overridden by this constructor.
+     * @param logSender         Sends the logs collected by log controller.
      * @param labelSettings     Preferences of the {@link Labels}. See {@link LabelSettings}.
      * @param logMonitor        Handles diagnostic events from whole library.
      */
-    public LogController(final ILogCollector logCollector, final ILogSender logSender, final LogSenderSettings logSenderSettings, final LabelSettings labelSettings, final ILogMonitor logMonitor) {
+    public LogController(final ILogCollector logCollector, ILogEncoder logEncoder, final LogSenderSettings logSenderSettings, final ILogSender logSender, final LabelSettings labelSettings, final ILogMonitor logMonitor) {
         this.logCollector = logCollector;
+        this.logEncoder = logEncoder;
         this.logSender = logSender;
         this.labelSettings = labelSettings;
         this.logMonitor = logMonitor;
         logSenderSettings.setContentType(this.logCollector.contentType());
+        if (this.logEncoder != null) {
+            logSenderSettings.setContentEncoding(this.logEncoder.contentEncoding());
+        }
         this.logSender.configure(logSenderSettings, logMonitor);
     }
 
@@ -196,7 +202,14 @@ public class LogController {
                 if (anyLogs > 0) {
                     final byte[] logs = logCollector.collect();
                     if (logs != null) {
-                        logSender.send(logs);
+                        if (logEncoder != null) {
+                            final byte[] encodedLogs = logEncoder.encode(logs);
+                            logMonitor.encode(logs, encodedLogs);
+                            logSender.send(encodedLogs);
+                        }
+                        else {
+                            logSender.send(logs);
+                        }
                     }
                 }
                 if (doLastCheck) {

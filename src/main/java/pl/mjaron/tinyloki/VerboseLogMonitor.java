@@ -6,6 +6,12 @@ import java.nio.charset.StandardCharsets;
  * This implementation prints all communication between this library and HTTP Loki server.
  */
 public class VerboseLogMonitor extends ErrorLogMonitor {
+
+    @Override
+    public void encode(final byte[] in, final byte[] out) {
+        System.out.println("<|> " + in.length + " bytes encoded to " + out.length + " bytes");
+    }
+
     @Override
     public void send(final byte[] message) {
         System.out.println("<<< " + new String(message, StandardCharsets.UTF_8));

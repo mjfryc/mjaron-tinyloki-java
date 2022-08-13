@@ -48,6 +48,9 @@ public class HttpLogSender implements ILogSender {
             connection.setConnectTimeout(settings.getConnectTimeout());
             connection.setRequestMethod("POST");
             connection.setRequestProperty("Content-Type", settings.getContentType());
+            if (settings.getContentEncoding() != null) {
+                connection.setRequestProperty("Content-Encoding", settings.getContentEncoding());
+            }
             connection.setRequestProperty("Content-Length", Integer.toString(message.length));
 
             if (settings.getUser() != null && settings.getPassword() != null) {

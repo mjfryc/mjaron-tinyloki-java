@@ -4,6 +4,11 @@ package pl.mjaron.tinyloki;
  * Prints only error events.
  */
 public class ErrorLogMonitor implements ILogMonitor {
+
+    @Override
+    public void encode(byte[] in, byte[] out) {
+    }
+
     @Override
     public void send(final byte[] message) {
     }

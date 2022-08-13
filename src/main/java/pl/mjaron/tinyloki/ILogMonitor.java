@@ -6,6 +6,13 @@ package pl.mjaron.tinyloki;
 public interface ILogMonitor {
 
     /**
+     * Called when HTTP message content has been encoded.
+     * @param in Data before encoding.
+     * @param out Data after encoding.
+     */
+    void encode(final byte[] in, final byte[] out);
+
+    /**
      * Called before sending given data to HTTP server.
      *
      * @param message Data reference.

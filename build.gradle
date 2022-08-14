@@ -5,7 +5,7 @@ plugins {
 }
 
 group 'io.github.mjfryc'
-version '0.3.3'
+version '0.3.4'
 
 repositories {
     mavenCentral()
@@ -30,7 +30,7 @@ java {
 }
 
 project.plugins.withType(MavenPublishPlugin).all {
-    PublishingExtension publishing = project.extensions.getByType(PublishingExtension)
+    PublishingExtension publishing = project.extensions.getByType(PublishingExtension.class)
     publishing.publications.withType(MavenPublication).all { mavenPublication ->
         mavenPublication.pom {
             name = "${project.group}:${project.name}"

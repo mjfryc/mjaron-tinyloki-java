@@ -32,6 +32,14 @@ public class LogSenderSettings {
     private String contentType = "application/json";
 
     /**
+     * Complaint with HTTP Content-Encoding header.
+     * Used to send Json compressed with Gzip.
+     *
+     * @since 0.3.4
+     */
+    private String contentEncoding = null;
+
+    /**
      * Default value of connecting timeout.
      * User can change connecting timeout by calling {@link #setConnectTimeout(int)}.
      */
@@ -127,6 +135,29 @@ public class LogSenderSettings {
      */
     public LogSenderSettings setContentType(final String contentType) {
         this.contentType = contentType;
+        return this;
+    }
+
+    /**
+     * Getter of HTTP Content-Encoding header value.
+     * It may be null when not set.
+     *
+     * @return HTTP Content-Encoding header value.
+     * @since 0.3.4
+     */
+    public String getContentEncoding() {
+        return contentEncoding;
+    }
+
+    /**
+     * Setter of HTTP Content-Encoding header value.
+     *
+     * @param contentEncoding HTTP Content-Encoding header value.
+     * @return This reference.
+     * @since 0.3.4
+     */
+    public LogSenderSettings setContentEncoding(final String contentEncoding) {
+        this.contentEncoding = contentEncoding;
         return this;
     }
 

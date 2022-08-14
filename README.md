@@ -112,12 +112,14 @@ classDiagram
 class Labels {
     l(name, value) // Add the label
 }
+
 class ILogStream {
     <<Interface>>
     log(content)
     log(timestamp, content)
     release()
 }
+
 class ILogCollector {
     <<Interface>>
     createStream(labels)
@@ -125,9 +127,24 @@ class ILogCollector {
     contentType()
     waitForLogs(timeout)
 }
+
+class ILogEncoder {
+    <<Interface>>
+    contentEncoding(): String
+    encode(final byte[] what): byte[]
+}
+
 class ILogMonitor {
     <<Interface>>
+    onConfigured(contentType, contentEncoding)
+    onEncoded(in, out)
+    send(message)
+    sendOk(status)
+    sendErr(status, message)
+    onException(exception)
+    onWorkerThreadExit(isSoft)
 }
+
 class ILogSender {
     <<Interface>>
     configure(logSenderSettings, logMonitor)
@@ -135,20 +152,25 @@ class ILogSender {
 }
 
 class LogController {
-    -workerThread: Thread
+    workerThread: Thread
+    stream(): StreamBuilder
     createStream(labels)
     start()
     softStop()
     hardStop()
 }
 
+class GzipLogEncoder
+
 class VerboseLogMonitor
 class ErrorLogmonitor
 class JsonLogStream
 class JsonLogCollector
+
 class Settings {
     +start(): LogController
 }
+
 class TinyLoki {
     +withUrl(url)$
 }
@@ -160,6 +182,8 @@ ILogStream <.. ILogCollector: create
 ILogCollector --* LogController
 Labels <.. ILogCollector : use
 ILogSender --* LogController
+GzipLogEncoder --|> ILogEncoder: implements
+ILogEncoder --* LogController
 ILogMonitor --* LogController
 JsonLogStream --|>  ILogStream: implements
 JsonLogCollector --|> ILogCollector: implements

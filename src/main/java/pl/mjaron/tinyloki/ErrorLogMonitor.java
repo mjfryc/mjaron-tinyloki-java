@@ -4,6 +4,15 @@ package pl.mjaron.tinyloki;
  * Prints only error events.
  */
 public class ErrorLogMonitor implements ILogMonitor {
+
+    @Override
+    public void onConfigured(final String contentType, final String contentEncoding) {
+    }
+
+    @Override
+    public void onEncoded(byte[] in, byte[] out) {
+    }
+
     @Override
     public void send(final byte[] message) {
     }

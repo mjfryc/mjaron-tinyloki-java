@@ -2,3 +2,4 @@
 .idea
 /build/
 src/test/java/pl/mjaron/tinyloki/UnofficialTest.java
+local.properties

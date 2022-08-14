@@ -30,6 +30,13 @@ public class TinyLoki {
         private ILogCollector logCollector = null;
 
         /**
+         * {@link ILogEncoder} which is responsible for encode whole log message.
+         *
+         * @since 0.3.4
+         */
+        private ILogEncoder logEncoder = null;
+
+        /**
          * {@link ILogMonitor} which is used for this library diagnostic and error handling.
          *
          * @since 0.3.0
@@ -102,6 +109,38 @@ public class TinyLoki {
         }
 
         /**
+         * Allows changing the default {@link ILogEncoder}, which currently is null (no log encoder).
+         *
+         * @param logEncoder Instance of custom {@link ILogEncoder}.
+         * @return This {@link Settings} object reference.
+         * @since 0.3.4
+         */
+        public Settings withLogEncoder(final ILogEncoder logEncoder) {
+            this.logEncoder = logEncoder;
+            return this;
+        }
+
+        /**
+         * Sets the {@link ILogEncoder} used to encode logs to {@link GzipLogEncoder}.
+         *
+         * @return This {@link Settings} object reference.
+         * @since 0.3.4
+         */
+        public Settings withGzipLogEncoder() {
+            return this.withLogEncoder(new GzipLogEncoder());
+        }
+
+        /**
+         * Resets the {@link ILogEncoder} to no encoder, so logs will not be encoded before sending.
+         *
+         * @return This {@link Settings} object reference.
+         * @since 0.3.4
+         */
+        public Settings withoutLogEncoder() {
+            return this.withLogEncoder(null);
+        }
+
+        /**
          * Allows changing the default {@link ILogMonitor}, which currently is {@link ErrorLogMonitor}.
          *
          * @param logMonitor Instance of custom {@link ILogMonitor}.
@@ -162,6 +201,16 @@ public class TinyLoki {
          */
         public ILogCollector getLogCollector() {
             return (logCollector != null) ? logCollector : new JsonLogCollector();
+        }
+
+        /**
+         * Getter of {@link ILogEncoder}.
+         *
+         * @return Selected {@link ILogEncoder} or null if there is no encoder.
+         * @since 0.3.4
+         */
+        public ILogEncoder getLogEncoder() {
+            return logEncoder;
         }
 
         /**
@@ -230,7 +279,7 @@ public class TinyLoki {
      * @since 0.3.0
      */
     public static LogController createAndStart(final Settings settings) {
-        return new LogController(settings.getLogCollector(), settings.getLogSender(), settings.getLogSenderSettings(), settings.getLabelSettings(), settings.getLogMonitor()).start();
+        return new LogController(settings.getLogCollector(), settings.getLogEncoder(), settings.getLogSenderSettings(), settings.getLogSender(), settings.getLabelSettings(), settings.getLogMonitor()).start();
     }
 
     /**

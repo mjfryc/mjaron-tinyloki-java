@@ -121,6 +121,26 @@ public class TinyLoki {
         }
 
         /**
+         * Sets the {@link ILogEncoder} used to encode logs to {@link GzipLogEncoder}.
+         *
+         * @return This {@link Settings} object reference.
+         * @since 0.3.4
+         */
+        public Settings withGzipLogEncoder() {
+            return this.withLogEncoder(new GzipLogEncoder());
+        }
+
+        /**
+         * Resets the {@link ILogEncoder} to no encoder, so logs will not be encoded before sending.
+         *
+         * @return This {@link Settings} object reference.
+         * @since 0.3.4
+         */
+        public Settings withoutLogEncoder() {
+            return this.withLogEncoder(null);
+        }
+
+        /**
          * Allows changing the default {@link ILogMonitor}, which currently is {@link ErrorLogMonitor}.
          *
          * @param logMonitor Instance of custom {@link ILogMonitor}.

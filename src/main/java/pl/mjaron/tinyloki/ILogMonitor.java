@@ -56,4 +56,12 @@ public interface ILogMonitor {
      * @param isSoft Tells whether worker thread has exited without interrupting.
      */
     void onWorkerThreadExit(final boolean isSoft);
+
+    /**
+     * Used internally by TinyLoki implementation for this library diagnostic purposes.
+     * @param what Log content.
+     */
+    static void systemLog(final String what) {
+        System.out.println("[TinyLoki]: " + what);
+    }
 }

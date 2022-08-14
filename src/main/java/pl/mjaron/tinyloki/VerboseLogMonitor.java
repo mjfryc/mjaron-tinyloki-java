@@ -13,37 +13,37 @@ public class VerboseLogMonitor extends ErrorLogMonitor {
 
     @Override
     public void onConfigured(final String contentType, final String contentEncoding) {
-        System.out.println("LogController configured.");
+        ILogMonitor.systemLog("LogController configured.");
         this.contentType = contentType;
         this.contentEncoding = contentEncoding;
     }
 
     @Override
     public void onEncoded(final byte[] in, final byte[] out) {
-        System.out.println("<|> " + in.length + " bytes encoded to " + out.length + " bytes");
+        ILogMonitor.systemLog("<|> " + in.length + " bytes encoded to " + out.length + " bytes");
     }
 
     @Override
     public void send(final byte[] message) {
         if (contentEncoding == null && contentType.equals(JsonLogCollector.CONTENT_TYPE)) {
-            System.out.println("<<< " + new String(message, StandardCharsets.UTF_8));
+            ILogMonitor.systemLog("<<< " + new String(message, StandardCharsets.UTF_8));
         }
         else {
-            System.out.println("<<< " + message.length + " bytes sent");
+            ILogMonitor.systemLog("<<< " + message.length + " bytes sent");
         }
     }
 
     @Override
     public void sendOk(final int status) {
-        System.out.println(">>> " + status);
+        ILogMonitor.systemLog(">>> " + status);
     }
 
     @Override
     public void onWorkerThreadExit(final boolean isSoft) {
         if (isSoft) {
-            System.out.println("Worker thread exited correctly.");
+            ILogMonitor.systemLog("Worker thread exited correctly.");
         } else {
-            System.err.println("Worker thread exited by interrupting.");
+            ILogMonitor.systemLog("Worker thread exited by interrupting.");
         }
     }
 }

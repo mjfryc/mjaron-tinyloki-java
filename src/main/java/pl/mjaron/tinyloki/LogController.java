@@ -41,11 +41,10 @@ public class LogController {
         this.labelSettings = labelSettings;
         this.logMonitor = logMonitor;
         logSenderSettings.setContentType(this.logCollector.contentType());
-        if (this.logEncoder != null) {
-            logSenderSettings.setContentEncoding(this.logEncoder.contentEncoding());
-        }
+        final String contentEncoding = (this.logEncoder == null) ? null : logEncoder.contentEncoding();
+        logSenderSettings.setContentEncoding(contentEncoding);
         this.logSender.configure(logSenderSettings, logMonitor);
-        this.logMonitor.onConfigured(this.logCollector.contentType(), this.logEncoder.contentEncoding());
+        this.logMonitor.onConfigured(this.logCollector.contentType(), contentEncoding);
     }
 
     /**

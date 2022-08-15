@@ -40,6 +40,7 @@ jobs:
         generate-coverage-badge: true
         generate-branches-badge: true
         jacoco-csv-file: build/reports/jacoco/test/jacocoTestReport.csv
+        on-missing-report: fail
     - name: Log coverage percentage
       run: |
         echo "coverage = ${{ steps.jacoco.outputs.coverage }}"

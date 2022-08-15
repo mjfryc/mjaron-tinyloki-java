@@ -19,6 +19,9 @@ dependencies {
 
 jacocoTestReport {
     dependsOn test
+    reports {
+        csv.enabled true
+    }
 }
 
 test {

@@ -46,3 +46,18 @@ jobs:
         echo "coverage = ${{ steps.jacoco.outputs.coverage }}"
         echo "branch coverage = ${{ steps.jacoco.outputs.branches }}"
         ls -lah .github/badges
+    - name: Upload JaCoCo coverage report
+      uses: actions/upload-artifact@v2
+      with:
+        name: jacoco-report
+        path: target/site/jacoco/
+    - name: Upload JaCoCo coverage badge
+      uses: actions/upload-artifact@v2
+      with:
+        name: jacoco.svg
+        path: .github/badges/jacoco.svg
+    - name: Upload JaCoCo branches badge
+      uses: actions/upload-artifact@v2
+      with:
+        name: branches.svg
+        path: .github/badges/branches.svg

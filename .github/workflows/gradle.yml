@@ -50,7 +50,7 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: jacoco-report
-        path: target/site/jacoco/
+        path: build/reports/jacoco/test/jacocoTestReport.csv
     - name: Upload JaCoCo coverage badge
       uses: actions/upload-artifact@v2
       with:

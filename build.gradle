@@ -2,6 +2,7 @@ plugins {
     id 'java'
     id 'maven-publish'
     id "signing"
+    id 'org.barfuin.gradle.jacocolog' version '2.0.0'
 }
 
 group 'io.github.mjfryc'
@@ -16,8 +17,13 @@ dependencies {
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.2'
 }
 
+jacocoTestReport {
+    dependsOn test
+}
+
 test {
     useJUnitPlatform()
+    finalizedBy jacocoTestReport
 }
 
 java {

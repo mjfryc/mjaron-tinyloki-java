@@ -3,7 +3,6 @@ package pl.mjaron.tinyloki;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Collects logs in a JSON format consistent with

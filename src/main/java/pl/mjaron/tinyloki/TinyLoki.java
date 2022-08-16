@@ -153,6 +153,26 @@ public class TinyLoki {
         }
 
         /**
+         * Allows setting {@link ErrorLogMonitor} explicitly.
+         *
+         * @return This {@link Settings} object reference.
+         * @since 0.3.4
+         */
+        public Settings withErrorLogMonitor() {
+            return this.withLogMonitor(new ErrorLogMonitor());
+        }
+
+        /**
+         * Allows setting {@link VerboseLogMonitor} explicitly.
+         *
+         * @return This {@link Settings} object reference.
+         * @since 0.3.4
+         */
+        public Settings withVerboseLogMonitor() {
+            return this.withLogMonitor(new VerboseLogMonitor());
+        }
+
+        /**
          * Allows changing the default {@link ILogSender}, which currently is {@link HttpLogSender}.
          *
          * @param logSender Instance of custom {@link ILogSender}.

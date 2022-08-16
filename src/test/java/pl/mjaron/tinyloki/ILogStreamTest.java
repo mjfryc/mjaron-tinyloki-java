@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 
 class ILogStreamTest {
 
-    private class TestLogStream implements ILogStream {
+    private static class TestLogStream implements ILogStream {
         public long timestamp = 0;
 
         @Override

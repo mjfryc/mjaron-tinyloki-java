@@ -23,7 +23,7 @@ public class ErrorLogMonitor implements ILogMonitor {
 
     @Override
     public void sendErr(final int status, final String message) {
-        System.err.println("Unexpected server response status: " + status + ": " + message);
+        ILogMonitor.logError("Unexpected server response status: " + status + ": " + message);
     }
 
     @Override
@@ -34,7 +34,7 @@ public class ErrorLogMonitor implements ILogMonitor {
     @Override
     public void onWorkerThreadExit(final boolean isSoft) {
         if (!isSoft) {
-            System.err.println("Worker thread exited by interrupting.");
+            ILogMonitor.logError("Worker thread exited by interrupting.");
         }
     }
 }

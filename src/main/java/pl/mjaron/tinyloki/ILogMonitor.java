@@ -61,7 +61,15 @@ public interface ILogMonitor {
      * Used internally by TinyLoki implementation for this library diagnostic purposes.
      * @param what Log content.
      */
-    static void systemLog(final String what) {
+    static void logInfo(final String what) {
         System.out.println("[TinyLoki]: " + what);
+    }
+
+    /**
+     * Used internally by TinyLoki implementation for this library diagnostic purposes.
+     * @param what Log content.
+     */
+    static void logError(final String what) {
+        System.err.println("[TinyLoki]: " + what);
     }
 }

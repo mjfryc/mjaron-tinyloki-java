@@ -6,7 +6,7 @@ plugins {
 }
 
 group 'io.github.mjfryc'
-version 'v0.3.7'
+version '0.3.8'
 
 repositories {
     mavenCentral()

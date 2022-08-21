@@ -100,15 +100,29 @@ public class Labels implements Cloneable {
      * @param labelIdentifier Label name or label value to check.
      * @return True when given label identifier is valid.
      * @since 0.2.0
+     * @deprecated Use {@link #checkLabelNameWhenNotEmpty(String)}
      */
+    @Deprecated
     public static boolean checkLabelIdentifierWhenNotEmpty(final String labelIdentifier) {
-        final char firstChar = labelIdentifier.charAt(0);
+        return checkLabelNameWhenNotEmpty(labelIdentifier);
+    }
+
+    /**
+     * Checks whether label name contains only letters, digits or '_' and first character is letter.
+     * It doesn't check whether the length of label name is lower than any length limit.
+     *
+     * @param labelName Label name to check.
+     * @return True when given label name is valid.
+     * @since 0.3.9
+     */
+    public static boolean checkLabelNameWhenNotEmpty(final String labelName) {
+        final char firstChar = labelName.charAt(0);
         if (!Character.isLetter(firstChar)) {
             return false;
         }
 
-        for (int i = 1; i < labelIdentifier.length(); ++i) {
-            final char ch = labelIdentifier.charAt(i);
+        for (int i = 1; i < labelName.length(); ++i) {
+            final char ch = labelName.charAt(i);
             if (!Character.isLetterOrDigit(ch) && ch != '_') {
                 return false;
             }
@@ -131,32 +145,14 @@ public class Labels implements Cloneable {
     }
 
     /**
-     * Replaces invalid characters with `_` character.
-     * If first character is invalid, replaces it with `A`.
-     * <p>
-     * Cuts down identifier if it is too long.
+     * Corrects label name to meet the rules described in the label naming rules documentation:
+     * <a href="https://prometheus.io/docs/concepts/data_model/#metric-names-and-labels">Data model | Prometheus</a>
      *
-     * @param labelIdentifier Label name or value to check.
-     * @param maxLength       Maximum accepted length of identifier.
-     * @return Valid labelIdentifier identifier with removed wrong symbols.
-     * @throws RuntimeException when given <code>labelIdentifier</code> is null or empty.
-     * @since 0.3.0
+     * @param labelName Label name to correct.
+     * @return Valid label name, accepted by Grafana Loki server.
      */
-    public static String prettifyLabelIdentifier(final String labelIdentifier, final int maxLength) {
-        assertLabelIdentifierNotNullOrEmpty(labelIdentifier);
-
-        final String validLengthIdentifier;
-        if (labelIdentifier.length() > maxLength) {
-            validLengthIdentifier = labelIdentifier.substring(0, maxLength);
-        } else {
-            validLengthIdentifier = labelIdentifier;
-        }
-
-        if (checkLabelIdentifierWhenNotEmpty(validLengthIdentifier)) { // If identifier is valid, do not clone valid identifier.
-            return validLengthIdentifier;
-        }
-
-        final char[] stringBytes = validLengthIdentifier.toCharArray();
+    public static String correctLabelName(final String labelName) {
+        final char[] stringBytes = labelName.toCharArray();
 
         final char firstChar = stringBytes[0];
         if (!Character.isLetter(firstChar)) {
@@ -171,6 +167,87 @@ public class Labels implements Cloneable {
         }
 
         return new String(stringBytes);
+    }
+
+    /**
+     * Replaces invalid characters with `_` character.
+     * If first character is invalid, replaces it with `A`.
+     * See label naming rules: <a href="https://prometheus.io/docs/concepts/data_model/#metric-names-and-labels">Data model | Prometheus</a>
+     * <p>
+     * Cuts down label name if it is too long.
+     *
+     * @param labelName Label name to check.
+     * @param maxLength Maximum accepted length of label name.
+     * @return Valid label name with wrong symbols removed.
+     * @throws RuntimeException when given <code>labelName</code> is null or empty.
+     * @since 0.3.9
+     */
+    public static String prettifyLabelName(final String labelName, final int maxLength) {
+        assertLabelIdentifierNotNullOrEmpty(labelName);
+
+        final String validLengthIdentifier;
+        if (labelName.length() > maxLength) {
+            validLengthIdentifier = labelName.substring(0, maxLength);
+        } else {
+            validLengthIdentifier = labelName;
+        }
+
+        if (checkLabelNameWhenNotEmpty(validLengthIdentifier)) {
+            return validLengthIdentifier; // If identifier is valid, do not clone valid identifier.
+        }
+
+        return correctLabelName(validLengthIdentifier);
+    }
+
+    /**
+     * Cuts down identifier if it is too long.
+     * See label naming rules: <a href="https://prometheus.io/docs/concepts/data_model/#metric-names-and-labels">Data model | Prometheus</a>
+     *
+     * @param labelValue Label value to check.
+     * @param maxLength  Maximum accepted length of label value.
+     * @return Valid labelValue identifier with correct length.
+     * @throws RuntimeException when given <code>labelValue</code> is null or empty.
+     * @since 0.3.9
+     */
+    public static String prettifyLabelValue(final String labelValue, final int maxLength) {
+        assertLabelIdentifierNotNullOrEmpty(labelValue);
+
+        if (labelValue.length() > maxLength) {
+            return labelValue.substring(0, maxLength);
+        } else {
+            return labelValue;
+        }
+    }
+
+    /**
+     * Replaces invalid characters with `_` character.
+     * If first character is invalid, replaces it with `A`.
+     * <p>
+     * Cuts down identifier if it is too long.
+     *
+     * @param labelIdentifier Label name or value to check.
+     * @param maxLength       Maximum accepted length of identifier.
+     * @return Valid labelIdentifier identifier with removed wrong symbols.
+     * @throws RuntimeException when given <code>labelIdentifier</code> is null or empty.
+     * @since 0.3.0
+     * @deprecated Use {@link #prettifyLabelName(String, int)} or {@link #prettifyLabelValue(String, int)} instead.
+     */
+    @Deprecated
+    public static String prettifyLabelIdentifier(final String labelIdentifier, final int maxLength) {
+        assertLabelIdentifierNotNullOrEmpty(labelIdentifier);
+
+        final String validLengthIdentifier;
+        if (labelIdentifier.length() > maxLength) {
+            validLengthIdentifier = labelIdentifier.substring(0, maxLength);
+        } else {
+            validLengthIdentifier = labelIdentifier;
+        }
+
+        if (checkLabelIdentifierWhenNotEmpty(validLengthIdentifier)) {
+            return validLengthIdentifier; // If identifier is valid, do not clone valid identifier.
+        }
+
+        return correctLabelName(validLengthIdentifier);
     }
 
     /**
@@ -211,7 +288,8 @@ public class Labels implements Cloneable {
      * Used by {@link LogController} to pass correct labels to the server.
      *
      * @param labels        Labels to prettify.
-     *                      Based on: <a href="https://grafana.com/docs/loki/latest/configuration/">Grafana Loki server configuration.</a>
+     *                      Label length limits: <a href="https://grafana.com/docs/loki/latest/configuration/">Grafana Loki server configuration.</a>
+     *                      Label naming rules: <a href="https://prometheus.io/docs/concepts/data_model/#metric-names-and-labels">Data model | Prometheus</a>
      * @param labelSettings Label parameters.
      * @return New {@link Labels} object with corrected label values, so such labels will be accepted by Grafana Loki server.
      * @since 0.3.0
@@ -219,8 +297,8 @@ public class Labels implements Cloneable {
     public static Labels prettify(final Labels labels, final LabelSettings labelSettings) {
         final Labels prettified = new Labels();
         for (final Map.Entry<String, String> entry : labels.getMap().entrySet()) {
-            final String name = prettifyLabelIdentifier(entry.getKey(), labelSettings.getMaxLabelNameLength());
-            final String value = prettifyLabelIdentifier(entry.getValue(), labelSettings.getMaxLabelValueLength());
+            final String name = prettifyLabelName(entry.getKey(), labelSettings.getMaxLabelNameLength());
+            final String value = prettifyLabelValue(entry.getValue(), labelSettings.getMaxLabelValueLength());
             prettified.l(name, value);
         }
 

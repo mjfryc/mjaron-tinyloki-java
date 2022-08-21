@@ -37,6 +37,16 @@ class LabelsTest {
     }
 
     @Test
+    void prettifyLabelNameTest() {
+        assertEquals("Aab", Labels.prettifyLabelName("1abc", 3));
+    }
+
+    @Test
+    void prettifyLabelValueTest() {
+        assertEquals("1ab", Labels.prettifyLabelValue("1abc", 3));
+    }
+
+    @Test
     void lengthLimitTest() {
         final Labels lRef = new Labels();
         lRef.l("qwer", "qwerty");

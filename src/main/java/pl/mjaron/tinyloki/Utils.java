@@ -47,4 +47,49 @@ public class Utils {
             throw new RuntimeException("Thread.sleep() has failed.", e);
         }
     }
+
+    /**
+     * Tells whether given character is valid ASCII capital letter [A-Z]
+     * @param ch Character to check.
+     * @return True when <code>ch</code> is a capital letter.
+     */
+    public static boolean isAsciiCapitalLetter(final char ch) {
+        return ch >= 0x41 && ch <= 0x5A;
+    }
+
+    /**
+     * Tells whether given character is valid ASCII lowercase letter [a-z]
+     * @param ch Character to check.
+     * @return True when <code>ch</code> is a lowercase letter.
+     */
+    public static boolean isAsciiLowercaseLetter(final char ch) {
+        return ch >= 0x61 && ch <= 0x7A;
+    }
+
+    /**
+     * Tells whether given character is valid ASCII letter [A-Za-z]
+     * @param ch Character to check.
+     * @return True when <code>ch</code> is a letter.
+     */
+    public static boolean isAsciiLetter(final char ch) {
+        return isAsciiCapitalLetter(ch) || isAsciiLowercaseLetter(ch);
+    }
+
+    /**
+     * Tells whether given character is valid ASCII digit [0-9]
+     * @param ch Character to check.
+     * @return True when <code>ch</code> is a digit.
+     */
+    public static boolean isAsciiDigit(final char ch) {
+        return ch >= 0x30 && ch <= 0x39;
+    }
+
+    /**
+     * Tells whether given character is valid ASCII letter or digit [0-9A-Za-z]
+     * @param ch Character to check.
+     * @return True when <code>ch</code> is a letter or digit.
+     */
+    public static boolean isAsciiLetterOrDigit(final char ch) {
+        return isAsciiLetter(ch) || isAsciiDigit(ch);
+    }
 }

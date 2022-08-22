@@ -116,7 +116,7 @@ public class Labels implements Cloneable {
      * @since 0.3.10
      */
     public static boolean isNameFirstCharacterCorrect(final char firstChar) {
-        return Character.isLetter(firstChar) || firstChar == '_';
+        return Utils.isAsciiLetter(firstChar) || firstChar == '_';
     }
 
     /**
@@ -128,7 +128,7 @@ public class Labels implements Cloneable {
      * @since 0.3.10
      */
     public static boolean isNameNotFirstCharacterCorrect(final char notFirstChar) {
-        return Character.isLetterOrDigit(notFirstChar) || notFirstChar == '_';
+        return Utils.isAsciiLetterOrDigit(notFirstChar) || notFirstChar == '_';
     }
 
     /**

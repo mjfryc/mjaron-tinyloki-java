@@ -4,9 +4,8 @@ import java.util.Map;
 import java.util.TreeMap;
 
 /**
- * Represents label name - label value mappings.
- * Contains common label constants and its values.
- * Log level constants are defined at:
+ * Represents label name - label value mappings. Contains common label constants and its values. Log level constants are
+ * defined at:
  * <a href="https://grafana.com/docs/grafana/latest/packages_api/data/loglevel/">Grafana API Reference</a>
  */
 @SuppressWarnings("unused")
@@ -56,6 +55,7 @@ public class Labels implements Cloneable {
      * Verifies if <code>labelIdentifier</code> is not null and not empty.
      *
      * @param labelIdentifier Label name or labelIdentifier value.
+     * @throws RuntimeException When label identifier is null or empty.
      * @since 0.2.0
      */
     public static void assertLabelIdentifierNotNullOrEmpty(final String labelIdentifier) {
@@ -94,8 +94,8 @@ public class Labels implements Cloneable {
     }
 
     /**
-     * Checks whether label contains only letters, digits or '_' and first character is letter.
-     * It doesn't check whether the length of identifier is lower than any length limit.
+     * Checks whether label contains only letters, digits or '_' and first character is letter. It doesn't check whether
+     * the length of identifier is lower than any length limit.
      *
      * @param labelIdentifier Label name or label value to check.
      * @return True when given label identifier is valid.
@@ -108,7 +108,53 @@ public class Labels implements Cloneable {
     }
 
     /**
-     * Checks whether label name contains only letters, digits or '_' and first character is letter.
+     * Checks whether first character is a letter or <code>_</code>. See label naming rules documentation:
+     * <a href="https://prometheus.io/docs/concepts/data_model/#metric-names-and-labels">Data model | Prometheus</a>
+     *
+     * @param firstChar First character of label name.
+     * @return True when first character passes label naming rules.
+     * @since 0.3.10
+     */
+    public static boolean isNameFirstCharacterCorrect(final char firstChar) {
+        return Character.isLetter(firstChar) || firstChar == '_';
+    }
+
+    /**
+     * Checks whether not-first character is a letter, digit or <code>_</code>. See label naming rules documentation:
+     * <a href="https://prometheus.io/docs/concepts/data_model/#metric-names-and-labels">Data model | Prometheus</a>
+     *
+     * @param notFirstChar Not first character of label name.
+     * @return True when first character passes label naming rules.
+     * @since 0.3.10
+     */
+    public static boolean isNameNotFirstCharacterCorrect(final char notFirstChar) {
+        return Character.isLetterOrDigit(notFirstChar) || notFirstChar == '_';
+    }
+
+    /**
+     * Checks whether label name begins with <code>__</code>, which is reserved for internal use. See label naming rules
+     * documentation:
+     * <a href="https://prometheus.io/docs/concepts/data_model/#metric-names-and-labels">Data model | Prometheus</a>
+     *
+     * @param labelName Full name of a label.
+     * @return True when label name is reserved.
+     * @since 0.3.10
+     */
+    public static boolean isNameReservedForInternalUse(final String labelName) {
+        return labelName.startsWith("__");
+    }
+
+    /**
+     * Checks whether label name meets the following rules:
+     * <ul>
+     * <li>Label contains only letters, digits or <code>_</code></li>
+     * <li>First character is letter or <code>_</code></li>
+     * <li>Label names beginning with __ are reserved for internal use</li>
+     * </ul>
+     * <p>
+     * See naming rules documentation:
+     * <a href="https://prometheus.io/docs/concepts/data_model/#metric-names-and-labels">Data model | Prometheus</a>
+     * <p>
      * It doesn't check whether the length of label name is lower than any length limit.
      *
      * @param labelName Label name to check.
@@ -116,14 +162,17 @@ public class Labels implements Cloneable {
      * @since 0.3.9
      */
     public static boolean checkLabelNameWhenNotEmpty(final String labelName) {
-        final char firstChar = labelName.charAt(0);
-        if (!Character.isLetter(firstChar)) {
+        if (!isNameFirstCharacterCorrect(labelName.charAt(0))) {
+            return false;
+        }
+
+        if (isNameReservedForInternalUse(labelName)) {
             return false;
         }
 
         for (int i = 1; i < labelName.length(); ++i) {
             final char ch = labelName.charAt(i);
-            if (!Character.isLetterOrDigit(ch) && ch != '_') {
+            if (!isNameNotFirstCharacterCorrect(ch)) {
                 return false;
             }
         }
@@ -131,7 +180,7 @@ public class Labels implements Cloneable {
     }
 
     /**
-     * Checks whether label contains only letters, digits or '_' and first character is letter.
+     * Checks whether label contains only letters, digits or <code>_</code> and first character is letter.
      *
      * @param labelIdentifier Label name or label value to check.
      * @return True when given label identifier is valid.
@@ -145,7 +194,14 @@ public class Labels implements Cloneable {
     }
 
     /**
-     * Corrects label name to meet the rules described in the label naming rules documentation:
+     * Corrects label name to meet the rules:
+     * <ul>
+     * <li>Label contains only letters, digits or <code>_</code></li>
+     * <li>First character is letter or <code>_</code></li>
+     * <li>Label names beginning with __ are reserved for internal use</li>
+     * </ul>
+     * <p>
+     * See naming rules documentation:
      * <a href="https://prometheus.io/docs/concepts/data_model/#metric-names-and-labels">Data model | Prometheus</a>
      *
      * @param labelName Label name to correct.
@@ -154,14 +210,13 @@ public class Labels implements Cloneable {
     public static String correctLabelName(final String labelName) {
         final char[] stringBytes = labelName.toCharArray();
 
-        final char firstChar = stringBytes[0];
-        if (!Character.isLetter(firstChar)) {
+        if (!isNameFirstCharacterCorrect(stringBytes[0]) || isNameReservedForInternalUse(labelName)) {
             stringBytes[0] = 'A';
         }
 
         for (int i = 1; i < stringBytes.length; ++i) {
             final char ch = stringBytes[i];
-            if (!Character.isLetterOrDigit(ch)) {
+            if (!isNameNotFirstCharacterCorrect(ch)) {
                 stringBytes[i] = '_';
             }
         }
@@ -170,9 +225,9 @@ public class Labels implements Cloneable {
     }
 
     /**
-     * Replaces invalid characters with `_` character.
-     * If first character is invalid, replaces it with `A`.
-     * See label naming rules: <a href="https://prometheus.io/docs/concepts/data_model/#metric-names-and-labels">Data model | Prometheus</a>
+     * Replaces invalid characters with `_` character. If first character is invalid, replaces it with `A`. See label
+     * naming rules: <a href="https://prometheus.io/docs/concepts/data_model/#metric-names-and-labels">Data model |
+     * Prometheus</a>
      * <p>
      * Cuts down label name if it is too long.
      *
@@ -185,12 +240,7 @@ public class Labels implements Cloneable {
     public static String prettifyLabelName(final String labelName, final int maxLength) {
         assertLabelIdentifierNotNullOrEmpty(labelName);
 
-        final String validLengthIdentifier;
-        if (labelName.length() > maxLength) {
-            validLengthIdentifier = labelName.substring(0, maxLength);
-        } else {
-            validLengthIdentifier = labelName;
-        }
+        final String validLengthIdentifier = narrowLabelIdentifierLength(labelName, maxLength);
 
         if (checkLabelNameWhenNotEmpty(validLengthIdentifier)) {
             return validLengthIdentifier; // If identifier is valid, do not clone valid identifier.
@@ -201,7 +251,24 @@ public class Labels implements Cloneable {
 
     /**
      * Cuts down identifier if it is too long.
-     * See label naming rules: <a href="https://prometheus.io/docs/concepts/data_model/#metric-names-and-labels">Data model | Prometheus</a>
+     *
+     * @param labelIdentifier Label name or value to check.
+     * @param maxLength       Maximum accepted length of label value.
+     * @return Valid label identifier with correct length.
+     * @throws RuntimeException when given <code>labelIdentifier</code> is null or empty.
+     * @since 0.3.10
+     */
+    public static String narrowLabelIdentifierLength(final String labelIdentifier, final int maxLength) {
+        if (labelIdentifier.length() > maxLength) {
+            return labelIdentifier.substring(0, maxLength);
+        } else {
+            return labelIdentifier;
+        }
+    }
+
+    /**
+     * Cuts down identifier if it is too long. See label naming rules: <a
+     * href="https://prometheus.io/docs/concepts/data_model/#metric-names-and-labels">Data model | Prometheus</a>
      *
      * @param labelValue Label value to check.
      * @param maxLength  Maximum accepted length of label value.
@@ -211,17 +278,11 @@ public class Labels implements Cloneable {
      */
     public static String prettifyLabelValue(final String labelValue, final int maxLength) {
         assertLabelIdentifierNotNullOrEmpty(labelValue);
-
-        if (labelValue.length() > maxLength) {
-            return labelValue.substring(0, maxLength);
-        } else {
-            return labelValue;
-        }
+        return narrowLabelIdentifierLength(labelValue, maxLength);
     }
 
     /**
-     * Replaces invalid characters with `_` character.
-     * If first character is invalid, replaces it with `A`.
+     * Replaces invalid characters with `_` character. If first character is invalid, replaces it with `A`.
      * <p>
      * Cuts down identifier if it is too long.
      *
@@ -251,8 +312,7 @@ public class Labels implements Cloneable {
     }
 
     /**
-     * Replaces invalid characters with `_` character.
-     * If first character is invalid, replaces it with `A`.
+     * Replaces invalid characters with `_` character. If first character is invalid, replaces it with `A`.
      * <p>
      * Doesn't verify max length of identifier.
      *
@@ -260,7 +320,8 @@ public class Labels implements Cloneable {
      * @return Valid labelIdentifier identifier with removed wrong symbols.
      * @throws RuntimeException when given <code>labelIdentifier</code> is null or empty.
      * @since 0.2.0
-     * @deprecated This method will be removed in the future release. Use {@link #prettifyLabelIdentifier(String, int)} instead.
+     * @deprecated This method will be removed in the future release. Use {@link #prettifyLabelIdentifier(String, int)}
+     * instead.
      */
     @Deprecated
     public static String prettifyLabelIdentifier(final String labelIdentifier) {
@@ -268,14 +329,18 @@ public class Labels implements Cloneable {
     }
 
     /**
-     * Creates a new {@link Labels} object with corrected label values, so such labels will be accepted by Grafana Loki server.
+     * Creates a new {@link Labels} object with corrected label values, so such labels will be accepted by Grafana Loki
+     * server.
      *
      * @param labels              Labels to prettify.
-     * @param maxLabelNameLength  Max length of valid label name.
-     *                            Based on: <a href="https://grafana.com/docs/loki/latest/configuration/">Grafana Loki server configuration.</a>
-     * @param maxLabelValueLength Max length of valid label value.
-     *                            Based on: <a href="https://grafana.com/docs/loki/latest/configuration/">Grafana Loki server configuration.</a>
-     * @return New {@link Labels} object with corrected label values, so such labels will be accepted by Grafana Loki server.
+     * @param maxLabelNameLength  Max length of valid label name. Based on: <a
+     *                            href="https://grafana.com/docs/loki/latest/configuration/">Grafana Loki server
+     *                            configuration.</a>
+     * @param maxLabelValueLength Max length of valid label value. Based on: <a
+     *                            href="https://grafana.com/docs/loki/latest/configuration/">Grafana Loki server
+     *                            configuration.</a>
+     * @return New {@link Labels} object with corrected label values, so such labels will be accepted by Grafana Loki
+     * server.
      * @since 0.3.0
      */
     public static Labels prettify(final Labels labels, final int maxLabelNameLength, final int maxLabelValueLength) {
@@ -283,15 +348,19 @@ public class Labels implements Cloneable {
     }
 
     /**
-     * Creates a new {@link Labels} object with corrected label values, so such labels will be accepted by Grafana Loki server.
+     * Creates a new {@link Labels} object with corrected label values, so such labels will be accepted by Grafana Loki
+     * server.
      * <p>
      * Used by {@link LogController} to pass correct labels to the server.
      *
-     * @param labels        Labels to prettify.
-     *                      Label length limits: <a href="https://grafana.com/docs/loki/latest/configuration/">Grafana Loki server configuration.</a>
-     *                      Label naming rules: <a href="https://prometheus.io/docs/concepts/data_model/#metric-names-and-labels">Data model | Prometheus</a>
+     * @param labels        Labels to prettify. Label length limits: <a
+     *                      href="https://grafana.com/docs/loki/latest/configuration/">Grafana Loki server
+     *                      configuration.</a> Label naming rules: <a
+     *                      href="https://prometheus.io/docs/concepts/data_model/#metric-names-and-labels">Data model |
+     *                      Prometheus</a>
      * @param labelSettings Label parameters.
-     * @return New {@link Labels} object with corrected label values, so such labels will be accepted by Grafana Loki server.
+     * @return New {@link Labels} object with corrected label values, so such labels will be accepted by Grafana Loki
+     * server.
      * @since 0.3.0
      */
     public static Labels prettify(final Labels labels, final LabelSettings labelSettings) {
@@ -332,7 +401,7 @@ public class Labels implements Cloneable {
      * @param map Given map is copied to internal Labels map.
      */
     public Labels(final Map<String, String> map) {
-        this.l(map);
+        this.map = new TreeMap<>(map);
     }
 
     /**
@@ -347,8 +416,8 @@ public class Labels implements Cloneable {
     }
 
     /**
-     * @return Internal {@link Map} representation of labels content.
-     * User should not modify given map because modified values will not be checked for validity.
+     * @return Internal {@link Map} representation of labels content. User should not modify given map because modified
+     * values will not be checked for validity.
      * @since 0.1.22
      */
     public Map<String, String> getMap() {
@@ -405,8 +474,10 @@ public class Labels implements Cloneable {
     /**
      * Add a new label and return this object.
      *
-     * @param labelName  Label name. Valid label identifier starts with letter and contains only letters, digits or '_'.
-     * @param labelValue Label value. Valid label identifier starts with letter and contains only letters, digits or '_'.
+     * @param labelName  Label name. Valid label identifier starts with letter and contains only letters, digits or
+     *                   '_'.
+     * @param labelValue Label value. Valid label identifier starts with letter and contains only letters, digits or
+     *                   '_'.
      * @return This object with added label.
      * @throws RuntimeException when given <code>labelName</code> or <code>labelValue</code> is null or empty.
      * @since 0.1.22
@@ -417,8 +488,7 @@ public class Labels implements Cloneable {
     }
 
     /**
-     * Put a map with labels.
-     * Valid label identifier starts with letter and contains only letters, digits or '_'.
+     * Put a map with labels. Valid label identifier starts with letter and contains only letters, digits or '_'.
      *
      * @param map Map containing label key - value pairs.
      * @return This reference.

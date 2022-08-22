@@ -41,7 +41,7 @@ public class LogController {
         this.labelSettings = labelSettings;
         this.logMonitor = logMonitor;
         logSenderSettings.setContentType(this.logCollector.contentType());
-        final String contentEncoding = (this.logEncoder == null) ? null : logEncoder.contentEncoding();
+        final String contentEncoding = (this.logEncoder == null) ? null : this.logEncoder.contentEncoding();
         logSenderSettings.setContentEncoding(contentEncoding);
         this.logSender.configure(logSenderSettings, logMonitor);
         this.logMonitor.onConfigured(this.logCollector.contentType(), contentEncoding);

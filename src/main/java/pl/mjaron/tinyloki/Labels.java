@@ -466,6 +466,16 @@ public class Labels implements Cloneable {
         return this.map.equals(otherLabels.map);
     }
 
+    /**
+     * Provides hash code. See {@link Object#hashCode()}.
+     *
+     * @return Hash code.
+     */
+    @Override
+    public int hashCode() {
+        return map.hashCode();
+    }
+
     @Override
     public String toString() {
         return map.toString();

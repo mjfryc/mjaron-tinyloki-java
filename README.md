@@ -6,6 +6,7 @@
 ![Coverage](.github/badges/jacoco.svg)
 ![Branches](.github/badges/branches.svg)
 ![Known Vulnerabilities](https://snyk.io/test/github/mjfryc/mjaron-tinyloki-java/badge.svg)
+![Code Quality](https://img.shields.io/lgtm/grade/java/github/mjfryc/mjaron-tinyloki-java)
 
 Tiny [Grafana Loki](https://grafana.com/oss/loki/) client (log sender) written in pure Java 1.8 without any external dependencies.
 

@@ -9,6 +9,7 @@
 ![Code Quality](https://img.shields.io/lgtm/grade/java/github/mjfryc/mjaron-tinyloki-java)
 [![Total alerts](https://img.shields.io/lgtm/alerts/g/mjfryc/mjaron-tinyloki-java.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/mjfryc/mjaron-tinyloki-java/alerts/)
 [![CodeQL](https://github.com/mjfryc/mjaron-tinyloki-java/actions/workflows/codeql.yml/badge.svg)](https://github.com/mjfryc/mjaron-tinyloki-java/actions/workflows/codeql.yml)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=mjfryc_mjaron-tinyloki-java&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=mjfryc_mjaron-tinyloki-java)
 
 Tiny [Grafana Loki](https://grafana.com/oss/loki/) client (log sender) written in pure Java 1.8 without any external dependencies.
 

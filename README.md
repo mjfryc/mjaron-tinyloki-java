@@ -2,13 +2,14 @@
 
 [![Java CI with Gradle](https://github.com/mjfryc/mjaron-tinyloki-java/actions/workflows/gradle.yml/badge.svg)](https://github.com/mjfryc/mjaron-tinyloki-java/actions/workflows/gradle.yml)
 [![Gradle Package](https://github.com/mjfryc/mjaron-tinyloki-java/actions/workflows/gradle-publish.yml/badge.svg)](https://github.com/mjfryc/mjaron-tinyloki-java/actions/workflows/gradle-publish.yml)
+[![CodeQL](https://github.com/mjfryc/mjaron-tinyloki-java/actions/workflows/codeql.yml/badge.svg)](https://github.com/mjfryc/mjaron-tinyloki-java/actions/workflows/codeql.yml)
 [![Maven Central](https://img.shields.io/maven-central/v/io.github.mjfryc/mjaron-tinyloki-java?color=dark-green&style=flat)](https://search.maven.org/artifact/io.github.mjfryc/mjaron-tinyloki-java/)
-![Coverage](.github/badges/jacoco.svg)
-![Branches](.github/badges/branches.svg)
 ![Known Vulnerabilities](https://snyk.io/test/github/mjfryc/mjaron-tinyloki-java/badge.svg)
 ![Code Quality](https://img.shields.io/lgtm/grade/java/github/mjfryc/mjaron-tinyloki-java)
 [![Total alerts](https://img.shields.io/lgtm/alerts/g/mjfryc/mjaron-tinyloki-java.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/mjfryc/mjaron-tinyloki-java/alerts/)
-[![CodeQL](https://github.com/mjfryc/mjaron-tinyloki-java/actions/workflows/codeql.yml/badge.svg)](https://github.com/mjfryc/mjaron-tinyloki-java/actions/workflows/codeql.yml)
+![Coverage](.github/badges/jacoco.svg)
+![Branches](.github/badges/branches.svg)
+
 
 Tiny [Grafana Loki](https://grafana.com/oss/loki/) client (log sender) written in pure Java 1.8 without any external dependencies.
 

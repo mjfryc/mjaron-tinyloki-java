@@ -26,7 +26,7 @@ public class StreamBuilder {
      *
      * @return New {@link ILogStream} instance.
      */
-    ILogStream build() {
+    public ILogStream build() {
         return logController.createStream(labels);
     }
 

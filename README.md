@@ -38,7 +38,6 @@ public class Sample {
                 .l("host", "MyComputerName")
                 .l("customLabel", "custom_value")
                 .build();
-        );
 
         stream.log("Hello world.");
 

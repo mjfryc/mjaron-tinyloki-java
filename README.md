@@ -169,7 +169,7 @@ class LogController {
 class GzipLogEncoder
 
 class VerboseLogMonitor
-class ErrorLogmonitor
+class ErrorLogMonitor
 class JsonLogStream
 class JsonLogCollector
 
@@ -182,7 +182,7 @@ class TinyLoki {
 }
 
 VerboseLogMonitor --|> ILogMonitor: implements
-ErrorLogmonitor --|> ILogMonitor: implements
+ErrorLogMonitor --|> ILogMonitor: implements
 
 ILogStream <.. ILogCollector: create
 ILogCollector --* LogController

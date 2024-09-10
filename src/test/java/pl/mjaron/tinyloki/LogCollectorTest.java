@@ -1,11 +1,7 @@
 package pl.mjaron.tinyloki;
 
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-
-import java.util.Map;
-import java.util.TreeMap;
 
 class LogCollectorTest {
 

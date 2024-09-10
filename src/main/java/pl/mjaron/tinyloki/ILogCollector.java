@@ -1,7 +1,5 @@
 package pl.mjaron.tinyloki;
 
-import java.util.Map;
-
 /**
  * Responsible for creating streams (with fixed labels) and collecting data from them.
  */

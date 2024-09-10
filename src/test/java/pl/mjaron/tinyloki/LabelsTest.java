@@ -28,12 +28,14 @@ class LabelsTest {
         assertDoesNotThrow(() -> Labels.assertLabelIdentifierNotNullOrEmpty(" "));
     }
 
+    @SuppressWarnings("deprecation")
     @Test
     void validateLabelIdentifierOrThrow() {
         assertThrows(RuntimeException.class, () -> Labels.validateLabelIdentifierOrThrow(""));
         assertDoesNotThrow(() -> Labels.validateLabelIdentifierOrThrow("abc"));
     }
 
+    @SuppressWarnings("deprecation")
     @Test
     void checkLabelIdentifierWhenNotEmpty() {
         assertTrue(Labels.checkLabelIdentifierWhenNotEmpty("abc"));
@@ -103,12 +105,14 @@ class LabelsTest {
         assertEquals("1ab", Labels.prettifyLabelValue("1abc", 3));
     }
 
+    @SuppressWarnings("deprecation")
     @Test
     void prettifyLabelIdentifier() {
         assertEquals("ab", Labels.prettifyLabelIdentifier("abc", 2));
         assertEquals("Ab", Labels.prettifyLabelIdentifier("1bc", 2));
     }
 
+    @SuppressWarnings("deprecation")
     @Test
     void prettifyLabelIdentifier1() {
         assertEquals("abc", Labels.prettifyLabelIdentifier("abc"));

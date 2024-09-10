@@ -20,7 +20,8 @@ dependencies {
 jacocoTestReport {
     dependsOn test
     reports {
-        csv.enabled true
+        // csv.enabled true // This API is deprecated: https://docs.gradle.org/7.1/dsl/org.gradle.api.reporting.Report.html#org.gradle.api.reporting.Report:enabled
+        csv.required = true
     }
 }
 

@@ -2,7 +2,7 @@ plugins {
     id 'java'
     id 'maven-publish'
     id "signing"
-    id 'org.barfuin.gradle.jacocolog' version '2.0.0'
+    id 'org.barfuin.gradle.jacocolog' version '3.1.0'
 }
 
 group 'io.github.mjfryc'
@@ -13,8 +13,10 @@ repositories {
 }
 
 dependencies {
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.2'
+    // https://docs.gradle.org/8.10.1/userguide/upgrading_version_8.html#manually_declaring_dependencies
+    // If using JUnit Jupiter
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.9.2'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
 jacocoTestReport {
@@ -39,12 +41,12 @@ java {
     }
 }
 
-project.plugins.withType(MavenPublishPlugin).all {
+project.plugins.withType(MavenPublishPlugin).configureEach {
     PublishingExtension publishing = project.extensions.getByType(PublishingExtension.class)
-    publishing.publications.withType(MavenPublication).all { mavenPublication ->
+    publishing.publications.withType(MavenPublication).configureEach { mavenPublication ->
         mavenPublication.pom {
             name = "${project.group}:${project.name}"
-            description = name
+            description.set(name.toString())
             url = "https://github.com/mjfryc/mjaron-tinyloki-java"
             licenses {
                 license {
@@ -108,8 +110,8 @@ if (hasSigningKey) {
 }
 
 void doSign(Project project) {
-    println("Signing publications. All etries:")
-    publishing.publications.all {
+    println("Signing publications. All entries:")
+    publishing.publications.configureEach {
         println("    Publication: " + it.name)
     }
 

@@ -167,7 +167,7 @@ public class LogController {
      * @return This reference.
      * @since 0.4.0
      */
-    public LogController stop(final int timeout) {
+    public LogController stop(final int timeout) throws InterruptedException {
         executor.stop(timeout);
         return this;
     }
@@ -178,7 +178,7 @@ public class LogController {
      * @return This reference.
      * @since 0.4.0
      */
-    public LogController stop() {
+    public LogController stop() throws InterruptedException {
         return stop(DEFAULT_STOP_TIME);
     }
 
@@ -189,7 +189,7 @@ public class LogController {
      * @return This reference.
      * @since 0.4.0
      */
-    public LogController sync(final int timeout) {
+    public LogController sync(final int timeout) throws InterruptedException {
         executor.sync(timeout);
         return this;
     }
@@ -201,7 +201,7 @@ public class LogController {
      * @return This reference.
      * @since 0.4.0
      */
-    public LogController sync() {
+    public LogController sync() throws InterruptedException {
         executor.sync(DEFAULT_SYNC_TIME);
         return this;
     }
@@ -290,8 +290,8 @@ public class LogController {
     /**
      * Tells if worker thread has stopped softly, doing all its work before exiting.
      *
-     * @return True if worker thread has exited without interruption.
-     * @deprecated This method will be removed.
+     * @return Always <code>true</code>.
+     * @deprecated Since <code>0.4.0</code>. This method will be removed.
      */
     @Deprecated
     public boolean isSoftStopped() {
@@ -304,7 +304,7 @@ public class LogController {
      *
      * @since 0.4.0
      */
-    public void internalProcessLogs() {
+    public void internalProcessLogs() throws InterruptedException {
         final byte[] logs = logCollector.collect();
         if (logs == null) {
             return;

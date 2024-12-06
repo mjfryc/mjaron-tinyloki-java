@@ -14,11 +14,6 @@ class UtilsTest {
     }
 
     @Test
-    void sleep() {
-        Utils.sleep(1);
-    }
-
-    @Test
     void isAsciiCapitalLetter() {
         assertTrue(Utils.isAsciiCapitalLetter('A'));
         assertTrue(Utils.isAsciiCapitalLetter('M'));

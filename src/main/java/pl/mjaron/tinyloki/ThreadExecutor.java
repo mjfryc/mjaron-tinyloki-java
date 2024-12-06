@@ -32,25 +32,16 @@ public class ThreadExecutor implements IExecutor, Runnable {
     }
 
     @Override
-    public void stop(final int timeout) {
-        try {
-            if (workerThread != null) {
-                workerThread.interrupt();
-                workerThread.join(timeout);
-            }
-        } catch (final InterruptedException e) {
-            logController.getLogMonitor().onException(e);
-            throw new RuntimeException(e);
+    public void stop(final int timeout) throws InterruptedException {
+        if (workerThread != null) {
+            workerThread.interrupt();
+            workerThread.join(timeout);
         }
     }
 
     @Override
-    public void sync(final int timeout) {
-        try {
-            logListener.flush(timeout);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
+    public void sync(final int timeout) throws InterruptedException {
+        logListener.flush(timeout);
     }
 
     @Override
@@ -62,7 +53,6 @@ public class ThreadExecutor implements IExecutor, Runnable {
                     logController.internalProcessLogs();
                 }
             } catch (final InterruptedException e) {
-                //logController.getLogMonitor().onException(e);
                 logController.getLogMonitor().onWorkerThreadExit(true);
                 return;
             } catch (final Exception e) {

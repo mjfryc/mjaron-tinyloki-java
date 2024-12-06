@@ -56,21 +56,6 @@ public class Utils {
     }
 
     /**
-     * Sleeps given amount of time. Allows calling without try-catch block.
-     *
-     * @param milliseconds Milliseconds count.
-     * @throws RuntimeException When any thread has interrupted this thread.
-     */
-    @SuppressWarnings("unused")
-    public static void sleep(final long milliseconds) {
-        try {
-            Thread.sleep(milliseconds);
-        } catch (final InterruptedException e) {
-            throw new RuntimeException("Thread.sleep() has failed.", e);
-        }
-    }
-
-    /**
      * Tells whether given character is valid ASCII capital letter [A-Z]
      *
      * @param ch Character to check.

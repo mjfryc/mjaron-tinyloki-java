@@ -29,7 +29,7 @@ public interface IExecutor {
      * @param timeout Maximum time to block the calling thread. After that time the function returns even the logs are not sent.
      * @since 0.4.0
      */
-    void sync(int timeout);
+    void sync(int timeout) throws InterruptedException;
 
     /**
      * Blocking function. Stops the asynchronous service (thread) which sends the logs.
@@ -37,5 +37,5 @@ public interface IExecutor {
      * @param timeout Maximum time to block the calling thread. After that time the function returns event the thread is not stopped.
      * @since 0.4.0
      */
-    void stop(int timeout);
+    void stop(int timeout) throws InterruptedException;
 }

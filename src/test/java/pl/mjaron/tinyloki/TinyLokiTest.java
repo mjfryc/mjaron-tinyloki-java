@@ -18,7 +18,7 @@ public class TinyLokiTest {
     }
 
     @Test
-    void dummySendTest() {
+    void dummySendTest() throws InterruptedException {
         LogController logController = TinyLoki.withUrl("http://localhost/loki/api/v1/push")
                 .withLogSender(new DummyLogSender(1000))
                 .withLogMonitor(new VerboseLogMonitor())

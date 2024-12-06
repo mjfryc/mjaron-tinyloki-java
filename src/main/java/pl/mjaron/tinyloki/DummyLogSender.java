@@ -12,6 +12,9 @@ public class DummyLogSender implements ILogSender {
     }
 
     public DummyLogSender(final int dummySendBlockTime) {
+        if (dummySendBlockTime < 0) {
+            throw new IllegalArgumentException("The block time must be 0 or positive value.");
+        }
         this.dummySendBlockTime = dummySendBlockTime;
     }
 
@@ -21,10 +24,10 @@ public class DummyLogSender implements ILogSender {
     }
 
     @Override
-    public void send(byte[] message) {
+    public void send(byte[] message) throws InterruptedException {
         logMonitor.send(message);
         if (dummySendBlockTime > 0) {
-            Utils.sleep(dummySendBlockTime);
+            Thread.sleep(dummySendBlockTime);
         }
         logMonitor.sendOk(200);
     }

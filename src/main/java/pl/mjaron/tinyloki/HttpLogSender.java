@@ -88,8 +88,8 @@ public class HttpLogSender implements ILogSender {
                             }
                         }
                     }
-                } catch (final IOException e2) {
-                    e2.printStackTrace();
+                } catch (final IOException ignored) {
+                    // e2.printStackTrace();
                 }
             }
             throw new RuntimeException("Failed to send logs.", e);

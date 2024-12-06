@@ -7,13 +7,6 @@ package pl.mjaron.tinyloki;
 public interface ILogListener {
 
     /**
-     * Called by {@link ILogCollector} when new log occurs.
-     *
-     * @param cachedLogsCount Count of logs already cached in the {@link ILogCollector}.
-     */
-    void onLog(int cachedLogsCount);
-
-    /**
      * Create the log listener which does nothing. Mainly for diagnostic purposes.
      *
      * @return The new dummy log listener.
@@ -27,4 +20,11 @@ public interface ILogListener {
             }
         };
     }
+
+    /**
+     * Called by {@link ILogCollector} when new log occurs.
+     *
+     * @param cachedLogsCount Count of logs already cached in the {@link ILogCollector}.
+     */
+    void onLog(int cachedLogsCount);
 }

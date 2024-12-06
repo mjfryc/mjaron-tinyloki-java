@@ -26,8 +26,7 @@ public class VerboseLogMonitor extends ErrorLogMonitor {
     public void send(final byte[] message) {
         if (contentEncoding == null && contentType.equals(JsonLogCollector.CONTENT_TYPE)) {
             ILogMonitor.logInfo("<<< " + new String(message, StandardCharsets.UTF_8));
-        }
-        else {
+        } else {
             ILogMonitor.logInfo("<<< " + message.length + " bytes sent");
         }
     }

@@ -3,10 +3,9 @@ package pl.mjaron.tinyloki;
 public class ThreadExecutor implements IExecutor, Runnable {
 
     public static final int DEFAULT_LOG_COLLECTION_PERIOD_MS = 5000;
-
+    private final BlockingLogListener logListener = new BlockingLogListener();
     private LogController logController = null;
     private Thread workerThread = null;
-    private final BlockingLogListener logListener = new BlockingLogListener();
     private int logCollectionPeriod = DEFAULT_LOG_COLLECTION_PERIOD_MS;
 
     public void setLogCollectionPeriod(final int logCollectionPeriod) {

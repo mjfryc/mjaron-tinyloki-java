@@ -9,24 +9,6 @@ import java.util.Map;
  */
 public class LogController {
 
-    private static final int LOG_WAIT_TIME = 100;
-
-    /**
-     * Default maximum time of {@link #softStop()} operation in milliseconds..
-     *
-     * @deprecated Since <code>0.4.0</code>. Use {@link #DEFAULT_STOP_TIME} instead.
-     */
-    @Deprecated
-    private static final int DEFAULT_SOFT_STOP_WAIT_TIME = 2000;
-
-    /**
-     * Default maximum time of {@link #hardStop()} operation in milliseconds.
-     *
-     * @deprecated Since <code>0.4.0</code>. Use {@link #DEFAULT_STOP_TIME} instead.
-     */
-    @Deprecated
-    private static final int DEFAULT_HARD_STOP_WAIT_TIME = 1000;
-
     /**
      * Default wait time of {@link #stop()} operation in milliseconds.
      *
@@ -35,7 +17,6 @@ public class LogController {
      * @since 0.4.0
      */
     public static final int DEFAULT_STOP_TIME = 1000;
-
     /**
      * Default wait time of {@link #sync()} operation in milliseconds.
      *
@@ -44,7 +25,21 @@ public class LogController {
      * @since 0.4.0
      */
     public static final int DEFAULT_SYNC_TIME = 1000;
-
+    private static final int LOG_WAIT_TIME = 100;
+    /**
+     * Default maximum time of {@link #softStop()} operation in milliseconds..
+     *
+     * @deprecated Since <code>0.4.0</code>. Use {@link #DEFAULT_STOP_TIME} instead.
+     */
+    @Deprecated
+    private static final int DEFAULT_SOFT_STOP_WAIT_TIME = 2000;
+    /**
+     * Default maximum time of {@link #hardStop()} operation in milliseconds.
+     *
+     * @deprecated Since <code>0.4.0</code>. Use {@link #DEFAULT_STOP_TIME} instead.
+     */
+    @Deprecated
+    private static final int DEFAULT_HARD_STOP_WAIT_TIME = 1000;
     private final ILogCollector logCollector;
     private final ILogEncoder logEncoder;
     private final ILogSender logSender;

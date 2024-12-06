@@ -6,6 +6,13 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ILogStreamTest {
 
+    @Test
+    void log() {
+        final TestLogStream stream = new TestLogStream();
+        stream.log("sample");
+        assertTrue(Math.abs(System.currentTimeMillis() - stream.timestamp) < 1000);
+    }
+
     private static class TestLogStream implements ILogStream {
         public long timestamp = 0;
 
@@ -17,12 +24,5 @@ class ILogStreamTest {
         @Override
         public void release() {
         }
-    }
-
-    @Test
-    void log() {
-        final TestLogStream stream = new TestLogStream();
-        stream.log("sample");
-        assertTrue(Math.abs(System.currentTimeMillis() - stream.timestamp) < 1000);
     }
 }

@@ -6,6 +6,24 @@ package pl.mjaron.tinyloki;
 public interface ILogMonitor {
 
     /**
+     * Used internally by TinyLoki implementation for this library diagnostic purposes.
+     *
+     * @param what Log content.
+     */
+    static void logInfo(final String what) {
+        System.out.println("[TinyLoki]: " + what);
+    }
+
+    /**
+     * Used internally by TinyLoki implementation for this library diagnostic purposes.
+     *
+     * @param what Log content.
+     */
+    static void logError(final String what) {
+        System.err.println("[TinyLoki]: " + what);
+    }
+
+    /**
      * Called when {@link LogController} is set up and ready to work.
      *
      * @param contentType     Content type used by {@link ILogCollector}.
@@ -56,20 +74,4 @@ public interface ILogMonitor {
      * @param isSoft Tells whether worker thread has exited without interrupting.
      */
     void onWorkerThreadExit(final boolean isSoft);
-
-    /**
-     * Used internally by TinyLoki implementation for this library diagnostic purposes.
-     * @param what Log content.
-     */
-    static void logInfo(final String what) {
-        System.out.println("[TinyLoki]: " + what);
-    }
-
-    /**
-     * Used internally by TinyLoki implementation for this library diagnostic purposes.
-     * @param what Log content.
-     */
-    static void logError(final String what) {
-        System.err.println("[TinyLoki]: " + what);
-    }
 }

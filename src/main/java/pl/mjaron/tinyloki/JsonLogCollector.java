@@ -13,8 +13,8 @@ public class JsonLogCollector implements ILogCollector {
     public static final String CONTENT_TYPE = "application/json";
 
     private final List<JsonLogStream> streams = new ArrayList<>();
-    private int logEntriesCount = 0;
     private final Object logEntriesLock = new Object();
+    private int logEntriesCount = 0;
     private ILogListener logObserver = null;
 
     @Override
@@ -119,7 +119,7 @@ public class JsonLogCollector implements ILogCollector {
      * @param timeout Time in milliseconds.
      * @return Collected logs count.
      * @throws InterruptedException When this thread is interrupted during waiting.
-     * @deprecated 
+     * @deprecated
      */
     @Override
     @Deprecated

@@ -5,28 +5,6 @@ package pl.mjaron.tinyloki;
  */
 public class Utils {
 
-    public static class MonotonicClock {
-        public static long MILLISECONDS_FACTOR = 1_000_000;
-
-        public static long timePoint() {
-            return System.nanoTime();
-        }
-
-        public static long timePoint(final long milliseconds) {
-            return System.nanoTime() + (milliseconds * MILLISECONDS_FACTOR);
-        }
-
-        public static boolean waitUntil(Object object, final long timePoint) throws InterruptedException {
-            final long diff = timePoint - MonotonicClock.timePoint();
-            final long diffMilliseconds = diff / MILLISECONDS_FACTOR;
-            if (diffMilliseconds > 0) {
-                object.wait(diffMilliseconds);
-                return false;
-            }
-            return true;
-        }
-    }
-
     /**
      * Source: <a href="https://stackoverflow.com/a/69338077/6835932">https://stackoverflow.com/a/69338077/6835932</a>
      *
@@ -103,5 +81,27 @@ public class Utils {
      */
     public static boolean isAsciiLetterOrDigit(final char ch) {
         return isAsciiLetter(ch) || isAsciiDigit(ch);
+    }
+
+    public static class MonotonicClock {
+        public static long MILLISECONDS_FACTOR = 1_000_000;
+
+        public static long timePoint() {
+            return System.nanoTime();
+        }
+
+        public static long timePoint(final long milliseconds) {
+            return System.nanoTime() + (milliseconds * MILLISECONDS_FACTOR);
+        }
+
+        public static boolean waitUntil(Object object, final long timePoint) throws InterruptedException {
+            final long diff = timePoint - MonotonicClock.timePoint();
+            final long diffMilliseconds = diff / MILLISECONDS_FACTOR;
+            if (diffMilliseconds > 0) {
+                object.wait(diffMilliseconds);
+                return false;
+            }
+            return true;
+        }
     }
 }

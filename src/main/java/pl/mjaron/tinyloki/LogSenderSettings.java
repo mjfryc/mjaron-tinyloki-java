@@ -162,6 +162,15 @@ public class LogSenderSettings {
     }
 
     /**
+     * HTTP connecting timeout getter.
+     *
+     * @return HTTP connecting timeout in milliseconds.
+     */
+    public int getConnectTimeout() {
+        return connectTimeout;
+    }
+
+    /**
      * Setter of timeout when connecting to the HTTP server.
      *
      * @param connectTimeout Time in milliseconds.
@@ -171,14 +180,5 @@ public class LogSenderSettings {
     public LogSenderSettings setConnectTimeout(final int connectTimeout) {
         this.connectTimeout = connectTimeout;
         return this;
-    }
-
-    /**
-     * HTTP connecting timeout getter.
-     *
-     * @return HTTP connecting timeout in milliseconds.
-     */
-    public int getConnectTimeout() {
-        return connectTimeout;
     }
 }

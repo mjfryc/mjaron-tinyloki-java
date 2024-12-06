@@ -2,9 +2,8 @@ package pl.mjaron.tinyloki;
 
 class BlockingLogListener implements ILogListener {
 
-    private int cachedLogsCount = 0;
     private final Object cachedLogsMonitor = new Object();
-
+    private int cachedLogsCount = 0;
     /**
      * Tells which sequence number of logs waiting is processed.
      */
@@ -43,8 +42,7 @@ class BlockingLogListener implements ILogListener {
     public int waitForLogs(final int timeout) throws InterruptedException {
         synchronized (cachedLogsMonitor) {
             ++logEntryLevel;
-            if (flushLevel <= logEntryLevel)
-            {
+            if (flushLevel <= logEntryLevel) {
                 final long timePoint = Utils.MonotonicClock.timePoint(timeout);
                 do {
                     if (Utils.MonotonicClock.waitUntil(cachedLogsMonitor, timePoint)) {

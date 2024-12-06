@@ -50,6 +50,35 @@ public class Labels implements Cloneable {
      * Unknown log level.
      */
     public static final String UNKNOWN = "unknown";
+    /**
+     * Internal labels container.
+     */
+    private TreeMap<String, String> map;
+
+    /**
+     * Default constructor. Creates empty labels with default parameters.
+     */
+    public Labels() {
+        this.map = new TreeMap<>();
+    }
+
+    /**
+     * Creates a deep copy of other labels.
+     *
+     * @param other Other labels instance.
+     */
+    public Labels(final Labels other) {
+        this.map = new TreeMap<>(other.map);
+    }
+
+    /**
+     * Creates the labels from a given map.
+     *
+     * @param map Given map is copied to internal Labels map.
+     */
+    public Labels(final Map<String, String> map) {
+        this.map = new TreeMap<>(map);
+    }
 
     /**
      * Verifies if <code>labelIdentifier</code> is not null and not empty.
@@ -372,36 +401,6 @@ public class Labels implements Cloneable {
         }
 
         return prettified;
-    }
-
-    /**
-     * Internal labels container.
-     */
-    private TreeMap<String, String> map;
-
-    /**
-     * Default constructor. Creates empty labels with default parameters.
-     */
-    public Labels() {
-        this.map = new TreeMap<>();
-    }
-
-    /**
-     * Creates a deep copy of other labels.
-     *
-     * @param other Other labels instance.
-     */
-    public Labels(final Labels other) {
-        this.map = new TreeMap<>(other.map);
-    }
-
-    /**
-     * Creates the labels from a given map.
-     *
-     * @param map Given map is copied to internal Labels map.
-     */
-    public Labels(final Map<String, String> map) {
-        this.map = new TreeMap<>(map);
     }
 
     /**

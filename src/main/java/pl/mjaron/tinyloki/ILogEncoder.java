@@ -15,6 +15,7 @@ public interface ILogEncoder {
 
     /**
      * Encodes given bytes in a way consistent with {@link #contentEncoding()} value.
+     *
      * @param what Bytes to encode.
      * @return Bytes encoded.
      */

@@ -5,8 +5,30 @@ package pl.mjaron.tinyloki;
  */
 public class Utils {
 
+    public static class MonotonicClock {
+        public static long MILLISECONDS_FACTOR = 1_000_000;
+
+        public static long timePoint() {
+            return System.nanoTime();
+        }
+
+        public static long timePoint(final long milliseconds) {
+            return System.nanoTime() + (milliseconds * MILLISECONDS_FACTOR);
+        }
+
+        public static boolean waitUntil(Object object, final long timePoint) throws InterruptedException {
+            final long diff = timePoint - MonotonicClock.timePoint();
+            final long diffMilliseconds = diff / MILLISECONDS_FACTOR;
+            if (diffMilliseconds > 0) {
+                object.wait(diffMilliseconds);
+                return false;
+            }
+            return true;
+        }
+    }
+
     /**
-     * Source: https://stackoverflow.com/a/69338077/6835932
+     * Source: <a href="https://stackoverflow.com/a/69338077/6835932">https://stackoverflow.com/a/69338077/6835932</a>
      *
      * @param b    Reference to exiting {@link StringBuilder} where given <code>text</code> will be appended.
      * @param text {@link CharSequence} which will be escaped and appended to {@link StringBuilder} <code>b</code>.
@@ -43,13 +65,14 @@ public class Utils {
     public static void sleep(final long milliseconds) {
         try {
             Thread.sleep(milliseconds);
-        } catch (InterruptedException e) {
+        } catch (final InterruptedException e) {
             throw new RuntimeException("Thread.sleep() has failed.", e);
         }
     }
 
     /**
      * Tells whether given character is valid ASCII capital letter [A-Z]
+     *
      * @param ch Character to check.
      * @return True when <code>ch</code> is a capital letter.
      */
@@ -59,6 +82,7 @@ public class Utils {
 
     /**
      * Tells whether given character is valid ASCII lowercase letter [a-z]
+     *
      * @param ch Character to check.
      * @return True when <code>ch</code> is a lowercase letter.
      */
@@ -68,6 +92,7 @@ public class Utils {
 
     /**
      * Tells whether given character is valid ASCII letter [A-Za-z]
+     *
      * @param ch Character to check.
      * @return True when <code>ch</code> is a letter.
      */
@@ -77,6 +102,7 @@ public class Utils {
 
     /**
      * Tells whether given character is valid ASCII digit [0-9]
+     *
      * @param ch Character to check.
      * @return True when <code>ch</code> is a digit.
      */
@@ -86,6 +112,7 @@ public class Utils {
 
     /**
      * Tells whether given character is valid ASCII letter or digit [0-9A-Za-z]
+     *
      * @param ch Character to check.
      * @return True when <code>ch</code> is a letter or digit.
      */

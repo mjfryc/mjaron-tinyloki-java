@@ -9,41 +9,74 @@ import java.util.Map;
  */
 public class LogController {
 
-    private static final long LOG_WAIT_TIME = 100;
-    private static final long DEFAULT_SOFT_STOP_WAIT_TIME = 2000;
-    private static final long DEFAULT_HARD_STOP_WAIT_TIME = 1000;
+    private static final int LOG_WAIT_TIME = 100;
+
+    /**
+     * Default maximum time of {@link #softStop()} operation in milliseconds..
+     *
+     * @deprecated Since <code>0.4.0</code>. Use {@link #DEFAULT_STOP_TIME} instead.
+     */
+    @Deprecated
+    private static final int DEFAULT_SOFT_STOP_WAIT_TIME = 2000;
+
+    /**
+     * Default maximum time of {@link #hardStop()} operation in milliseconds.
+     *
+     * @deprecated Since <code>0.4.0</code>. Use {@link #DEFAULT_STOP_TIME} instead.
+     */
+    @Deprecated
+    private static final int DEFAULT_HARD_STOP_WAIT_TIME = 1000;
+
+    /**
+     * Default wait time of {@link #stop()} operation in milliseconds.
+     *
+     * @see #stop()
+     * @see #stop(int)
+     * @since 0.4.0
+     */
+    public static final int DEFAULT_STOP_TIME = 1000;
+
+    /**
+     * Default wait time of {@link #sync()} operation in milliseconds.
+     *
+     * @see #sync()
+     * @see #sync(int)
+     * @since 0.4.0
+     */
+    public static final int DEFAULT_SYNC_TIME = 1000;
 
     private final ILogCollector logCollector;
     private final ILogEncoder logEncoder;
     private final ILogSender logSender;
     private final LabelSettings labelSettings;
+    private final IExecutor executor;
     private final ILogMonitor logMonitor;
-    private Thread workerThread = null;
-    private boolean softFinishing = false;
-    private boolean softExit = false;
 
     /**
      * Main constructor designed for user of this library.
      *
      * @param logCollector      ILogCollector implementation, which is responsible for creating new streams and collecting its logs.
-     * @param logEncoder        Optional (may be null) log encoder which is responsible for encode whole log message.
+     * @param logEncoder        Optional (nullable) log encoder which is responsible for encode whole log message.
      * @param logSenderSettings {@link LogSenderSettings} used to initialize the {@link ILogSender log sender}.
      *                          Some settings will be overridden by this constructor.
      * @param logSender         Sends the logs collected by log controller.
      * @param labelSettings     Preferences of the {@link Labels}. See {@link LabelSettings}.
+     * @param executor          The {@link IExecutor} implementation.
      * @param logMonitor        Handles diagnostic events from whole library.
      * @since 0.3.4
      */
-    public LogController(final ILogCollector logCollector, ILogEncoder logEncoder, final LogSenderSettings logSenderSettings, final ILogSender logSender, final LabelSettings labelSettings, final ILogMonitor logMonitor) {
+    public LogController(final ILogCollector logCollector, ILogEncoder logEncoder, final LogSenderSettings logSenderSettings, final ILogSender logSender, final LabelSettings labelSettings, final IExecutor executor, final ILogMonitor logMonitor) {
         this.logCollector = logCollector;
         this.logEncoder = logEncoder;
         this.logSender = logSender;
         this.labelSettings = labelSettings;
+        this.executor = executor;
         this.logMonitor = logMonitor;
         logSenderSettings.setContentType(this.logCollector.contentType());
         final String contentEncoding = (this.logEncoder == null) ? null : this.logEncoder.contentEncoding();
         logSenderSettings.setContentEncoding(contentEncoding);
         this.logSender.configure(logSenderSettings, logMonitor);
+        this.executor.configure(this);
         this.logMonitor.onConfigured(this.logCollector.contentType(), contentEncoding);
     }
 
@@ -55,11 +88,32 @@ public class LogController {
      *                          Some settings will be overridden by this constructor.
      * @param logSender         Sends the logs collected by log controller.
      * @param labelSettings     Preferences of the {@link Labels}. See {@link LabelSettings}.
+     * @param executor          The {@link IExecutor} implementation.
      * @param logMonitor        Handles diagnostic events from whole library.
-     * @deprecated Use {@link LogController#LogController(ILogCollector, ILogEncoder, LogSenderSettings, ILogSender, LabelSettings, ILogMonitor)} instead, where logEncoder parameter should be specified explicitly.
+     * @deprecated Use {@link LogController#LogController(ILogCollector, ILogEncoder, LogSenderSettings, ILogSender, LabelSettings, IExecutor, ILogMonitor)} instead, where logEncoder parameter should be specified explicitly.
      */
-    public LogController(final ILogCollector logCollector, final LogSenderSettings logSenderSettings, final ILogSender logSender, final LabelSettings labelSettings, final ILogMonitor logMonitor) {
-        this(logCollector, null, logSenderSettings, logSender, labelSettings, logMonitor);
+    public LogController(final ILogCollector logCollector, final LogSenderSettings logSenderSettings, final ILogSender logSender, final LabelSettings labelSettings, final IExecutor executor, final ILogMonitor logMonitor) {
+        this(logCollector, null, logSenderSettings, logSender, labelSettings, executor, logMonitor);
+    }
+
+    /**
+     * THe log monitor getter.
+     *
+     * @return The log monitor set in the constructor.
+     * @since 0.4.0
+     */
+    public ILogMonitor getLogMonitor() {
+        return this.logMonitor;
+    }
+
+    /**
+     * Provides the {@link ILogCollector} instance used to initialize this <code>LogController</code>.
+     *
+     * @return The {@link ILogCollector} instance used to initialize this <code>LogController</code>.
+     * @since 0.4.0
+     */
+    public ILogCollector getLogCollector() {
+        return logCollector;
     }
 
     /**
@@ -102,13 +156,53 @@ public class LogController {
      * @return This reference.
      */
     public LogController start() {
-        workerThread = new Thread("LogController.workerThread") {
-            @Override
-            public void run() {
-                workerLoop();
-            }
-        };
-        workerThread.start();
+        executor.start();
+        return this;
+    }
+
+    /**
+     * Blocking function. Stops the executor sending the logs in the background.
+     *
+     * @param timeout Maximum time to wait for executor to finish.
+     * @return This reference.
+     * @since 0.4.0
+     */
+    public LogController stop(final int timeout) {
+        executor.stop(timeout);
+        return this;
+    }
+
+    /**
+     * Blocking function. Stops the executor sending the logs in the background with default timeout defined as {@link #DEFAULT_STOP_TIME}.
+     *
+     * @return This reference.
+     * @since 0.4.0
+     */
+    public LogController stop() {
+        return stop(DEFAULT_STOP_TIME);
+    }
+
+    /**
+     * Blocking function. Stops the flow until all already requested logs are processed (sent) or given time has passed.
+     *
+     * @param timeout The maximum time to wait in milliseconds.
+     * @return This reference.
+     * @since 0.4.0
+     */
+    public LogController sync(final int timeout) {
+        executor.sync(timeout);
+        return this;
+    }
+
+    /**
+     * Blocking function. Stops the flow until all already requested logs are processed (sent) or given time has passed.
+     * The maximum blocking time is defined by {@link #DEFAULT_SYNC_TIME}.
+     *
+     * @return This reference.
+     * @since 0.4.0
+     */
+    public LogController sync() {
+        executor.sync(DEFAULT_SYNC_TIME);
         return this;
     }
 
@@ -119,18 +213,8 @@ public class LogController {
      */
     @SuppressWarnings("UnusedReturnValue")
     synchronized public LogController softStopAsync() {
-        softFinishing = true;
+        /// TODO IMPLEMENTATION HERE.
         return this;
-    }
-
-    /**
-     * Tells whether worker thread exited or not.
-     *
-     * @return True if worker thread is terminated.
-     */
-    public boolean isHardStopped() {
-        //return workerThread.isAlive();
-        return (workerThread.getState() == Thread.State.TERMINATED);
     }
 
     /**
@@ -138,13 +222,14 @@ public class LogController {
      *
      * @param interruptTimeout Timeout in milliseconds.
      * @return This reference.
+     * @see #stop(int)
+     * @see #stop()
+     * @deprecated Since <code>0.4.0</code>. Use {@link #stop(int)} instead.
      */
     public LogController hardStop(final long interruptTimeout) {
         try {
-            this.softStopAsync();
-            workerThread.interrupt();
-            workerThread.join(interruptTimeout);
-        } catch (InterruptedException e) {
+            this.stop(java.lang.Math.toIntExact(interruptTimeout));
+        } catch (Exception e) {
             logMonitor.onException(e);
         }
         return this;
@@ -155,7 +240,11 @@ public class LogController {
      *
      * @return This reference.
      * @see #hardStop(long)
+     * @see #stop()
+     * @see #stop(int)
+     * @deprecated Since <code>0.4.0</code>. Use {@link #stop(int)} instead.
      */
+    @Deprecated
     @SuppressWarnings("UnusedReturnValue")
     public LogController hardStop() {
         return this.hardStop(DEFAULT_HARD_STOP_WAIT_TIME);
@@ -166,12 +255,17 @@ public class LogController {
      *
      * @param softTimeout Timeout in milliseconds.
      * @return This reference.
+     * @see #stop()
+     * @see #stop(int)
+     * @see #sync(int)
+     * @deprecated Since <code>0.4.0</code>. Use {@link #sync(int)} and {@link #stop(int)} instead.
      */
+    @Deprecated
     public LogController softStop(final long softTimeout) {
         try {
-            this.softStopAsync();
-            workerThread.join(softTimeout);
-        } catch (final InterruptedException e) {
+            this.sync(java.lang.Math.toIntExact(softTimeout));
+            this.stop();
+        } catch (final Exception e) {
             logMonitor.onException(e);
         }
         return this;
@@ -182,7 +276,12 @@ public class LogController {
      *
      * @return This reference.
      * @see #softStop(long)
+     * @see #stop()
+     * @see #stop(int)
+     * @see #sync(int)
+     * @deprecated Since <code>0.4.0</code>. Use {@link #sync(int)} and {@link #stop(int)} instead.
      */
+    @Deprecated
     @SuppressWarnings("unused")
     public LogController softStop() {
         return this.softStop(DEFAULT_SOFT_STOP_WAIT_TIME);
@@ -192,57 +291,31 @@ public class LogController {
      * Tells if worker thread has stopped softly, doing all its work before exiting.
      *
      * @return True if worker thread has exited without interruption.
+     * @deprecated This method will be removed.
      */
+    @Deprecated
     public boolean isSoftStopped() {
-        synchronized (this) {
-            return this.softExit;
-        }
+        return true;
     }
 
     /**
-     * Defines worker thread activity.
+     * Used by the {@link IExecutor} to process logs in execution context (separate or borrowed thread, task, etc.).
+     * Should not be called by the library client directly.
+     *
+     * @since 0.4.0
      */
-    public void workerLoop() {
-        while (true) {
-            try {
-                boolean doLastCheck = false;
-                synchronized (this) {
-                    if (softFinishing) {
-                        doLastCheck = true;
-                    }
-                }
-                final int anyLogs;
-                if (doLastCheck) {
-                    anyLogs = logCollector.waitForLogs(1);
-                } else {
-                    anyLogs = logCollector.waitForLogs(LOG_WAIT_TIME);
-                }
-                if (anyLogs > 0) {
-                    final byte[] logs = logCollector.collect();
-                    if (logs != null) {
-                        if (logEncoder != null) {
-                            final byte[] encodedLogs = logEncoder.encode(logs);
-                            logMonitor.onEncoded(logs, encodedLogs);
-                            logSender.send(encodedLogs);
-                        } else {
-                            logSender.send(logs);
-                        }
-                    }
-                }
-                if (doLastCheck) {
-                    synchronized (this) {
-                        softExit = true;
-                    }
-                    logMonitor.onWorkerThreadExit(true);
-                    return;
-                }
-            } catch (final InterruptedException e) {
-                logMonitor.onException(e);
-                logMonitor.onWorkerThreadExit(false);
-                return;
-            } catch (final Exception e) {
-                logMonitor.onException(e);
-            }
+    public void internalProcessLogs() {
+        final byte[] logs = logCollector.collect();
+        if (logs == null) {
+            return;
         }
+        if (logEncoder == null) {
+            logSender.send(logs);
+            return;
+        }
+
+        final byte[] encodedLogs = logEncoder.encode(logs);
+        logMonitor.onEncoded(logs, encodedLogs);
+        logSender.send(encodedLogs);
     }
 }

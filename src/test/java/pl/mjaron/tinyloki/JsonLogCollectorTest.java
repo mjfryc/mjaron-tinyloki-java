@@ -9,6 +9,7 @@ class JsonLogCollectorTest {
     @Test
     void basic() {
         JsonLogCollector collector = new JsonLogCollector();
+        collector.setLogListener(ILogListener.dummy());
         JsonLogStream stream = (JsonLogStream) collector.createStream(new Labels().l("abc", "def"));
         stream.log(123, "abc");
         final byte[] collected = collector.collect();

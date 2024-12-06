@@ -61,6 +61,13 @@ public class TinyLoki {
         private final LabelSettings labelSettings = new LabelSettings();
 
         /**
+         * The {@link IExecutor} used to perform background log collecting and sending operations.
+         *
+         * @since 0.4.0
+         */
+        private IExecutor executor = null;
+
+        /**
          * Settings constructor with initial URL value.
          *
          * @param url URL to Loki HTTP API endpoint, usually ending with <code>/loki/api/v1/push</code>.
@@ -204,6 +211,18 @@ public class TinyLoki {
         }
 
         /**
+         * Sets the {@link IExecutor} used to perform background operations like log collecting and sendint.
+         *
+         * @param executor The {@link IExecutor} instance. The <code>null</code> value causes using the default executor.
+         * @return This {@link Settings} object reference.
+         * @since 0.4.0
+         */
+        public Settings withExecutor(final IExecutor executor) {
+            this.executor = executor;
+            return this;
+        }
+
+        /**
          * Getter of {@link LogSenderSettings}. Used by TinyLoki to initialize the {@link HttpLogSender}.
          *
          * @return Reference to {@link LogSenderSettings} instance in this settings object.
@@ -263,6 +282,16 @@ public class TinyLoki {
         }
 
         /**
+         * Provides the {@link IExecutor} instance defined by this library's user or default executor if user hasn't specified the executor.
+         *
+         * @return Selected {@link IExecutor} instance.
+         * @since 0.4.0
+         */
+        public IExecutor getExecutor() {
+            return (executor != null) ? executor : new ThreadExecutor();
+        }
+
+        /**
          * Creates and starts the {@link LogController} instance using parameters defined previously by this settings object.
          *
          * @return New {@link LogController} instance.
@@ -299,7 +328,7 @@ public class TinyLoki {
      * @since 0.3.0
      */
     public static LogController createAndStart(final Settings settings) {
-        return new LogController(settings.getLogCollector(), settings.getLogEncoder(), settings.getLogSenderSettings(), settings.getLogSender(), settings.getLabelSettings(), settings.getLogMonitor()).start();
+        return new LogController(settings.getLogCollector(), settings.getLogEncoder(), settings.getLogSenderSettings(), settings.getLogSender(), settings.getLabelSettings(), settings.getExecutor(), settings.getLogMonitor()).start();
     }
 
     /**

@@ -6,6 +6,13 @@ package pl.mjaron.tinyloki;
 public interface ILogCollector {
 
     /**
+     * Called before using the object.
+     *
+     * @param logListener The object used as callback when new log occurs.
+     */
+    void setLogListener(ILogListener logListener);
+
+    /**
      * Creates a new stream.
      *
      * @param labels Unique set of labels.
@@ -28,7 +35,7 @@ public interface ILogCollector {
     String contentType();
 
     /**
-     * Stop thread until a new log will occur.
+     * Blocks the thread until a new log occurs.
      *
      * @param timeout Time in milliseconds.
      * @return Count of logs in given time. It may not be exact count of logs and depends on implementation.

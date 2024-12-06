@@ -15,6 +15,12 @@ public class JsonLogCollector implements ILogCollector {
     private final List<JsonLogStream> streams = new ArrayList<>();
     private int logEntriesCount = 0;
     private final Object logEntriesLock = new Object();
+    private ILogListener logObserver = null;
+
+    @Override
+    public void setLogListener(ILogListener logListener) {
+        this.logObserver = logListener;
+    }
 
     /**
      * Creates new instance of stream which will notify this collector about new logs.
@@ -103,6 +109,7 @@ public class JsonLogCollector implements ILogCollector {
         synchronized (logEntriesLock) {
             ++logEntriesCount;
             logEntriesLock.notify();
+            logObserver.onLog(logEntriesCount);
         }
     }
 
@@ -112,14 +119,16 @@ public class JsonLogCollector implements ILogCollector {
      * @param timeout Time in milliseconds.
      * @return Collected logs count.
      * @throws InterruptedException When this thread is interrupted during waiting.
+     * @deprecated 
      */
     @Override
+    @Deprecated
     public int waitForLogs(final long timeout) throws InterruptedException {
         synchronized (logEntriesLock) {
             if (logEntriesCount == 0) {
                 logEntriesLock.wait(timeout);
             }
-            int logEntriesCountCopy = logEntriesCount;
+            final int logEntriesCountCopy = logEntriesCount;
             logEntriesCount = 0;
             return logEntriesCountCopy;
         }

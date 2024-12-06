@@ -6,15 +6,29 @@ import org.junit.jupiter.api.Test;
 public class TinyLokiTest {
 
     @Test
-    void shortLabelTest() {
+    void dummySendLegacyTest() {
         LogController logController = TinyLoki.withUrl("http://localhost/loki/api/v1/push")
-                .withLogSender(new DummyLogSender())
+                .withLogSender(new DummyLogSender(1000))
                 .withLogMonitor(new VerboseLogMonitor())
                 .withLabelLength(1, 1)
                 .start();
         ILogStream abcStream = logController.createStream(TinyLoki.info().l("abc", "bcd"));
         abcStream.log(1, "Hello world.");
         logController.softStop().hardStop();
+    }
+
+    @Test
+    void dummySendTest() {
+        LogController logController = TinyLoki.withUrl("http://localhost/loki/api/v1/push")
+                .withLogSender(new DummyLogSender(1000))
+                .withLogMonitor(new VerboseLogMonitor())
+                .withLabelLength(1, 1)
+                .start();
+        ILogStream abcStream = logController.createStream(TinyLoki.info().l("abc", "bcd"));
+        abcStream.log(1, "Hello world.");
+        logController.sync();
+        logController.stop();
+        System.out.println("Done.");
     }
 
     @Test

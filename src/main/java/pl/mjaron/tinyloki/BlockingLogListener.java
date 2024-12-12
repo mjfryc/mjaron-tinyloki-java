@@ -10,9 +10,9 @@ class BlockingLogListener implements ILogListener {
     private long logEntryLevel = 0;
 
     /**
-     * Describes the level of log sequence the client is waiting to complete the flush operation.
+     * Describes the level of log sequence the client is waiting to complete the syncAnd operation.
      */
-    private long flushLevel = 0;
+    private long syncLevel = 0;
 
     @Override
     public void onLog(final int cachedLogsCount) {
@@ -33,22 +33,36 @@ class BlockingLogListener implements ILogListener {
     }
 
     /**
-     * Wait for all logs in given time.
+     * Waits for logs in given time.
      *
-     * @param timeout Time of waiting for logs.
+     * @param time Time of waiting for logs.
      * @return Captured logs count.
      * @throws InterruptedException When calling thread has been interrupted.
+     * @implNote Collects logs until:
+     * <ul>
+     * <li>given time passes or</li>
+     * <li>{@link #syncLevel} exceeds the current {@link #logEntryLevel} which means that this function must be called again to increase the {@link #logEntryLevel}.</li>
+     * </ul>
      */
-    public int waitForLogs(final int timeout) throws InterruptedException {
+    public int waitForLogs(final int time) throws InterruptedException {
         synchronized (cachedLogsMonitor) {
             ++logEntryLevel;
-            if (flushLevel <= logEntryLevel) {
-                final long timePoint = Utils.MonotonicClock.timePoint(timeout);
+            cachedLogsMonitor.notifyAll(); // Notify about updated sync level.
+
+            // If Synchronization not requested, just wait for logs as long as possible (with given time).
+            if (syncLevel <= logEntryLevel) {
+
+                // Define the waiting deadline time point.
+                final long timePoint = Utils.MonotonicClock.timePoint(time);
                 do {
                     if (Utils.MonotonicClock.waitUntil(cachedLogsMonitor, timePoint)) {
+
+                        // If timeout occurs, break the waiting and return the real consumed logs count.
                         break;
                     }
-                } while (flushLevel <= logEntryLevel);
+
+                    // If Synchronization not requested, just wait for logs as long as possible (with given time).
+                } while (syncLevel <= logEntryLevel);
             }
 
             return consumeCachedLogsUnsafe();
@@ -57,19 +71,35 @@ class BlockingLogListener implements ILogListener {
 
     /**
      * Request the {@link #waitForLogs(int)} to return asap.
+     *
+     * @return <code>true</code> When the synchronization operation has passed with success and all logs has been synchronized.
+     * <p/>
+     * <code>false</code> When all or some logs hasn't been synchronized.
      */
-    public void flush(final int timeout) throws InterruptedException {
-        final long timePoint = Utils.MonotonicClock.timePoint(timeout);
-        synchronized (cachedLogsMonitor) {
-            final long targetLevel = logEntryLevel + 2;
-            flushLevel = targetLevel;
-            cachedLogsMonitor.notifyAll();
+    public boolean sync(final int timeout) throws InterruptedException {
 
+        // Determine the deadline time point when the sync operation must finish.
+        final long timePoint = Utils.MonotonicClock.timePoint(timeout);
+
+        synchronized (cachedLogsMonitor) {
+
+            // Determine the level until the sync operation will block.
+            final long targetLevel = logEntryLevel + 2;
+            syncLevel = targetLevel;
+
+            cachedLogsMonitor.notifyAll(); // Notify about updated sync level.
+
+            // Wait until the logEntryLevel reaches the requested target level.
             while (targetLevel > logEntryLevel) {
+
+                // If timeout occurs, return information whether the target level has been achieved.
                 if (Utils.MonotonicClock.waitUntil(cachedLogsMonitor, timePoint)) {
-                    break;
+                    return targetLevel <= logEntryLevel;
                 }
             }
+
+            // The loop has finished without a timeout. The target level has been achieved.
+            return true;
         }
     }
 }

@@ -33,13 +33,4 @@ public interface ILogCollector {
      * @return HTTP Content-Type header value.
      */
     String contentType();
-
-    /**
-     * Blocks the thread until a new log occurs.
-     *
-     * @param timeout Time in milliseconds.
-     * @return Count of logs in given time. It may not be exact count of logs and depends on implementation.
-     * @throws InterruptedException When given thread has been interrupted.
-     */
-    int waitForLogs(final long timeout) throws InterruptedException;
 }

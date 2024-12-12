@@ -86,14 +86,35 @@ public class Utils {
     public static class MonotonicClock {
         public static long MILLISECONDS_FACTOR = 1_000_000;
 
+        /**
+         * Creates the time point pointing to current time.
+         *
+         * @return Time point which meaning is only valid when used with other {@link MonotonicClock} functions.
+         */
         public static long timePoint() {
             return System.nanoTime();
         }
 
+        /**
+         * Creates the time point given @param milliseconds from now.
+         *
+         * @param milliseconds The milliseconds from now where the time point points.
+         * @return Time point which meaning is only valid when used with other {@link MonotonicClock} functions.
+         */
         public static long timePoint(final long milliseconds) {
             return System.nanoTime() + (milliseconds * MILLISECONDS_FACTOR);
         }
 
+        /**
+         * Blocking function. Waits given count of milliseconds.
+         *
+         * @param object    The object used to wait on it.
+         * @param timePoint The timepoint to wait, created with {@link #timePoint()} method.
+         * @return <code>true</code> if waited with success.
+         * <p/>
+         * <code>false</code> if failed to wait due to {@link #notify()} or other reason.
+         * @throws InterruptedException When the calling thread is interrupted.
+         */
         public static boolean waitUntil(Object object, final long timePoint) throws InterruptedException {
             final long diff = timePoint - MonotonicClock.timePoint();
             final long diffMilliseconds = diff / MILLISECONDS_FACTOR;

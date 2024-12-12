@@ -18,10 +18,10 @@ public class LogController {
      */
     public static final int DEFAULT_STOP_TIME = 1000;
     /**
-     * Default wait time of {@link #sync()} operation in milliseconds.
+     * Default wait time of {@link #syncAnd()} operation in milliseconds.
      *
-     * @see #sync()
-     * @see #sync(int)
+     * @see #syncAnd()
+     * @see #syncAnd(int)
      * @since 0.4.0
      */
     public static final int DEFAULT_SYNC_TIME = 1000;
@@ -160,6 +160,7 @@ public class LogController {
      *
      * @param timeout Maximum time to wait for executor to finish.
      * @return This reference.
+     * @throws InterruptedException When calling thread is interrupted.
      * @since 0.4.0
      */
     public LogController stop(final int timeout) throws InterruptedException {
@@ -171,10 +172,19 @@ public class LogController {
      * Blocking function. Stops the executor sending the logs in the background with default timeout defined as {@link #DEFAULT_STOP_TIME}.
      *
      * @return This reference.
+     * @throws InterruptedException When calling thread is interrupted.
      * @since 0.4.0
      */
     public LogController stop() throws InterruptedException {
         return stop(DEFAULT_STOP_TIME);
+    }
+
+    public boolean sync(final int timeout) throws InterruptedException {
+        return executor.sync(timeout);
+    }
+
+    public boolean sync() throws InterruptedException {
+        return sync(DEFAULT_SYNC_TIME);
     }
 
     /**
@@ -182,9 +192,10 @@ public class LogController {
      *
      * @param timeout The maximum time to wait in milliseconds.
      * @return This reference.
+     * @throws InterruptedException When calling thread is interrupted.
      * @since 0.4.0
      */
-    public LogController sync(final int timeout) throws InterruptedException {
+    public LogController syncAnd(final int timeout) throws InterruptedException {
         executor.sync(timeout);
         return this;
     }
@@ -194,11 +205,34 @@ public class LogController {
      * The maximum blocking time is defined by {@link #DEFAULT_SYNC_TIME}.
      *
      * @return This reference.
+     * @throws InterruptedException When calling thread is interrupted.
      * @since 0.4.0
      */
-    public LogController sync() throws InterruptedException {
+    public LogController syncAnd() throws InterruptedException {
         executor.sync(DEFAULT_SYNC_TIME);
         return this;
+    }
+
+    /**
+     * Used by the {@link IExecutor} to process logs in execution context (separate or borrowed thread, task, etc.).
+     * Should not be called by the library client directly.
+     *
+     * @throws InterruptedException When calling thread is interrupted.
+     * @since 0.4.0
+     */
+    public void internalProcessLogs() throws InterruptedException {
+        final byte[] logs = logCollector.collect();
+        if (logs == null) {
+            return;
+        }
+        if (logEncoder == null) {
+            logSender.send(logs);
+            return;
+        }
+
+        final byte[] encodedLogs = logEncoder.encode(logs);
+        logMonitor.onEncoded(logs, encodedLogs);
+        logSender.send(encodedLogs);
     }
 
     /**
@@ -206,7 +240,7 @@ public class LogController {
      *
      * @return This reference.
      */
-    @SuppressWarnings("UnusedReturnValue")
+    @Deprecated
     synchronized public LogController softStopAsync() {
         /// TODO IMPLEMENTATION HERE.
         return this;
@@ -221,6 +255,7 @@ public class LogController {
      * @see #stop()
      * @deprecated Since <code>0.4.0</code>. Use {@link #stop(int)} instead.
      */
+    @Deprecated
     public LogController hardStop(final long interruptTimeout) {
         try {
             this.stop(java.lang.Math.toIntExact(interruptTimeout));
@@ -252,13 +287,13 @@ public class LogController {
      * @return This reference.
      * @see #stop()
      * @see #stop(int)
-     * @see #sync(int)
-     * @deprecated Since <code>0.4.0</code>. Use {@link #sync(int)} and {@link #stop(int)} instead.
+     * @see #syncAnd(int)
+     * @deprecated Since <code>0.4.0</code>. Use {@link #syncAnd(int)} and {@link #stop(int)} instead.
      */
     @Deprecated
     public LogController softStop(final long softTimeout) {
         try {
-            this.sync(java.lang.Math.toIntExact(softTimeout));
+            this.syncAnd(java.lang.Math.toIntExact(softTimeout));
             this.stop();
         } catch (final Exception e) {
             logMonitor.onException(e);
@@ -273,8 +308,8 @@ public class LogController {
      * @see #softStop(long)
      * @see #stop()
      * @see #stop(int)
-     * @see #sync(int)
-     * @deprecated Since <code>0.4.0</code>. Use {@link #sync(int)} and {@link #stop(int)} instead.
+     * @see #syncAnd(int)
+     * @deprecated Since <code>0.4.0</code>. Use {@link #syncAnd(int)} and {@link #stop(int)} instead.
      */
     @Deprecated
     @SuppressWarnings("unused")
@@ -291,26 +326,5 @@ public class LogController {
     @Deprecated
     public boolean isSoftStopped() {
         return true;
-    }
-
-    /**
-     * Used by the {@link IExecutor} to process logs in execution context (separate or borrowed thread, task, etc.).
-     * Should not be called by the library client directly.
-     *
-     * @since 0.4.0
-     */
-    public void internalProcessLogs() throws InterruptedException {
-        final byte[] logs = logCollector.collect();
-        if (logs == null) {
-            return;
-        }
-        if (logEncoder == null) {
-            logSender.send(logs);
-            return;
-        }
-
-        final byte[] encodedLogs = logEncoder.encode(logs);
-        logMonitor.onEncoded(logs, encodedLogs);
-        logSender.send(encodedLogs);
     }
 }

@@ -25,6 +25,7 @@ public interface ILogSender {
      *
      * @param message Data to send in HTTP request content.
      * @throws RuntimeException On connection error.
+     * @throws InterruptedException When operation is terminated by {@link IExecutor} thread.
      */
     void send(final byte[] message) throws InterruptedException;
 }

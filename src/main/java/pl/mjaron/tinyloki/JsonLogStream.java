@@ -90,11 +90,11 @@ public class JsonLogStream implements ILogStream {
     /**
      * Provide stream data and clear old logs.
      *
-     * @return JSON-formatted String containing single stream logs from last flush operation or from beginning of time.
+     * @return JSON-formatted String containing single stream logs from last syncAnd operation or from beginning of time.
      * Null if this stream is empty.
      */
     synchronized public String flush() {
-        if (cachedLogsCount == 0) { // Do not flush if there is no values inside a stream.
+        if (cachedLogsCount == 0) { // Do not syncAnd if there is no values inside a stream.
             return null;
         }
 

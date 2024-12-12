@@ -26,7 +26,7 @@ public class TinyLokiTest {
                 .start();
         ILogStream abcStream = logController.createStream(TinyLoki.info().l("abc", "bcd"));
         abcStream.log(1, "Hello world.");
-        logController.sync();
+        logController.syncAnd();
         logController.stop();
         System.out.println("Done.");
     }

@@ -24,7 +24,7 @@ public class JsonLogCollector implements ILogCollector {
 
     /**
      * Creates new instance of stream which will notify this collector about new logs.
-     * This collector will flush logs from the stream.
+     * This collector will syncAnd logs from the stream.
      *
      * @param labels Unique set of labels.
      * @return New instance of a stream.
@@ -113,24 +113,4 @@ public class JsonLogCollector implements ILogCollector {
         }
     }
 
-    /**
-     * Blocking function. Waits until at least one log from any stream occurs.
-     *
-     * @param timeout Time in milliseconds.
-     * @return Collected logs count.
-     * @throws InterruptedException When this thread is interrupted during waiting.
-     * @deprecated
-     */
-    @Override
-    @Deprecated
-    public int waitForLogs(final long timeout) throws InterruptedException {
-        synchronized (logEntriesLock) {
-            if (logEntriesCount == 0) {
-                logEntriesLock.wait(timeout);
-            }
-            final int logEntriesCountCopy = logEntriesCount;
-            logEntriesCount = 0;
-            return logEntriesCountCopy;
-        }
-    }
 }

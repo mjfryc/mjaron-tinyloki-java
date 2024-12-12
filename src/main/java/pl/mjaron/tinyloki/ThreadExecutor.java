@@ -8,7 +8,7 @@ public class ThreadExecutor implements IExecutor, Runnable {
     private Thread workerThread = null;
     private int logCollectionPeriod = DEFAULT_LOG_COLLECTION_PERIOD_MS;
 
-    public void setLogCollectionPeriod(final int logCollectionPeriod) {
+    public void setLogCollectionSleepTime(final int logCollectionPeriod) {
         this.logCollectionPeriod = logCollectionPeriod;
     }
 
@@ -39,8 +39,15 @@ public class ThreadExecutor implements IExecutor, Runnable {
     }
 
     @Override
-    public void sync(final int timeout) throws InterruptedException {
-        logListener.flush(timeout);
+    public void stopAsync() {
+        if (workerThread != null) {
+            workerThread.interrupt();
+        }
+    }
+
+    @Override
+    public boolean sync(final int timeout) throws InterruptedException {
+        return logListener.sync(timeout);
     }
 
     @Override

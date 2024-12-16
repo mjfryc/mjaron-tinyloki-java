@@ -158,8 +158,13 @@ public class LogController {
 
     /**
      * Starts worker thread which is responsible for collecting and sending logs.
+     * <p>
+     * <b>Thread safety</b>
+     * <p>
+     * The method is thread safe because underlying executor is obligated to start / sync / stop safely in asynchronous environment.
      *
      * @return This reference.
+     * @throws RuntimeException If executor already started and execution thread/environment was already initialize.
      */
     public LogController start() {
         executor.start();
@@ -169,6 +174,10 @@ public class LogController {
 
     /**
      * Blocking function. Stops the executor sending the logs in the background.
+     * <p>
+     * <b>Thread safety</b>
+     * <p>
+     * The method is thread safe because underlying executor is obligated to start / sync / stop safely in asynchronous environment.
      *
      * @param timeout Maximum blocking time.
      * @return <code>true</code> If execution has stopped successfully.
@@ -185,6 +194,10 @@ public class LogController {
 
     /**
      * Blocking function. Stops the executor sending the logs in the background with default timeout defined as {@link #DEFAULT_STOP_TIME}.
+     * <p>
+     * <b>Thread safety</b>
+     * <p>
+     * The method is thread safe because underlying executor is obligated to start / sync / stop safely in asynchronous environment.
      *
      * @return <code>true</code> If execution has stopped successfully.
      * <p>
@@ -198,6 +211,10 @@ public class LogController {
 
     /**
      * Blocking function. Stops the executor sending the logs in the background.
+     * <p>
+     * <b>Thread safety</b>
+     * <p>
+     * The method is thread safe because underlying executor is obligated to start / sync / stop safely in asynchronous environment.
      *
      * @param timeout Maximum time to wait for executor to finish.
      * @return This reference.
@@ -211,6 +228,10 @@ public class LogController {
 
     /**
      * Blocking function. Stops the executor sending the logs in the background with default timeout defined as {@link #DEFAULT_STOP_TIME}.
+     * <p>
+     * <b>Thread safety</b>
+     * <p>
+     * The method is thread safe because underlying executor is obligated to start / sync / stop safely in asynchronous environment.
      *
      * @return This reference.
      * @throws InterruptedException When calling thread is interrupted.
@@ -220,18 +241,49 @@ public class LogController {
         return stopAnd(DEFAULT_STOP_TIME);
     }
 
+    /**
+     * Blocking function. BLocks the calling thread until all requested logs are sent or timeout occurs.
+     * <p>
+     * <b>Thread safety</b>
+     * <p>
+     * The method is thread safe because underlying executor is obligated to start / sync / stop safely in asynchronous environment.
+     *
+     * @param timeout The maximum time in milliseconds of blocking the calling thread.
+     * @return <code>true</code> If sync operation finished with success.
+     * <p>
+     * <code>false</code> If sync operation failed due to timeout.
+     * @throws InterruptedException When calling thread is interrupted.
+     * @since 0.4.0
+     */
     public boolean sync(final int timeout) throws InterruptedException {
         final boolean result = executor.sync(timeout);
         logMonitor.onSync(result);
         return result;
     }
 
+    /**
+     * Blocking function. BLocks the calling thread until all requested logs are sent or default timeout occurs, defined as {@link #DEFAULT_SYNC_TIME}.
+     * <p>
+     * <b>Thread safety</b>
+     * <p>
+     * The method is thread safe because underlying executor is obligated to start / sync / stop safely in asynchronous environment.
+     *
+     * @return <code>true</code> If sync operation finished with success.
+     * <p>
+     * <code>false</code> If sync operation failed due to timeout.
+     * @throws InterruptedException When calling thread is interrupted.
+     * @since 0.4.0
+     */
     public boolean sync() throws InterruptedException {
         return sync(DEFAULT_SYNC_TIME);
     }
 
     /**
-     * Blocking function. Stops the flow until all already requested logs are processed (sent) or given time has passed.
+     * Blocking function. Stops the flow until all already requested logs are processed (requested to be sent) or given time has passed.
+     * <p>
+     * <b>Thread safety</b>
+     * <p>
+     * The method is thread safe because underlying executor is obligated to start / sync / stop safely in asynchronous environment.
      *
      * @param timeout The maximum time to wait in milliseconds.
      * @return This reference.
@@ -244,8 +296,12 @@ public class LogController {
     }
 
     /**
-     * Blocking function. Stops the flow until all already requested logs are processed (sent) or given time has passed.
+     * Blocking function. Stops the flow until all already requested logs are processed (requested to be sent) or given time has passed.
      * The maximum blocking time is defined by {@link #DEFAULT_SYNC_TIME}.
+     * <p>
+     * <b>Thread safety</b>
+     * <p>
+     * The method is thread safe because underlying executor is obligated to start / sync / stop safely in asynchronous environment.
      *
      * @return This reference.
      * @throws InterruptedException When calling thread is interrupted.

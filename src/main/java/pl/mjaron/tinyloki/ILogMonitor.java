@@ -10,7 +10,7 @@ public interface ILogMonitor {
      *
      * @param what Log content.
      */
-    static void logInfo(final String what) {
+    static void printInfo(final String what) {
         System.out.println("[TinyLoki]: " + what);
     }
 
@@ -19,9 +19,13 @@ public interface ILogMonitor {
      *
      * @param what Log content.
      */
-    static void logError(final String what) {
+    static void printError(final String what) {
         System.err.println("[TinyLoki]: " + what);
     }
+
+    void logInfo(final String what);
+
+    void logError(final String what);
 
     /**
      * Called when {@link LogController} is set up and ready to work.
@@ -69,9 +73,25 @@ public interface ILogMonitor {
     void onException(final Exception exception);
 
     /**
-     * Called when worker thread exits.
+     * Called when sync operation ends.
      *
-     * @param isSoft Tells whether worker thread has exited without interrupting.
+     * @param isSuccess The sync operation result.
+     * @since 0.4.0
      */
-    void onWorkerThreadExit(final boolean isSoft);
+    void onSync(final boolean isSuccess);
+
+    /**
+     * Called when start operation ends.
+     *
+     * @since 0.4.0
+     */
+    void onStart();
+
+    /**
+     * Called when stop operation ends.
+     *
+     * @param isSuccess The stop operation result.
+     * @since 0.4.0
+     */
+    void onStop(final boolean isSuccess);
 }

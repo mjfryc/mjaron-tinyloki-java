@@ -518,7 +518,10 @@ public class TinyLoki {
          * @since 0.3.0
          */
         public ILogMonitor getLogMonitor() {
-            return (logMonitor != null) ? logMonitor : new ErrorLogMonitor();
+            if (logMonitor == null) {
+                logMonitor = new ErrorLogMonitor();
+            }
+            return logMonitor;
         }
 
         /**
@@ -528,7 +531,10 @@ public class TinyLoki {
          * @since 0.3.0
          */
         public ILogSender getLogSender() {
-            return (logSender != null) ? logSender : new HttpLogSender();
+            if (logSender == null) {
+                logSender = new HttpLogSender();
+            }
+            return logSender;
         }
 
         /**
@@ -547,7 +553,10 @@ public class TinyLoki {
          * @since 0.4.0
          */
         public IExecutor getExecutor() {
-            return (executor != null) ? executor : new ThreadExecutor();
+            if (executor == null) {
+                executor = new ThreadExecutor();
+            }
+            return executor;
         }
 
         /**

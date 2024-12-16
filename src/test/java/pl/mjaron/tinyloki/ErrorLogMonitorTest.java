@@ -15,8 +15,8 @@ class ErrorLogMonitorTest {
         e.sendOk(200);
         e.sendErr(404, "Bad");
         e.onException(new Exception("Sample exception"));
-        e.onWorkerThreadExit(false);
-        e.onWorkerThreadExit(true);
+        e.logInfo("This is an info log.");
+        e.logError("This is an error log.");
         assertTrue(true);
     }
 }

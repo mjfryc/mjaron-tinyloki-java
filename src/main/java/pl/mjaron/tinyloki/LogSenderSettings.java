@@ -176,7 +176,6 @@ public class LogSenderSettings {
      * @param connectTimeout Time in milliseconds.
      * @return This reference.
      */
-    @SuppressWarnings("unused")
     public LogSenderSettings setConnectTimeout(final int connectTimeout) {
         this.connectTimeout = connectTimeout;
         return this;

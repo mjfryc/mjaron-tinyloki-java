@@ -7,9 +7,9 @@ public interface ILogEncoder {
 
     /**
      * HTTP Content-Encoding describing encoding algorithm.
-     * See: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Encoding
      *
      * @return HTTP Content-Encoding header value.
+     * @see <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Encoding">Content-Encoding</a>
      */
     String contentEncoding();
 

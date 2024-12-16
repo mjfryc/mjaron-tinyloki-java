@@ -7,11 +7,7 @@ public class TinyLokiTest {
 
     @Test
     void dummySendLegacyTest() {
-        LogController logController = TinyLoki.withUrl("http://localhost/loki/api/v1/push")
-                .withLogSender(new DummyLogSender(1000))
-                .withLogMonitor(new VerboseLogMonitor())
-                .withLabelLength(1, 1)
-                .start();
+        LogController logController = TinyLoki.withUrl("http://localhost/loki/api/v1/push").withLogSender(new DummyLogSender(1000)).withLogMonitor(new VerboseLogMonitor()).withLabelLength(1, 1).start();
         ILogStream abcStream = logController.createStream(TinyLoki.info().l("abc", "bcd"));
         abcStream.log(1, "Hello world.");
         logController.softStop().hardStop();
@@ -19,15 +15,10 @@ public class TinyLokiTest {
 
     @Test
     void dummySendTest() throws InterruptedException {
-        LogController logController = TinyLoki.withUrl("http://localhost/loki/api/v1/push")
-                .withLogSender(new DummyLogSender(1000))
-                .withLogMonitor(new VerboseLogMonitor())
-                .withLabelLength(1, 1)
-                .start();
-        ILogStream abcStream = logController.createStream(TinyLoki.info().l("abc", "bcd"));
+        LogController logController = TinyLoki.withUrl("http://localhost/loki/api/v1/push").withLogSender(new DummyLogSender(1000)).withLogMonitor(new VerboseLogMonitor()).withLabelLength(1, 1).start();
+        ILogStream abcStream = logController.stream().info().l("abc", "bcd").build();
         abcStream.log(1, "Hello world.");
-        logController.syncAnd();
-        logController.stop();
+        logController.syncAnd(1200).stop();
         System.out.println("Done.");
     }
 

@@ -1,9 +1,32 @@
 package pl.mjaron.tinyloki;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+
 /**
  * Contains universal common methods.
  */
 public class Utils {
+
+    /**
+     * This class is not instantiable.
+     */
+    private Utils() {
+    }
+
+    /**
+     * Provides the stack trace as String.
+     *
+     * @param throwable The {@link Throwable} object.
+     * @return String containing printed stack trace of given {@link Throwable} object.
+     * @since 0.4.0
+     */
+    public static String stackTraceString(final Throwable throwable) {
+        final StringWriter sw = new StringWriter();
+        final PrintWriter pw = new PrintWriter(sw);
+        throwable.printStackTrace(pw);
+        return sw.toString(); // stack trace as a string
+    }
 
     /**
      * Source: <a href="https://stackoverflow.com/a/69338077/6835932">https://stackoverflow.com/a/69338077/6835932</a>
@@ -84,6 +107,13 @@ public class Utils {
     }
 
     public static class MonotonicClock {
+
+        /**
+         * This class is not instantiable.
+         */
+        private MonotonicClock() {
+        }
+
         public static long MILLISECONDS_FACTOR = 1_000_000;
 
         /**
@@ -109,10 +139,10 @@ public class Utils {
          * Blocking function. Waits given count of milliseconds.
          *
          * @param object    The object used to wait on it.
-         * @param timePoint The timepoint to wait, created with {@link #timePoint()} method.
-         * @return <code>true</code> if waited with success.
-         * <p/>
-         * <code>false</code> if failed to wait due to {@link #notify()} or other reason.
+         * @param timePoint The time point to wait, created with {@link #timePoint()} method.
+         * @return <code>true</code>if waited with success. Given <code>timePoint</code> has passed and cannot wait anymore with given time point. Waiting was not performed.
+         * <p>
+         * <code>false</code> if failed to wait due to {@link #notify()} or other reason. The wait operation has blocked the thread and cannot determine if waiting is finished.
          * @throws InterruptedException When the calling thread is interrupted.
          */
         public static boolean waitUntil(Object object, final long timePoint) throws InterruptedException {

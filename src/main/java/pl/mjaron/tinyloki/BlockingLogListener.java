@@ -94,7 +94,7 @@ class BlockingLogListener implements ILogListener {
 
                 // If timeout occurs, return information whether the target level has been achieved.
                 if (Utils.MonotonicClock.waitUntil(cachedLogsMonitor, timePoint)) {
-                    return targetLevel <= logEntryLevel;
+                    return false; /// Failed to wait - the time point has been achieved.
                 }
             }
 

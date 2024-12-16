@@ -10,10 +10,10 @@ import java.util.Map;
 public class LogController {
 
     /**
-     * Default wait time of {@link #stop()} operation in milliseconds.
+     * Default wait time of {@link #stopAnd()} operation in milliseconds.
      *
-     * @see #stop()
-     * @see #stop(int)
+     * @see #stopAnd()
+     * @see #stopAnd(int)
      * @since 0.4.0
      */
     public static final int DEFAULT_STOP_TIME = 1000;
@@ -40,6 +40,7 @@ public class LogController {
      */
     @Deprecated
     private static final int DEFAULT_HARD_STOP_WAIT_TIME = 1000;
+
     private final ILogCollector logCollector;
     private final ILogEncoder logEncoder;
     private final ILogSender logSender;
@@ -112,6 +113,16 @@ public class LogController {
     }
 
     /**
+     * Provides the {@link IExecutor} instance used to initialize this <code>LogController</code>.
+     *
+     * @return The {@link IExecutor} instance used to initialize this <code>LogController</code>.
+     * @since 0.4.0
+     */
+    public IExecutor getExecutor() {
+        return executor;
+    }
+
+    /**
      * Creates new stream from log collector.
      *
      * @param labels Static labels. There shouldn't be many streams with the same labels combination.
@@ -152,7 +163,37 @@ public class LogController {
      */
     public LogController start() {
         executor.start();
+        logMonitor.onStart();
         return this;
+    }
+
+    /**
+     * Blocking function. Stops the executor sending the logs in the background.
+     *
+     * @param timeout Maximum blocking time.
+     * @return <code>true</code> If execution has stopped successfully.
+     * <p>
+     * <code>false</code> If execution has not stopped due to timeout.
+     * @throws InterruptedException When calling thread is interrupted.
+     * @since 0.4.0
+     */
+    public boolean stop(final int timeout) throws InterruptedException {
+        final boolean result = executor.stop(timeout);
+        logMonitor.onStop(result);
+        return result;
+    }
+
+    /**
+     * Blocking function. Stops the executor sending the logs in the background with default timeout defined as {@link #DEFAULT_STOP_TIME}.
+     *
+     * @return <code>true</code> If execution has stopped successfully.
+     * <p>
+     * <code>false</code> If execution has not stopped due to timeout.
+     * @throws InterruptedException When calling thread is interrupted.
+     * @since 0.4.0
+     */
+    public boolean stop() throws InterruptedException {
+        return this.stop(DEFAULT_STOP_TIME);
     }
 
     /**
@@ -163,8 +204,8 @@ public class LogController {
      * @throws InterruptedException When calling thread is interrupted.
      * @since 0.4.0
      */
-    public LogController stop(final int timeout) throws InterruptedException {
-        executor.stop(timeout);
+    public LogController stopAnd(final int timeout) throws InterruptedException {
+        this.stop(timeout);
         return this;
     }
 
@@ -175,12 +216,14 @@ public class LogController {
      * @throws InterruptedException When calling thread is interrupted.
      * @since 0.4.0
      */
-    public LogController stop() throws InterruptedException {
-        return stop(DEFAULT_STOP_TIME);
+    public LogController stopAnd() throws InterruptedException {
+        return stopAnd(DEFAULT_STOP_TIME);
     }
 
     public boolean sync(final int timeout) throws InterruptedException {
-        return executor.sync(timeout);
+        final boolean result = executor.sync(timeout);
+        logMonitor.onSync(result);
+        return result;
     }
 
     public boolean sync() throws InterruptedException {
@@ -196,7 +239,7 @@ public class LogController {
      * @since 0.4.0
      */
     public LogController syncAnd(final int timeout) throws InterruptedException {
-        executor.sync(timeout);
+        this.sync(timeout);
         return this;
     }
 
@@ -209,13 +252,13 @@ public class LogController {
      * @since 0.4.0
      */
     public LogController syncAnd() throws InterruptedException {
-        executor.sync(DEFAULT_SYNC_TIME);
+        this.sync(DEFAULT_SYNC_TIME);
         return this;
     }
 
     /**
      * Used by the {@link IExecutor} to process logs in execution context (separate or borrowed thread, task, etc.).
-     * Should not be called by the library client directly.
+     * Should <b style="color:red">not</b> be called by the library client directly.
      *
      * @throws InterruptedException When calling thread is interrupted.
      * @since 0.4.0
@@ -235,6 +278,11 @@ public class LogController {
         logSender.send(encodedLogs);
     }
 
+    @Override
+    protected void finalize() {
+        executor.stopAsync();
+    }
+
     /**
      * Request worker thread to do last jobs. This method is non-blocking.
      *
@@ -251,14 +299,14 @@ public class LogController {
      *
      * @param interruptTimeout Timeout in milliseconds.
      * @return This reference.
-     * @see #stop(int)
-     * @see #stop()
-     * @deprecated Since <code>0.4.0</code>. Use {@link #stop(int)} instead.
+     * @see #stopAnd(int)
+     * @see #stopAnd()
+     * @deprecated Since <code>0.4.0</code>. Use {@link #stopAnd(int)} instead.
      */
     @Deprecated
     public LogController hardStop(final long interruptTimeout) {
         try {
-            this.stop(java.lang.Math.toIntExact(interruptTimeout));
+            this.stopAnd(java.lang.Math.toIntExact(interruptTimeout));
         } catch (Exception e) {
             logMonitor.onException(e);
         }
@@ -266,13 +314,13 @@ public class LogController {
     }
 
     /**
-     * Blocking function. Request to stop worker thread by interrupting it. Waits for interruption with default timeout.
+     * Blocking function. Request to stopAnd worker thread by interrupting it. Waits for interruption with default timeout.
      *
      * @return This reference.
      * @see #hardStop(long)
-     * @see #stop()
-     * @see #stop(int)
-     * @deprecated Since <code>0.4.0</code>. Use {@link #stop(int)} instead.
+     * @see #stopAnd()
+     * @see #stopAnd(int)
+     * @deprecated Since <code>0.4.0</code>. Use {@link #stopAnd(int)} instead.
      */
     @Deprecated
     @SuppressWarnings("UnusedReturnValue")
@@ -285,16 +333,16 @@ public class LogController {
      *
      * @param softTimeout Timeout in milliseconds.
      * @return This reference.
-     * @see #stop()
-     * @see #stop(int)
+     * @see #stopAnd()
+     * @see #stopAnd(int)
      * @see #syncAnd(int)
-     * @deprecated Since <code>0.4.0</code>. Use {@link #syncAnd(int)} and {@link #stop(int)} instead.
+     * @deprecated Since <code>0.4.0</code>. Use {@link #syncAnd(int)} and {@link #stopAnd(int)} instead.
      */
     @Deprecated
     public LogController softStop(final long softTimeout) {
         try {
             this.syncAnd(java.lang.Math.toIntExact(softTimeout));
-            this.stop();
+            this.stopAnd();
         } catch (final Exception e) {
             logMonitor.onException(e);
         }
@@ -302,14 +350,14 @@ public class LogController {
     }
 
     /**
-     * Blocking function. Soft stop with default timeout.
+     * Blocking function. Soft stopAnd with default timeout.
      *
      * @return This reference.
      * @see #softStop(long)
-     * @see #stop()
-     * @see #stop(int)
+     * @see #stopAnd()
+     * @see #stopAnd(int)
      * @see #syncAnd(int)
-     * @deprecated Since <code>0.4.0</code>. Use {@link #syncAnd(int)} and {@link #stop(int)} instead.
+     * @deprecated Since <code>0.4.0</code>. Use {@link #syncAnd(int)} and {@link #stopAnd(int)} instead.
      */
     @Deprecated
     @SuppressWarnings("unused")

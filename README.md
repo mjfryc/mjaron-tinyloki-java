@@ -14,7 +14,7 @@
 ![Coverage](.github/badges/jacoco.svg)
 ![Branches](.github/badges/branches.svg)
 
-[![Milestone](https://img.shields.io/github/milestones/progress-percent/mjfryc/mjaron-tinyloki-java/1?label=milestone-v0.4.0)](https://github.com/mjfryc/mjaron-tinyloki-java/milestone/1)
+[![Milestone](https://img.shields.io/github/milestones/progress-percent/mjfryc/mjaron-tinyloki-java/1?label=Next%20release:%20milestone-v0.4.0)](https://github.com/mjfryc/mjaron-tinyloki-java/milestone/1)
 
 
 Tiny [Grafana Loki](https://grafana.com/oss/loki/) client (log sender) written in pure Java 1.8 without any external dependencies.

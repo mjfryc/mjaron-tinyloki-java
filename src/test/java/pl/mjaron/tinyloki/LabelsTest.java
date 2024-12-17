@@ -85,6 +85,7 @@ class LabelsTest {
         assertEquals("abc", Labels.correctLabelName("abc"));
         assertEquals("A_", Labels.correctLabelName("__"));
         assertEquals("A23", Labels.correctLabelName("123"));
+        assertEquals("B_3", Labels.correctLabelName("B#3"));
     }
 
     @Test
@@ -260,6 +261,10 @@ class LabelsTest {
 
         assertDoesNotThrow(() -> {
             Labels.validateLabelIdentifierOrThrow("Valid5");
+        });
+
+        assertDoesNotThrow(() -> {
+            Labels.validateLabelIdentifierOrThrow("Valid_");
         });
     }
 

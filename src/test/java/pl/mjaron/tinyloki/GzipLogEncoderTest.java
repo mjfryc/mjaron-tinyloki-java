@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import java.nio.charset.StandardCharsets;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class GzipLogEncoderTest {
 
@@ -28,5 +29,11 @@ public class GzipLogEncoderTest {
         // I don't understand the difference between some tools at tenth byte (with idx 9). Both versions are accepted.
         // 1f 8b 08 00 00 00 00 00 00 0a 4b cc 29 c8 48 4c 4a 2d 01 00 7f cd 3e 10 08 00 00 00
         // 1f 8b 08 00 00 00 00 00 00 00 4b cc 29 c8 48 4c 4a 2d 01 00 7f cd 3e 10 08 00 00 00
+    }
+
+    @Test
+    void contentEncoding() {
+        GzipLogEncoder encoder = new GzipLogEncoder();
+        assertEquals("gzip", encoder.contentEncoding());
     }
 }

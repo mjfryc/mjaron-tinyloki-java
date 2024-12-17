@@ -161,6 +161,7 @@ class LabelsTest {
         assertNotEquals(l0.l("b", "1"), l1);
     }
 
+    @SuppressWarnings({"SimplifiableAssertion", "ConstantValue", "EqualsWithItself", "EqualsBetweenInconvertibleTypes"})
     @Test
     void testEquals() {
         final Labels l0 = new Labels().l("a", "0").l("b", "1");
@@ -173,6 +174,10 @@ class LabelsTest {
         assertEquals(l0, l0.clone().l(l0));
         assertNotEquals(l2, l2.clone().l(l0));
         assertEquals(l2, new Labels(l2));
+
+        assertFalse(l0.equals(null));
+        assertTrue(l0.equals(l0));
+        assertFalse(l0.equals("Other class"));
     }
 
     @Test
@@ -241,5 +246,27 @@ class LabelsTest {
     @Test
     void unknown() {
         assertEquals(Labels.UNKNOWN, new Labels().unknown().getMap().get(Labels.LEVEL));
+    }
+
+    @Test
+    void testValidateLabelIdentifierOrThrow() {
+        assertThrows(RuntimeException.class, () -> {
+            Labels.validateLabelIdentifierOrThrow("5invalid");
+        });
+
+        assertThrows(RuntimeException.class, () -> {
+            Labels.validateLabelIdentifierOrThrow("invalid#");
+        });
+
+        assertDoesNotThrow(() -> {
+            Labels.validateLabelIdentifierOrThrow("Valid5");
+        });
+    }
+
+    @Test
+    void testHashCode() {
+        final Labels labels = new Labels().l("a", "b");
+        assertEquals(labels.hashCode(), labels.hashCode());
+        assertEquals(new Labels().l("a", "b").hashCode(), new Labels().l("a", "b").hashCode());
     }
 }

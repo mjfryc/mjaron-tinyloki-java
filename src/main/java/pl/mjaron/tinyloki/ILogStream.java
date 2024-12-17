@@ -26,6 +26,9 @@ public interface ILogStream {
     /**
      * Release log stream, so it isn't longer managed by its log collector.
      * It is not mandatory to call if this stream lifetime is the same as application lifetime.
+     * <p>
+     * Note that if stream is released too fast after logging,
+     * the logs may be not consumed by {@link IExecutor} and not sent to the server.
      */
     void release();
 }

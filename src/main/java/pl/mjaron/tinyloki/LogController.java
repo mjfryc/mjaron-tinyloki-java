@@ -72,7 +72,7 @@ public class LogController {
         final String contentEncoding = (this.logEncoder == null) ? null : this.logEncoder.contentEncoding();
         logSenderSettings.setContentEncoding(contentEncoding);
         this.logSender.configure(logSenderSettings, logMonitor);
-        this.executor.configure(this);
+        this.executor.configure(logCollector, this::internalProcessLogs, logMonitor);
         this.logMonitor.onConfigured(this.logCollector.contentType(), contentEncoding);
     }
 
@@ -319,7 +319,7 @@ public class LogController {
      * @throws InterruptedException When calling thread is interrupted.
      * @since 0.4.0
      */
-    public void internalProcessLogs() throws InterruptedException {
+    protected void internalProcessLogs() throws InterruptedException {
         final byte[] logs = logCollector.collect();
         if (logs == null) {
             return;

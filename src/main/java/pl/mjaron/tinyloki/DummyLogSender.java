@@ -1,7 +1,7 @@
 package pl.mjaron.tinyloki;
 
 /**
- * Dummy implementation of {@link ILogSender} for testing purposes.
+ * Dummy implementation of {@link ILogSender} for diagnostic purposes.
  */
 public class DummyLogSender implements ILogSender {
 

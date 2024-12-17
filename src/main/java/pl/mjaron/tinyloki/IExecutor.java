@@ -11,10 +11,12 @@ public interface IExecutor {
     /**
      * Performs the configuration before using the object. Called internally by the {@link LogController} constructor.
      *
-     * @param logController The {@link LogController} object.
+     * @param logCollector Object used to observe when new logs occur.
+     * @param logProcessor Used to periodically perform the log processing.
+     * @param logMonitor   Used to dump diagnostic logger information.
      * @since 0.4.0
      */
-    void configure(LogController logController);
+    void configure(ILogCollector logCollector, ILogProcessor logProcessor, ILogMonitor logMonitor);
 
     /**
      * Starts the execution loop.
@@ -40,7 +42,9 @@ public interface IExecutor {
      * <p>
      * The thread is stopped asap and some logs may not be sent.
      *
-     * @param timeout Maximum time to block the calling thread. After that time the function returns event the thread is not stopped.
+     * @param timeout Maximum time to block the calling thread.
+     *                <p>The <code>0</code> means wait forever until the worker thread is stopped.
+     *                After that time the function returns even the thread is not stopped.
      * @return <code>true</code> If stopped with success.
      * <p>
      * <code>false</code> If failed to stop due to timeout.

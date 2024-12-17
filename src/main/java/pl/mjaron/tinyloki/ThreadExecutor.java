@@ -5,7 +5,9 @@ public class ThreadExecutor implements IExecutor, Runnable {
     public static final int DEFAULT_LOG_COLLECTION_PERIOD_MS = 5000;
 
     private final BlockingLogListener logListener = new BlockingLogListener();
-    private LogController logController = null;
+    private ILogMonitor logMonitor = null;
+    private ILogCollector logCollector = null;
+    private ILogProcessor logProcessor = null;
     private Thread workerThread = null;
     private int logCollectionPeriod = DEFAULT_LOG_COLLECTION_PERIOD_MS;
 
@@ -21,17 +23,31 @@ public class ThreadExecutor implements IExecutor, Runnable {
     }
 
     @Override
-    public void configure(LogController logController) {
-        if (logController == null) {
-            throw new NullPointerException("Cannot configure ThreadExecutor: Given log controller is null.");
+    public void configure(final ILogCollector logCollector, final ILogProcessor logProcessor, final ILogMonitor logMonitor) {
+        if (logCollector == null) {
+            throw new NullPointerException("Cannot configure ThreadExecutor: Given log collector is null.");
         }
-        this.logController = logController;
-        this.logController.getLogCollector().setLogListener(this.logListener);
+
+        if (logProcessor == null) {
+            throw new NullPointerException("Cannot configure ThreadExecutor: Given log processor is null.");
+        }
+
+        if (logMonitor == null) {
+            throw new NullPointerException("Cannot configure ThreadExecutor: Given log monitor is null.");
+        }
+
+        // Input parameters are valid - configuration is possible.
+        logCollector.setLogListener(this.logListener);
+
+        // Configuration passed, saving changes.
+        this.logMonitor = logMonitor;
+        this.logCollector = logCollector;
+        this.logProcessor = logProcessor;
     }
 
     @Override
     public void start() {
-        if (logController == null) {
+        if (logCollector == null) {
             throw new RuntimeException("Cannot start the executor: The ThreadExecutor is not configured.");
         }
         synchronized (this) {
@@ -56,14 +72,17 @@ public class ThreadExecutor implements IExecutor, Runnable {
         thread.interrupt();
         thread.join(timeout);
 
+        if (thread.getState() != Thread.State.TERMINATED) {
+            return false;
+        }
+
         // If nobody set worker thread to null yet, let's set the thread to null.
         synchronized (this) {
-            if (workerThread != null) {
-                assert workerThread == thread;
+            if (workerThread == thread) {
                 workerThread = null;
             }
         }
-        return thread.getState() == Thread.State.TERMINATED;
+        return true;
     }
 
     @Override
@@ -82,19 +101,19 @@ public class ThreadExecutor implements IExecutor, Runnable {
 
     @Override
     public void run() {
-        logController.getLogMonitor().logInfo("Worker thread: started.");
+        logMonitor.logInfo("Worker thread: started.");
 
         while (true) {
             try {
                 final int anyLogs = logListener.waitForLogs(logCollectionPeriod);
                 if (anyLogs > 0) {
-                    logController.internalProcessLogs();
+                    logProcessor.processLogs();
                 }
             } catch (final InterruptedException e) {
-                logController.getLogMonitor().logInfo("Worker thread: exit.");
+                logMonitor.logInfo("Worker thread: exit.");
                 return;
             } catch (final Exception e) {
-                logController.getLogMonitor().onException(e);
+                logMonitor.onException(e);
             }
         }
     }

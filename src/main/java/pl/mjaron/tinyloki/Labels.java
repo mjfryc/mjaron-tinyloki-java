@@ -209,20 +209,6 @@ public class Labels implements Cloneable {
     }
 
     /**
-     * Checks whether label contains only letters, digits or <code>_</code> and first character is letter.
-     *
-     * @param labelIdentifier Label name or label value to check.
-     * @return True when given label identifier is valid.
-     * @since 0.2.0
-     * @deprecated This method is unnecessary and will be removed in the future.
-     */
-    @Deprecated
-    private static boolean checkLabelIdentifier(final String labelIdentifier) {
-        assertLabelIdentifierNotNullOrEmpty(labelIdentifier);
-        return checkLabelIdentifierWhenNotEmpty(labelIdentifier);
-    }
-
-    /**
      * Corrects label name to meet the rules:
      * <ul>
      * <li>Label contains only letters, digits or <code>_</code></li>

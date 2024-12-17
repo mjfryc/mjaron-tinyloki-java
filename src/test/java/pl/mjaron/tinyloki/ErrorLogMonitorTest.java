@@ -17,6 +17,10 @@ class ErrorLogMonitorTest {
         e.onException(new Exception("Sample exception"));
         e.logInfo("This is an info log.");
         e.logError("This is an error log.");
+        e.onSync(true);
+        e.onSync(false);
+        e.onStop(true);
+        e.onStop(false);
         assertTrue(true);
     }
 }

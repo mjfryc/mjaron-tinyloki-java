@@ -6,21 +6,25 @@ package pl.mjaron.tinyloki;
 public interface ILogMonitor {
 
     /**
+     * Default meta-logging implementation.
+     * <p>
      * Used internally by TinyLoki implementation for this library diagnostic purposes.
      *
      * @param what Log content.
      */
     static void printInfo(final String what) {
-        System.out.println("[TinyLoki]: " + what);
+        System.out.println("[TinyLoki] " + what);
     }
 
     /**
+     * Default meta-logging implementation.
+     * <p>
      * Used internally by TinyLoki implementation for this library diagnostic purposes.
      *
      * @param what Log content.
      */
     static void printError(final String what) {
-        System.err.println("[TinyLoki]: " + what);
+        System.err.println("[TinyLoki] " + what);
     }
 
     void logInfo(final String what);

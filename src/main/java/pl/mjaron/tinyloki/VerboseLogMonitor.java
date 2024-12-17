@@ -5,10 +5,20 @@ import java.nio.charset.StandardCharsets;
 /**
  * This implementation prints all communication between this library and HTTP Loki server.
  */
-public class VerboseLogMonitor extends ErrorLogMonitor {
+public class VerboseLogMonitor implements ILogMonitor {
 
     private String contentType = null;
     private String contentEncoding = null;
+
+    @Override
+    public void logInfo(String what) {
+        ILogMonitor.printInfo(what);
+    }
+
+    @Override
+    public void logError(String what) {
+        ILogMonitor.printError(what);
+    }
 
     @Override
     public void onConfigured(final String contentType, final String contentEncoding) {
@@ -27,13 +37,23 @@ public class VerboseLogMonitor extends ErrorLogMonitor {
         if (contentEncoding == null && contentType.equals(JsonLogCollector.CONTENT_TYPE)) {
             ILogMonitor.printInfo("<<< " + new String(message, StandardCharsets.UTF_8));
         } else {
-            ILogMonitor.printInfo("<<< " + message.length + " bytes sent");
+            ILogMonitor.printInfo("<<< " + message.length + " bytes sent (encoding undefined).");
         }
     }
 
     @Override
     public void sendOk(final int status) {
         ILogMonitor.printInfo(">>> " + status);
+    }
+
+    @Override
+    public void sendErr(int status, String message) {
+        ILogMonitor.printError("Unexpected server response status: " + status + ": " + message);
+    }
+
+    @Override
+    public void onException(Exception exception) {
+        ILogMonitor.printError("Exception occurred: " + exception.toString() + "\n" + Utils.stackTraceString(exception));
     }
 
     @Override

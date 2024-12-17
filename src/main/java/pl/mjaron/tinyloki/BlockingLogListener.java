@@ -1,5 +1,11 @@
 package pl.mjaron.tinyloki;
 
+/**
+ * Helper class which allows waiting actively (blocking) for incoming logs.
+ * Supports <code>sync()</code> requests and thread interruption.
+ *
+ * @since 0.4.0
+ */
 class BlockingLogListener implements ILogListener {
 
     private final Object cachedLogsMonitor = new Object();

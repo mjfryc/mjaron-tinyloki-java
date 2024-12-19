@@ -2,6 +2,7 @@ package pl.mjaron.tinyloki;
 
 import org.junit.jupiter.api.Test;
 
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
@@ -18,7 +19,7 @@ public class GzipLogEncoderTest {
     }
 
     @Test
-    public void test() {
+    public void test() throws IOException {
         GzipLogEncoder encoder = new GzipLogEncoder();
         final byte[] encoded = encoder.encode("alphabet".getBytes(StandardCharsets.UTF_8));
         //final int[] expectedInts = new int[]{0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x0a, 0x4b, 0xcc, 0x29, 0xc8, 0x48, 0x4c, 0x4a, 0x2d, 0x01, 0x00, 0x7f, 0xcd, 0x3e, 0x10, 0x08, 0x00, 0x00, 0x00};

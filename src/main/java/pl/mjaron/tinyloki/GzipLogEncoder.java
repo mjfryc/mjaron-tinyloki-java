@@ -30,12 +30,10 @@ public class GzipLogEncoder implements ILogEncoder {
      * @return Gzip bytes.
      */
     @Override
-    public byte[] encode(byte[] what) {
+    public byte[] encode(byte[] what) throws IOException {
         final ByteArrayOutputStream bos = new ByteArrayOutputStream(what.length);
         try (final GZIPOutputStream gzipOutputStream = new GZIPOutputStream(bos)) {
             gzipOutputStream.write(what);
-        } catch (final IOException e) {
-            throw new RuntimeException("Failed to encode to Gzip", e);
         }
         return bos.toByteArray();
     }

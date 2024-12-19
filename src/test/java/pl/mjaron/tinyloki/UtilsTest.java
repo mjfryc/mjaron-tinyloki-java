@@ -6,11 +6,26 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class UtilsTest {
 
+    String escapeJsonStringHelper(final String what) {
+        StringBuilder b = new StringBuilder();
+        Utils.escapeJsonString(b, what);
+        return b.toString();
+    }
+
     @Test
     void escapeJsonString() {
-        StringBuilder b = new StringBuilder();
-        Utils.escapeJsonString(b, "abc");
-        assertEquals("abc", b.toString());
+        assertEquals("abc", escapeJsonStringHelper("abc"));
+        assertEquals("\\\"", escapeJsonStringHelper("\"")); // "
+        assertEquals("\\\\", escapeJsonStringHelper("\\")); // \
+        assertEquals("\\/", escapeJsonStringHelper("/")); // /
+        assertEquals("\\b", escapeJsonStringHelper("\b")); //
+        assertEquals("\\f", escapeJsonStringHelper("\f")); //
+        assertEquals("\\b", escapeJsonStringHelper("\b")); //
+        assertEquals("\\n", escapeJsonStringHelper("\n")); //
+        assertEquals("\\r", escapeJsonStringHelper("\r")); //
+        assertEquals("\\t", escapeJsonStringHelper("\t")); //
+        assertEquals("\\u0001", escapeJsonStringHelper("\u0001"));
+        assertEquals("\\u0000", escapeJsonStringHelper("\u0000"));
     }
 
     @Test

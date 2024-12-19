@@ -1,5 +1,7 @@
 package pl.mjaron.tinyloki;
 
+import java.io.IOException;
+
 /**
  * Responsible for encoding the HTTP content.
  */
@@ -19,5 +21,5 @@ public interface ILogEncoder {
      * @param what Bytes to encode.
      * @return Bytes encoded.
      */
-    byte[] encode(final byte[] what);
+    byte[] encode(final byte[] what) throws IOException;
 }

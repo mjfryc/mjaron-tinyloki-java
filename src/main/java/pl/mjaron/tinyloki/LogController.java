@@ -1,5 +1,6 @@
 package pl.mjaron.tinyloki;
 
+import java.io.IOException;
 import java.util.Map;
 
 /**
@@ -25,9 +26,9 @@ public class LogController {
      * @since 0.4.0
      */
     public static final int DEFAULT_SYNC_TIME = 1000;
-    private static final int LOG_WAIT_TIME = 100;
+
     /**
-     * Default maximum time of {@link #softStop()} operation in milliseconds..
+     * Default maximum time of {@link #softStop()} operation in milliseconds.
      *
      * @deprecated Since <code>0.4.0</code>. Use {@link #DEFAULT_STOP_TIME} instead.
      */
@@ -317,6 +318,7 @@ public class LogController {
      * Should <b style="color:red">not</b> be called by the library client directly.
      *
      * @throws InterruptedException When calling thread is interrupted.
+     * @throws RuntimeException     When encoding error or other error occurs.
      * @since 0.4.0
      */
     protected void internalProcessLogs() throws InterruptedException {
@@ -329,7 +331,12 @@ public class LogController {
             return;
         }
 
-        final byte[] encodedLogs = logEncoder.encode(logs);
+        final byte[] encodedLogs;
+        try {
+            encodedLogs = logEncoder.encode(logs);
+        } catch (final IOException e) {
+            throw new RuntimeException("Failed to encode logs.", e);
+        }
         logMonitor.onEncoded(logs, encodedLogs);
         logSender.send(encodedLogs);
     }

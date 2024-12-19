@@ -29,29 +29,52 @@ public class Utils {
     }
 
     /**
+     * Source: <a href="https://www.json.org/json-en.html">https://www.json.org/json-en.html</a>
+     * Source: <a href="https://www.ietf.org/rfc/rfc4627.txt">https://www.ietf.org/rfc/rfc4627.txt</a>
      * Source: <a href="https://stackoverflow.com/a/69338077/6835932">https://stackoverflow.com/a/69338077/6835932</a>
      *
      * @param b    Reference to exiting {@link StringBuilder} where given <code>text</code> will be appended.
      * @param text {@link CharSequence} which will be escaped and appended to {@link StringBuilder} <code>b</code>.
      */
     public static void escapeJsonString(final StringBuilder b, final CharSequence text) {
+
         for (int i = 0, length = text.length(); i < length; i++) {
             final char c = text.charAt(i);
             switch (c) {
-                case '"':
+                case '"': // quotation mark.
                     b.append("\\\"");
                     break;
-                case '\\':
+                case '\\': // reverse solidus.
                     b.append("\\\\");
                     break;
-                default:
-                    if (c > 0x1f) {
+                case '/': // solidus.
+                    b.append("\\/");
+                    break;
+                case '\b': // backspace.
+                    b.append("\\b");
+                    break;
+                case '\f': // formfeed.
+                    b.append("\\f");
+                    break;
+                case '\n': // linefeed.
+                    b.append("\\n");
+                    break;
+                case '\r': // carriage return.
+                    b.append("\\r");
+                    break;
+                case '\t': // horizontal return.
+                    b.append("\\t");
+                    break;
+                default: {
+                    if (c > 0x1f) { // 1F is the last control character.
                         b.append(c);
                     } else {
+                        // Other control characters [0..1F].
                         b.append("\\u");
                         final String hex = "000" + Integer.toHexString(c);
                         b.append(hex.substring(hex.length() - 4));
                     }
+                }
             }
         }
     }

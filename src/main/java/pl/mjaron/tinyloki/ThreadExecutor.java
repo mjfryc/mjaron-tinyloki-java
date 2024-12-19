@@ -110,7 +110,7 @@ public class ThreadExecutor implements IExecutor, Runnable {
                     logProcessor.processLogs();
                 }
             } catch (final InterruptedException e) {
-                logMonitor.logInfo("Worker thread: exit.");
+                logMonitor.logInfo("Worker thread: interrupted.");
                 return;
             } catch (final Exception e) {
                 logMonitor.onException(e);

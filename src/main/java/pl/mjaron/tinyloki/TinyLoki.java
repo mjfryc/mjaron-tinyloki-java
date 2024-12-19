@@ -285,7 +285,7 @@ public class TinyLoki {
          *
          * @since 0.3.0
          */
-        private final LogSenderSettings logSenderSettings = LogSenderSettings.create();
+        private final LogSenderSettings logSenderSettings = new LogSenderSettings();
         /**
          * Parameters of valid label values.
          *

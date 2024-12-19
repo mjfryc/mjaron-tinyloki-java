@@ -46,16 +46,6 @@ public class LogSenderSettings {
     private int connectTimeout = DEFAULT_CONNECT_TIMEOUT;
 
     /**
-     * Creates a new instance of {@link LogSenderSettings}.
-     * It may be used instead of constructor.
-     *
-     * @return New instance of {@link LogSenderSettings}.
-     */
-    public static LogSenderSettings create() {
-        return new LogSenderSettings();
-    }
-
-    /**
      * Getter of HTTP URL used to connect to Grafana Loki server.
      * This URL's path should end with `/loki/api/v1/push`.
      *

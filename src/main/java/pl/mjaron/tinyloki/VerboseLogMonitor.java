@@ -34,7 +34,7 @@ public class VerboseLogMonitor implements ILogMonitor {
 
     @Override
     public void send(final byte[] message) {
-        if (contentEncoding == null && contentType.equals(JsonLogCollector.CONTENT_TYPE)) {
+        if (contentEncoding == null && contentType != null && contentType.equals(JsonLogCollector.CONTENT_TYPE)) {
             ILogMonitor.printInfo("<<< " + new String(message, StandardCharsets.UTF_8));
         } else {
             ILogMonitor.printInfo("<<< " + message.length + " bytes sent (encoding undefined).");

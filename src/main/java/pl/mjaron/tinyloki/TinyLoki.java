@@ -9,6 +9,12 @@ import java.util.Map;
 public class TinyLoki {
 
     /**
+     * This class should be newer instantiated.
+     */
+    private TinyLoki() {
+    }
+
+    /**
      * Creates a new {@link Settings} object which is used to initialize a new {@link LogController} instance, e.g:
      * <pre>
      *     LogController logController =

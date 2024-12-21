@@ -37,7 +37,7 @@ public class HttpLogSender implements ILogSender {
      * @param message Data to send in HTTP request content.
      * @throws RuntimeException On connection error.
      */
-    public void send(final byte[] message) {
+    public void send(final byte[] message) throws IOException {
         logMonitor.send(message);
         HttpURLConnection connection = null;
         try {
@@ -78,7 +78,7 @@ public class HttpLogSender implements ILogSender {
             } else {
                 logMonitor.sendOk(responseCode);
             }
-        } catch (final IOException e) {
+        } finally {
             if (connection != null) {
                 try (final InputStream errorStream = connection.getErrorStream()) {
                     if (errorStream != null) {
@@ -92,8 +92,6 @@ public class HttpLogSender implements ILogSender {
                     // e2.printStackTrace();
                 }
             }
-            throw new RuntimeException("Failed to send logs.", e);
         }
     }
 }
-

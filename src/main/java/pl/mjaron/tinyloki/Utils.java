@@ -28,6 +28,14 @@ public class Utils {
         return sw.toString(); // stack trace as a string
     }
 
+    public static long clamp(final long value, final long min, final long max) {
+        return Math.max(min, Math.min(max, value));
+    }
+
+    public static int clampToInt(final long value) {
+        return (int) clamp(value, Integer.MIN_VALUE, Integer.MAX_VALUE);
+    }
+
     /**
      * Source: <a href="https://www.json.org/json-en.html">https://www.json.org/json-en.html</a>
      * Source: <a href="https://www.ietf.org/rfc/rfc4627.txt">https://www.ietf.org/rfc/rfc4627.txt</a>

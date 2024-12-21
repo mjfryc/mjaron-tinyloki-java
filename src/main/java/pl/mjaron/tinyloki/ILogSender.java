@@ -1,5 +1,7 @@
 package pl.mjaron.tinyloki;
 
+import java.io.IOException;
+
 /**
  * Sends the logs.
  *
@@ -27,5 +29,5 @@ public interface ILogSender {
      * @throws RuntimeException On connection error.
      * @throws InterruptedException When operation is terminated by {@link IExecutor} thread.
      */
-    void send(final byte[] message) throws InterruptedException;
+    void send(final byte[] message) throws InterruptedException, IOException;
 }

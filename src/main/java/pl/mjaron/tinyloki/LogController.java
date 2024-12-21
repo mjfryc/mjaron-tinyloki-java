@@ -8,36 +8,36 @@ import java.util.Map;
  * Method {@link #start()} creates worker thread which sends new logs, so should be called
  * when application starts.
  */
-public class LogController {
+public class LogController implements java.io.Closeable {
 
     /**
-     * Default wait time of {@link #stopAnd()} operation in milliseconds.
+     * Default wait time of {@link #stop()} operation in milliseconds.
      *
-     * @see #stopAnd()
-     * @see #stopAnd(int)
+     * @see #stop()
+     * @see #stop(int)
      * @since 0.4.0
      */
-    public static final int DEFAULT_STOP_TIME = 1000;
+    public static final int DEFAULT_STOP_TIMEOUT = 1000;
     /**
-     * Default wait time of {@link #syncAnd()} operation in milliseconds.
+     * Default wait time of {@link #sync()}} operation in milliseconds.
      *
-     * @see #syncAnd()
-     * @see #syncAnd(int)
+     * @see #sync()
+     * @see #sync(int)
      * @since 0.4.0
      */
-    public static final int DEFAULT_SYNC_TIME = 1000;
+    public static final int DEFAULT_SYNC_TIMEOUT = 1000;
 
     /**
      * Default maximum time of {@link #softStop()} operation in milliseconds.
      *
-     * @deprecated Since <code>0.4.0</code>. Use {@link #DEFAULT_STOP_TIME} instead.
+     * @deprecated Since <code>0.4.0</code>. Use {@link #DEFAULT_STOP_TIMEOUT} instead.
      */
     @Deprecated
     private static final int DEFAULT_SOFT_STOP_WAIT_TIME = 2000;
     /**
      * Default maximum time of {@link #hardStop()} operation in milliseconds.
      *
-     * @deprecated Since <code>0.4.0</code>. Use {@link #DEFAULT_STOP_TIME} instead.
+     * @deprecated Since <code>0.4.0</code>. Use {@link #DEFAULT_STOP_TIMEOUT} instead.
      */
     @Deprecated
     private static final int DEFAULT_HARD_STOP_WAIT_TIME = 1000;
@@ -162,14 +162,19 @@ public class LogController {
      * <p>
      * <b>Thread safety</b>
      * <p>
-     * The method is thread safe because underlying executor is obligated to start / sync / stop safely in asynchronous environment.
+     * It may be called from any thread.
      *
      * @return This reference.
      * @throws RuntimeException If executor already started and execution thread/environment was already initialize.
      */
     public LogController start() {
-        executor.start();
-        logMonitor.onStart();
+        try {
+            executor.start();
+            logMonitor.onStart();
+        } catch (Exception e) {
+            logMonitor.onException(e);
+            throw e;
+        }
         return this;
     }
 
@@ -178,27 +183,37 @@ public class LogController {
      * <p>
      * <b>Thread safety</b>
      * <p>
-     * The method is thread safe because underlying executor is obligated to start / sync / stop safely in asynchronous environment.
+     * It may be called from any thread.
      *
-     * @param timeout Maximum blocking time.
+     * @param timeout Maximum blocking time. The <code>0</code> or a negative value will result in the operation not being performed and <code>false</code> will be returned.
      * @return <code>true</code> If execution has stopped successfully.
      * <p>
-     * <code>false</code> If execution has not stopped due to timeout.
-     * @throws InterruptedException When calling thread is interrupted.
+     * <code>false</code> If execution has not stopped due to timeout or invalid <code>timeout</code> argument.
+     * @throws InterruptedException When calling thread is interrupted so cannot wait for executor's thread.
      * @since 0.4.0
      */
     public boolean stop(final int timeout) throws InterruptedException {
-        final boolean result = executor.stop(timeout);
-        logMonitor.onStop(result);
-        return result;
+        try {
+            if (timeout <= 0) {
+                throw new IllegalArgumentException("Cannot stop with timeout <= 0: [" + timeout + "].");
+            }
+            final boolean result = executor.stop(timeout);
+            logMonitor.onStop(result);
+            return result;
+        } catch (final InterruptedException e) {
+            throw e;
+        } catch (final Exception e2) {
+            logMonitor.onException(e2);
+            return false;
+        }
     }
 
     /**
-     * Blocking function. Stops the executor sending the logs in the background with default timeout defined as {@link #DEFAULT_STOP_TIME}.
+     * Blocking function. Stops the executor sending the logs in the background with default timeout defined as {@link #DEFAULT_STOP_TIMEOUT}.
      * <p>
      * <b>Thread safety</b>
      * <p>
-     * The method is thread safe because underlying executor is obligated to start / sync / stop safely in asynchronous environment.
+     * It may be called from any thread.
      *
      * @return <code>true</code> If execution has stopped successfully.
      * <p>
@@ -207,67 +222,46 @@ public class LogController {
      * @since 0.4.0
      */
     public boolean stop() throws InterruptedException {
-        return this.stop(DEFAULT_STOP_TIME);
+        return this.stop(DEFAULT_STOP_TIMEOUT);
     }
 
     /**
-     * Blocking function. Stops the executor sending the logs in the background.
+     * Blocking function. Blocks the calling thread until all requested logs are processed (attempted to send) or timeout occurs.
      * <p>
      * <b>Thread safety</b>
      * <p>
-     * The method is thread safe because underlying executor is obligated to start / sync / stop safely in asynchronous environment.
-     *
-     * @param timeout Maximum time to wait for executor to finish.
-     * @return This reference.
-     * @throws InterruptedException When calling thread is interrupted.
-     * @since 0.4.0
-     */
-    public LogController stopAnd(final int timeout) throws InterruptedException {
-        this.stop(timeout);
-        return this;
-    }
-
-    /**
-     * Blocking function. Stops the executor sending the logs in the background with default timeout defined as {@link #DEFAULT_STOP_TIME}.
-     * <p>
-     * <b>Thread safety</b>
-     * <p>
-     * The method is thread safe because underlying executor is obligated to start / sync / stop safely in asynchronous environment.
-     *
-     * @return This reference.
-     * @throws InterruptedException When calling thread is interrupted.
-     * @since 0.4.0
-     */
-    public LogController stopAnd() throws InterruptedException {
-        return stopAnd(DEFAULT_STOP_TIME);
-    }
-
-    /**
-     * Blocking function. BLocks the calling thread until all requested logs are sent or timeout occurs.
-     * <p>
-     * <b>Thread safety</b>
-     * <p>
-     * The method is thread safe because underlying executor is obligated to start / sync / stop safely in asynchronous environment.
+     * It may be called from any thread.
      *
      * @param timeout The maximum time in milliseconds of blocking the calling thread.
+     *                The <code>0</code> or negative value will cause returning immediately.
      * @return <code>true</code> If sync operation finished with success.
      * <p>
-     * <code>false</code> If sync operation failed due to timeout.
+     * <code>false</code> If sync operation failed due to timeout or given <code>timeout</code> is less or equal <code>0</code>.
      * @throws InterruptedException When calling thread is interrupted.
      * @since 0.4.0
      */
     public boolean sync(final int timeout) throws InterruptedException {
-        final boolean result = executor.sync(timeout);
-        logMonitor.onSync(result);
-        return result;
+        try {
+            if (timeout <= 0) {
+                throw new IllegalArgumentException("Cannot sync with timeout <= 0: [" + timeout + "].");
+            }
+            final boolean result = executor.sync(timeout);
+            logMonitor.onSync(result);
+            return result;
+        } catch (final InterruptedException e) {
+            throw e;
+        } catch (final Exception e2) {
+            logMonitor.onException(e2);
+            return false;
+        }
     }
 
     /**
-     * Blocking function. BLocks the calling thread until all requested logs are sent or default timeout occurs, defined as {@link #DEFAULT_SYNC_TIME}.
+     * Blocking function. BLocks the calling thread until all requested logs are processed (attempted to send) or default timeout occurs, defined as {@link #DEFAULT_SYNC_TIMEOUT}.
      * <p>
      * <b>Thread safety</b>
      * <p>
-     * The method is thread safe because underlying executor is obligated to start / sync / stop safely in asynchronous environment.
+     * It may be called from any thread.
      *
      * @return <code>true</code> If sync operation finished with success.
      * <p>
@@ -276,41 +270,76 @@ public class LogController {
      * @since 0.4.0
      */
     public boolean sync() throws InterruptedException {
-        return sync(DEFAULT_SYNC_TIME);
+        return sync(DEFAULT_SYNC_TIMEOUT);
     }
 
     /**
-     * Blocking function. Stops the flow until all already requested logs are processed (requested to be sent) or given time has passed.
+     * Blocking function. Tries to call {@link #sync(int)} and then {@link #stop(int)} (even if <code>sync</code> fails).
      * <p>
      * <b>Thread safety</b>
      * <p>
-     * The method is thread safe because underlying executor is obligated to start / sync / stop safely in asynchronous environment.
+     * It may be called from any thread.
      *
-     * @param timeout The maximum time to wait in milliseconds.
-     * @return This reference.
+     * @param syncTimeout The maximum time to <code>sync</code> in milliseconds.
+     * @param stopTimeout The maximum time to wait for executor stopping in milliseconds.
+     *                    The waiting time is reduced to 10 milliseconds if <code>sync</code> has been broken by thread interrupted exception.
+     * @return <code>true</code> If synchronization and stopping passed with success.
+     * <p>
+     * <code>false</code> On synchronization or stopping timeout.
      * @throws InterruptedException When calling thread is interrupted.
      * @since 0.4.0
      */
-    public LogController syncAnd(final int timeout) throws InterruptedException {
-        this.sync(timeout);
-        return this;
+    public boolean closeSync(final int syncTimeout, final int stopTimeout) throws InterruptedException {
+        InterruptedException syncInterruptedException = null;
+        int finalStopTimeout = stopTimeout;
+        boolean syncSuccess = false;
+        boolean stopSuccess = false;
+
+        try {
+            syncSuccess = this.sync(syncTimeout);
+        } catch (final InterruptedException e) {
+            syncInterruptedException = e;
+            finalStopTimeout = Math.min(stopTimeout, 10);
+        }
+
+        stopSuccess = this.stop(finalStopTimeout);
+
+        if (syncInterruptedException != null) {
+            final InterruptedException finalException = new InterruptedException("The closeSync() has been interrupted during sync. Trying to stop with result: " + stopSuccess);
+            finalException.initCause(syncInterruptedException);
+            throw finalException;
+        }
+
+        return syncSuccess && stopSuccess;
     }
 
     /**
-     * Blocking function. Stops the flow until all already requested logs are processed (requested to be sent) or given time has passed.
-     * The maximum blocking time is defined by {@link #DEFAULT_SYNC_TIME}.
-     * <p>
-     * <b>Thread safety</b>
-     * <p>
-     * The method is thread safe because underlying executor is obligated to start / sync / stop safely in asynchronous environment.
+     * Blocking function. Tries to call {@link #sync(int)} and then {@link #stop(int)} even if <code>sync</code> fails.
      *
-     * @return This reference.
+     * @param timeout The maximum time for synchronizing and stopping at all. Half of time is for syncing and half for stopping.
+     * @return <code>true</code> If synchronization and stopping passed with success.
+     * <p>
+     * <code>false</code> On synchronization or stopping timeout.
      * @throws InterruptedException When calling thread is interrupted.
-     * @since 0.4.0
      */
-    public LogController syncAnd() throws InterruptedException {
-        this.sync(DEFAULT_SYNC_TIME);
-        return this;
+    public boolean closeSync(final int timeout) throws InterruptedException {
+        return closeSync(timeout / 2, timeout / 2);
+    }
+
+    /**
+     * Blocking function. Tries to call {@link #sync()} and then {@link #stop()} even if <code>sync</code> fails.
+     * <p>
+     * Default timeout values are used.
+     *
+     * @return <code>true</code> If synchronization and stopping passed with success.
+     * <p>
+     * <code>false</code> On synchronization or stopping timeout.
+     * @throws InterruptedException When calling thread is interrupted.
+     * @see #DEFAULT_SYNC_TIMEOUT
+     * @see #DEFAULT_STOP_TIMEOUT
+     */
+    public boolean closeSync() throws InterruptedException {
+        return closeSync(DEFAULT_SYNC_TIMEOUT, DEFAULT_STOP_TIMEOUT);
     }
 
     /**
@@ -326,50 +355,49 @@ public class LogController {
         if (logs == null) {
             return;
         }
+        final byte[] toSend;
         if (logEncoder == null) {
-            logSender.send(logs);
-            return;
+            toSend = logs;
+        } else {
+            try {
+                toSend = logEncoder.encode(logs);
+            } catch (final IOException e) {
+                throw new RuntimeException("Failed to encode logs.", e);
+            }
+            logMonitor.onEncoded(logs, toSend);
         }
 
-        final byte[] encodedLogs;
         try {
-            encodedLogs = logEncoder.encode(logs);
+            logSender.send(toSend);
         } catch (final IOException e) {
-            throw new RuntimeException("Failed to encode logs.", e);
+            throw new RuntimeException(e);
         }
-        logMonitor.onEncoded(logs, encodedLogs);
-        logSender.send(encodedLogs);
-    }
-
-    @Override
-    protected void finalize() {
-        executor.stopAsync();
     }
 
     /**
-     * Request worker thread to do last jobs. This method is non-blocking.
+     * Requests the executor (worker thread) to stop ASAP. Not synchronized logs are dropped.
      *
      * @return This reference.
+     * @since 0.4.0
      */
-    @Deprecated
-    synchronized public LogController softStopAsync() {
-        /// TODO IMPLEMENTATION HERE.
+    synchronized public LogController stopAsync() {
+        executor.stopAsync();
         return this;
     }
 
     /**
      * Interrupts worker thread and tries to join for given interruptTimeout.
      *
-     * @param interruptTimeout Timeout in milliseconds.
+     * @param interruptTimeout Timeout in milliseconds. The value is clamped to <code>int</code> range.
      * @return This reference.
-     * @see #stopAnd(int)
-     * @see #stopAnd()
-     * @deprecated Since <code>0.4.0</code>. Use {@link #stopAnd(int)} instead.
+     * @see #stop()
+     * @see #stop(int)
+     * @deprecated Since <code>0.4.0</code>. Use {@link #stop(int)} or {@link #closeSync(int, int)} instead.
      */
     @Deprecated
     public LogController hardStop(final long interruptTimeout) {
         try {
-            this.stopAnd(java.lang.Math.toIntExact(interruptTimeout));
+            this.stop(Utils.clampToInt(interruptTimeout));
         } catch (Exception e) {
             logMonitor.onException(e);
         }
@@ -377,13 +405,13 @@ public class LogController {
     }
 
     /**
-     * Blocking function. Request to stopAnd worker thread by interrupting it. Waits for interruption with default timeout.
+     * Blocking function. Request to stop worker thread by interrupting it. Waits for interruption with default timeout.
      *
      * @return This reference.
      * @see #hardStop(long)
-     * @see #stopAnd()
-     * @see #stopAnd(int)
-     * @deprecated Since <code>0.4.0</code>. Use {@link #stopAnd(int)} instead.
+     * @see #stop(int)
+     * @see #stop()
+     * @deprecated Since <code>0.4.0</code>. Use {@link #stop(int)} or {@link #closeSync(int, int)} instead.
      */
     @Deprecated
     @SuppressWarnings("UnusedReturnValue")
@@ -394,18 +422,16 @@ public class LogController {
     /**
      * Blocking function. Tells to worker to send logs to this time point and exit.
      *
-     * @param softTimeout Timeout in milliseconds.
+     * @param softTimeout Timeout in milliseconds. The value is clamped to <code>int</code> range.
      * @return This reference.
-     * @see #stopAnd()
-     * @see #stopAnd(int)
-     * @see #syncAnd(int)
-     * @deprecated Since <code>0.4.0</code>. Use {@link #syncAnd(int)} and {@link #stopAnd(int)} instead.
+     * @see #closeSync(int, int)
+     * @deprecated Since <code>0.4.0</code>. Use {@link #closeSync(int, int)} instead.
      */
     @Deprecated
     public LogController softStop(final long softTimeout) {
         try {
-            this.syncAnd(java.lang.Math.toIntExact(softTimeout));
-            this.stopAnd();
+            final int normalizedTimeout = Utils.clampToInt(softTimeout);
+            this.closeSync(normalizedTimeout);
         } catch (final Exception e) {
             logMonitor.onException(e);
         }
@@ -417,10 +443,8 @@ public class LogController {
      *
      * @return This reference.
      * @see #softStop(long)
-     * @see #stopAnd()
-     * @see #stopAnd(int)
-     * @see #syncAnd(int)
-     * @deprecated Since <code>0.4.0</code>. Use {@link #syncAnd(int)} and {@link #stopAnd(int)} instead.
+     * @see #closeSync(int, int)
+     * @deprecated Since <code>0.4.0</code>. Use {@link #closeSync(int, int)} instead.
      */
     @Deprecated
     @SuppressWarnings("unused")
@@ -437,5 +461,25 @@ public class LogController {
     @Deprecated
     public boolean isSoftStopped() {
         return true;
+    }
+
+    /**
+     * Requests the executor (worker thread) to stop ASAP. Not synchronized logs are dropped.
+     *
+     * @since 0.4.0
+     */
+    @Override
+    public void close() {
+        this.stopAsync();
+    }
+
+    /**
+     * Requests the executor (worker thread) to stop ASAP. Not synchronized logs are dropped.
+     *
+     * @since 0.4.0
+     */
+    @Override
+    protected void finalize() {
+        this.stopAsync();
     }
 }

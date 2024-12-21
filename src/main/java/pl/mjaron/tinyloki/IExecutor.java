@@ -32,7 +32,8 @@ public interface IExecutor {
      * @return <code>true</code> If all logs has been processed by execution thread. Sending success / failure doesn't matter.
      * <p>
      * <code>false</code> If timeout has occurred.
-     * @throws InterruptedException When calling thread is interrupted.
+     * @throws InterruptedException     When calling thread is interrupted.
+     * @throws IllegalArgumentException If the value of <code>timeout</code> is negative.
      * @since 0.4.0
      */
     boolean sync(int timeout) throws InterruptedException;
@@ -48,7 +49,8 @@ public interface IExecutor {
      * @return <code>true</code> If stopped with success.
      * <p>
      * <code>false</code> If failed to stop due to timeout.
-     * @throws InterruptedException When calling thread is interrupted.
+     * @throws InterruptedException     When calling thread is interrupted.
+     * @throws IllegalArgumentException If the value of <code>timeout</code> is negative.
      * @since 0.4.0
      */
     boolean stop(int timeout) throws InterruptedException;

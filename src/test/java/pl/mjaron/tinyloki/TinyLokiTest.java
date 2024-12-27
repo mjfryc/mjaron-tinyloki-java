@@ -4,6 +4,9 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -77,5 +80,91 @@ public class TinyLokiTest {
         ILogSender logSender = new MemoryLogSender();
         settings.withLogSender(logSender);
         assertSame(logSender, settings.getLogSender());
+    }
+
+    @Test
+    @Disabled
+    void sampleTest() throws InterruptedException {
+        try (LogController loki = TinyLoki.withUrl("http://localhost:3100/loki/api/v1/push").withVerboseLogMonitor().start()) {
+            ILogStream stream = loki.stream().l("color", "white").build();
+            stream.log("Hello world.");
+            loki.sync();
+            loki.stop();
+        }
+    }
+
+    static class MassiveThread extends Thread {
+        int threadId;
+        ArrayList<ILogStream> streams;
+        int count = 0;
+
+        public MassiveThread(int threadId, ArrayList<ILogStream> streams) {
+            this.threadId = threadId;
+            this.streams = streams;
+        }
+
+        @Override
+        public void run() {
+            System.out.println("Starting thread: " + threadId);
+            final Random random = new Random();
+            while (true) {
+                final int streamIdx = random.nextInt(streams.size());
+                streams.get(streamIdx).log("Hello entry: thread: [" + threadId + "], entry: [" + count + "].");
+                ++count;
+                try {
+                    Thread.sleep(random.nextInt(10));
+                } catch (InterruptedException ignored) {
+                    return;
+                }
+            }
+        }
+    }
+
+    @Test
+    @Disabled
+    void sampleMassiveTest() throws InterruptedException {
+        List<MassiveThread> threads = new ArrayList<>();
+        ArrayList<ILogStream> streams = new ArrayList<>();
+        final Random random = new Random();
+        final int testRunId = random.nextInt(1000);
+        System.out.println("Running test: " + testRunId);
+
+        try (LogController loki = TinyLoki.withUrl("http://localhost:3100/loki/api/v1/push").withVerboseLogMonitor(false).start()) {
+
+            for (int i = 0; i < 100; ++i) {
+                streams.add(loki.stream().l("test_name", "sampleMassiveTest").l("test_run_id", "test_" + testRunId).l("test_stream_index", "index_" + i).build());
+            }
+
+            for (int i = 0; i < 100; ++i) {
+                MassiveThread thr = new MassiveThread(i, streams);
+                thr.start();
+                threads.add(thr);
+            }
+
+            Thread.sleep(6 * 1000);
+
+            System.out.println("Interrupting threads...");
+            for (Thread thread : threads) {
+                thread.interrupt();
+            }
+
+            System.out.println("Joining threads...");
+            for (Thread thread : threads) {
+                thread.join(1000);
+            }
+
+            System.out.println("Syncing...");
+            loki.sync(10 * 1000);
+            loki.stop();
+
+            System.out.println("Stopped.");
+
+            int sum = 0;
+            for (MassiveThread thr : threads) {
+                sum += thr.count;
+            }
+
+            System.out.println("Done: " + testRunId + " + Total logs: " + sum);
+        }
     }
 }

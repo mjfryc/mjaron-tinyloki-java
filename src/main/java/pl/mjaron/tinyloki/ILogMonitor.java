@@ -13,7 +13,7 @@ public interface ILogMonitor {
      * @param what Log content.
      */
     static void printInfo(final String what) {
-        System.out.println("[TinyLoki] " + what);
+        System.out.println("[TinyLoki][" + System.currentTimeMillis() + "][I] " + what);
     }
 
     /**
@@ -24,7 +24,7 @@ public interface ILogMonitor {
      * @param what Log content.
      */
     static void printError(final String what) {
-        System.err.println("[TinyLoki] " + what);
+        System.err.println("[TinyLoki][" + System.currentTimeMillis() + "][E] " + what);
     }
 
     void logInfo(final String what);

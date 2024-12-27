@@ -10,8 +10,7 @@ Start the server with:
 # cd tinyloki-server
 docker-compose up
 ```
+Following services are available:
 
-Check if server is ready: <http://localhost:3100/ready>
-
-Grafana dashboard: <http://localhost:3000>
-
+* Check if Loki server is ready: <http://localhost:3100/ready>
+* Open Grafana dashboard: <http://localhost:3000>

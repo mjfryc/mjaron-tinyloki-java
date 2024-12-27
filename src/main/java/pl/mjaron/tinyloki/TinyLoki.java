@@ -445,6 +445,17 @@ public class TinyLoki {
         }
 
         /**
+         * Allows setting {@link VerboseLogMonitor} explicitly and set if messages also should be printed.
+         *
+         * @param printMessages Tells whether sent messages content should be also printed.
+         * @return This {@link Settings} object reference.
+         * @since 0.3.4
+         */
+        public Settings withVerboseLogMonitor(final boolean printMessages) {
+            return this.withLogMonitor(new VerboseLogMonitor(printMessages));
+        }
+
+        /**
          * Allows changing the default {@link ILogSender}, which currently is {@link HttpLogSender}.
          *
          * @param logSender Instance of custom {@link ILogSender}.

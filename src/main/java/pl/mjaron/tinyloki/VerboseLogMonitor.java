@@ -7,8 +7,17 @@ import java.nio.charset.StandardCharsets;
  */
 public class VerboseLogMonitor implements ILogMonitor {
 
+    private final boolean printMessages;
     private String contentType = null;
     private String contentEncoding = null;
+
+    public VerboseLogMonitor() {
+        this.printMessages = true;
+    }
+
+    public VerboseLogMonitor(final boolean printMessages) {
+        this.printMessages = printMessages;
+    }
 
     @Override
     public void logInfo(String what) {
@@ -35,7 +44,11 @@ public class VerboseLogMonitor implements ILogMonitor {
     @Override
     public void send(final byte[] message) {
         if (contentEncoding == null && contentType != null && contentType.equals(JsonLogCollector.CONTENT_TYPE)) {
-            ILogMonitor.printInfo("<<< " + new String(message, StandardCharsets.UTF_8));
+            if (printMessages) {
+                ILogMonitor.printInfo("<<< " + new String(message, StandardCharsets.UTF_8));
+            } else {
+                ILogMonitor.printInfo("<<< " + message.length + " bytes sent.");
+            }
         } else {
             ILogMonitor.printInfo("<<< " + message.length + " bytes sent (encoding undefined).");
         }

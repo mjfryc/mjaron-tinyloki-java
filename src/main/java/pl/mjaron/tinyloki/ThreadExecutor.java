@@ -37,7 +37,7 @@ public class ThreadExecutor implements IExecutor, Runnable {
         }
 
         // Input parameters are valid - configuration is possible.
-        logCollector.setLogListener(this.logListener);
+        logCollector.configureLogListener(this.logListener);
 
         // Configuration passed, saving changes.
         this.logMonitor = logMonitor;
@@ -97,6 +97,11 @@ public class ThreadExecutor implements IExecutor, Runnable {
     @Override
     public boolean sync(final int timeout) throws InterruptedException {
         return logListener.sync(timeout);
+    }
+
+    @Override
+    public void flush() {
+        logListener.flush();
     }
 
     @Override

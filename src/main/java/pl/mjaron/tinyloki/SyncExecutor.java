@@ -25,7 +25,7 @@ public class SyncExecutor implements IExecutor {
     @Override
     public void configure(ILogCollector logCollector, ILogProcessor logProcessor, ILogMonitor logMonitor) {
         this.logProcessor = logProcessor;
-        logCollector.setLogListener(this::onLog);
+        logCollector.configureLogListener(this::onLog);
     }
 
     @Override
@@ -35,6 +35,10 @@ public class SyncExecutor implements IExecutor {
     @Override
     public boolean sync(int timeout) {
         return true;
+    }
+
+    @Override
+    public void flush() {
     }
 
     @Override

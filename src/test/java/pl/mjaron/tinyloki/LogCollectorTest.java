@@ -8,7 +8,7 @@ class LogCollectorTest {
     @Test
     void basicJson() {
         JsonLogCollector collector = new JsonLogCollector();
-        collector.setLogListener(ILogListener.dummy());
+        collector.configure(ILogListener.dummy(), new BasicBuffering());
         Labels labels = new Labels();
         labels.l("level", "INFO");
         labels.l("host", "ZEUS");

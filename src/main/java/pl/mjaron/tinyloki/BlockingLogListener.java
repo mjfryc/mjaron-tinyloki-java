@@ -41,7 +41,7 @@ class BlockingLogListener implements ILogListener {
     /**
      * Waits for logs in given time.
      *
-     * @param time Time of waiting for logs.
+     * @param time Duration of waiting for logs in milliseconds fom now.
      * @return Captured logs count.
      * @throws InterruptedException When calling thread has been interrupted.
      * @implNote Collects logs until:
@@ -106,6 +106,18 @@ class BlockingLogListener implements ILogListener {
 
             // The loop has finished without a timeout. The target level has been achieved.
             return true;
+        }
+    }
+
+    /**
+     * Asynchronously request the syncing.
+     *
+     * @since 0.4.0
+     */
+    public void flush() {
+        synchronized (cachedLogsMonitor) {
+            syncLevel += 2;
+            cachedLogsMonitor.notifyAll(); // Notify about updated sync level.
         }
     }
 }

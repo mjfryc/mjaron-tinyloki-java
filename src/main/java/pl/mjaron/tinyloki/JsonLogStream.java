@@ -9,6 +9,7 @@ public class JsonLogStream implements ILogStream {
     private final JsonLogCollector collector;
     private final StringBuilder b = new StringBuilder("{\"stream\":{");
     private final String initialSequenceWithHeaders;
+    private final String finalSequenceClosingStreams = "]}";
     private int cachedLogsCount = 0; // Must be used in synchronized methods only.
 
     /**
@@ -39,20 +40,23 @@ public class JsonLogStream implements ILogStream {
         initialSequenceWithHeaders = b.toString();
     }
 
+    int logUnsafe(final long timestampMs, final String line) {
+        final int beforeSize = b.length();
+        if (cachedLogsCount != 0) {
+            b.append(',');
+        }
+        ++cachedLogsCount;
+        b.append("[\"");
+        b.append(timestampMs);
+        b.append("000000\",\"");
+        Utils.escapeJsonString(b, line);
+        b.append("\"]");
+        return b.length() - beforeSize;
+    }
+
     @Override
     public void log(final long timestampMs, final String line) {
-        synchronized (this) {
-            if (cachedLogsCount != 0) {
-                b.append(',');
-            }
-            ++cachedLogsCount;
-            b.append("[\"");
-            b.append(timestampMs);
-            b.append("000000\",\"");
-            Utils.escapeJsonString(b, line);
-            b.append("\"]");
-        }
-        collector.logOccurred();
+        collector.logImplementation(this, timestampMs, line);
     }
 
     @Override
@@ -64,7 +68,7 @@ public class JsonLogStream implements ILogStream {
      * Appends JSON tags which closes streams array and JSON root object.
      */
     public void closeStreamsEntryTag() {
-        b.append("]}");
+        b.append(finalSequenceClosingStreams);
     }
 
     /**
@@ -93,7 +97,7 @@ public class JsonLogStream implements ILogStream {
      * @return JSON-formatted String containing single stream logs from last syncAnd operation or from beginning of time.
      * Null if this stream is empty.
      */
-    synchronized public String flush() {
+    public String flush() {
         if (cachedLogsCount == 0) { // Do not syncAnd if there is no values inside a stream.
             return null;
         }

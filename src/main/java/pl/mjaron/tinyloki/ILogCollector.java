@@ -9,8 +9,29 @@ public interface ILogCollector {
      * Called before using the object.
      *
      * @param logListener The object used as callback when new log occurs.
+     * @since 0.4.0
      */
-    void setLogListener(ILogListener logListener);
+    void configureLogListener(ILogListener logListener);
+
+    /**
+     * Called before using the object.
+     *
+     * @param bufferingManager The object which determines sent data buffering policy.
+     * @since 0.4.0
+     */
+    void configureBufferingManager(IBuffering bufferingManager);
+
+    /**
+     * Configures all values in single command.
+     *
+     * @param logListener      The object used as callback when new log occurs.
+     * @param bufferingManager The object which determines sent data buffering policy.
+     * @since 0.4.0
+     */
+    default void configure(ILogListener logListener, IBuffering bufferingManager) {
+        configureLogListener(logListener);
+        configureBufferingManager(bufferingManager);
+    }
 
     /**
      * Creates a new stream.
@@ -26,6 +47,13 @@ public interface ILogCollector {
      * @return Encoded content of streams or null if there is no new logs to send.
      */
     byte[] collect();
+
+    /**
+     * Collect all logs, including logs buffered with {@link IBuffering}.
+     *
+     * @return Array of messages to be sent.
+     */
+    byte[][] collectAll();
 
     /**
      * HTTP Content-Type describing data type of collect() result.

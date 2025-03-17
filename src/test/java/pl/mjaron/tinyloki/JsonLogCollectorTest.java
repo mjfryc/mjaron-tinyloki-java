@@ -9,7 +9,7 @@ class JsonLogCollectorTest {
     @Test
     void basic() {
         JsonLogCollector collector = new JsonLogCollector();
-        collector.setLogListener(ILogListener.dummy());
+        collector.configure(ILogListener.dummy(), new BasicBuffering());
         JsonLogStream stream = (JsonLogStream) collector.createStream(new Labels().l("abc", "def"));
         assertNotNull(stream.getStringBuilder());
         stream.log(123, "abc");
@@ -23,7 +23,7 @@ class JsonLogCollectorTest {
     @Test
     void emptyStreams() {
         JsonLogCollector collector = new JsonLogCollector();
-        collector.setLogListener(ILogListener.dummy());
+        collector.configure(ILogListener.dummy(), new BasicBuffering());
         ILogStream stream0 = collector.createStream(new Labels().l("a", "Alpha"));
         ILogStream stream1 = collector.createStream(new Labels().l("b", "Beta"));
         assertNull(collector.collect());
@@ -33,7 +33,7 @@ class JsonLogCollectorTest {
     @Test
     void twoStreams() {
         JsonLogCollector collector = new JsonLogCollector();
-        collector.setLogListener(ILogListener.dummy());
+        collector.configure(ILogListener.dummy(), new BasicBuffering());
         ILogStream stream0 = collector.createStream(new Labels().l("a", "Alpha"));
         ILogStream stream1 = collector.createStream(new Labels().l("b", "Beta"));
         stream0.log("a_line");
@@ -86,7 +86,7 @@ class JsonLogCollectorTest {
 
         final String extended = "🩑"; // "\uD83E\uDE51"
         JsonLogCollector collector = new JsonLogCollector();
-        collector.setLogListener(ILogListener.dummy());
+        collector.configure(ILogListener.dummy(), new BasicBuffering());
         ILogStream stream = collector.createStream(new Labels());
         stream.log(0, extended);
         final String logs = collector.collectAsString();

@@ -51,6 +51,7 @@ class ThreadExecutorTest {
         };
         final ThreadExecutor executor = new ThreadExecutor(1000);
         final ILogCollector logCollector = new JsonLogCollector();
+        logCollector.configureBufferingManager(new BasicBuffering());
         executor.configure(logCollector, throwingProcessor, new VerboseLogMonitor());
         executor.start();
         final ILogStream stream = logCollector.createStream(new Labels().l("sample", "label"));
@@ -84,8 +85,12 @@ class ThreadExecutorTest {
         }
 
         @Override
-        public void setLogListener(ILogListener logListener) {
+        public void configureLogListener(ILogListener logListener) {
             this.logListener = logListener;
+        }
+
+        @Override
+        public void configureBufferingManager(IBuffering bufferingManager) {
         }
 
         @Override
@@ -96,6 +101,11 @@ class ThreadExecutorTest {
         @Override
         public byte[] collect() {
             return new byte[0];
+        }
+
+        @Override
+        public byte[][] collectAll() {
+            return new byte[0][];
         }
 
         @Override

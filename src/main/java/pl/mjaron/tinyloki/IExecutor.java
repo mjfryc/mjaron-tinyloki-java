@@ -11,7 +11,7 @@ public interface IExecutor {
     /**
      * Performs the configuration before using the object. Called internally by the {@link LogController} constructor.
      *
-     * @param logCollector Object used to observe when new logs occur.
+     * @param logCollector Used to observe when new logs occur.
      * @param logProcessor Used to periodically perform the log processing.
      * @param logMonitor   Used to dump diagnostic logger information.
      * @since 0.4.0
@@ -37,6 +37,13 @@ public interface IExecutor {
      * @since 0.4.0
      */
     boolean sync(int timeout) throws InterruptedException;
+
+    /**
+     * Try to synchronize logs asynchronously.
+     *
+     * @since 0.4.0
+     */
+    void flush();
 
     /**
      * Blocking function. Stops the asynchronous service (thread) which sends the logs.

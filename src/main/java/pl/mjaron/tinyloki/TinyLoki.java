@@ -41,7 +41,7 @@ public class TinyLoki {
      * @since 0.3.0
      */
     public static LogController createAndStart(final Settings settings) {
-        return new LogController(settings.getLogCollector(), settings.getLogEncoder(), settings.getLogSenderSettings(), settings.getLogSender(), settings.getLabelSettings(), settings.getExecutor(), settings.getLogMonitor()).start();
+        return new LogController(settings.getLogCollector(), settings.getLogEncoder(), settings.getLogSenderSettings(), settings.getLogSender(), settings.getLabelSettings(), settings.getExecutor(), settings.getBuffering(), settings.getLogMonitor()).start();
     }
 
     /**
@@ -313,6 +313,9 @@ public class TinyLoki {
          * @since 0.3.4
          */
         private ILogEncoder logEncoder = null;
+
+        private IBuffering buffering = null;
+
         /**
          * {@link ILogMonitor} which is used for this library diagnostic and error handling.
          *
@@ -499,6 +502,34 @@ public class TinyLoki {
         }
 
         /**
+         * Allows setting the {@link IBuffering} implementation.
+         *
+         * @param buffering The {@link IBuffering} implementation.
+         * @return This {@link Settings} object reference.
+         * @since 0.4.0
+         */
+        public Settings withBuffering(final IBuffering buffering) {
+            this.buffering = buffering;
+            return this;
+        }
+
+        /**
+         * Allows to set and configure the {@link BasicBuffering}.
+         *
+         * @param maxMessageSize  The max single message size.
+         *                        This size should be lower than the Grafana Loki server max message size.
+         *                        The default value in this library: {@link IBuffering#DEFAULT_MAX_MESSAGE_SIZE}.
+         * @param maxBuffersCount The max buffers count. The value should be tuned to target system capabilities.
+         *                        The default value in this library: {@link IBuffering#DEFAULT_MAX_BUFFERS_COUNT}.
+         * @return This {@link Settings} object reference.
+         * @since 0.4.0
+         */
+        public Settings withBasicBuffering(final int maxMessageSize, final int maxBuffersCount) {
+            this.buffering = new BasicBuffering(maxMessageSize, maxBuffersCount);
+            return this;
+        }
+
+        /**
          * Getter of {@link LogSenderSettings}. Used by TinyLoki to initialize the {@link HttpLogSender}.
          *
          * @return Reference to {@link LogSenderSettings} instance in this settings object.
@@ -526,6 +557,19 @@ public class TinyLoki {
          */
         public ILogEncoder getLogEncoder() {
             return logEncoder;
+        }
+
+        /**
+         * Getter of {@link IBuffering}.
+         *
+         * @return Selected {@link IBuffering} or default value if not set.
+         * @since 0.4.0
+         */
+        public IBuffering getBuffering() {
+            if (buffering == null) {
+                buffering = new BasicBuffering();
+            }
+            return buffering;
         }
 
         /**

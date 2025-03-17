@@ -8,7 +8,7 @@ Start the server with:
 
 ```bash
 # cd tinyloki-server
-docker-compose up
+docker compose up
 ```
 Following services are available:
 

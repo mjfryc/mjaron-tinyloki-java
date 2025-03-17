@@ -47,6 +47,7 @@ public class LogController implements java.io.Closeable {
     private final ILogSender logSender;
     private final LabelSettings labelSettings;
     private final IExecutor executor;
+    private final IBuffering bufferingManager;
     private final ILogMonitor logMonitor;
 
     /**
@@ -59,16 +60,21 @@ public class LogController implements java.io.Closeable {
      * @param logSender         Sends the logs collected by log controller.
      * @param labelSettings     Preferences of the {@link Labels}. See {@link LabelSettings}.
      * @param executor          The {@link IExecutor} implementation.
+     * @param bufferingManager  The object responsible for buffering strategy.
      * @param logMonitor        Handles diagnostic events from whole library.
      * @since 0.3.4
      */
-    public LogController(final ILogCollector logCollector, ILogEncoder logEncoder, final LogSenderSettings logSenderSettings, final ILogSender logSender, final LabelSettings labelSettings, final IExecutor executor, final ILogMonitor logMonitor) {
+    public LogController(final ILogCollector logCollector, ILogEncoder logEncoder, final LogSenderSettings logSenderSettings, final ILogSender logSender, final LabelSettings labelSettings, final IExecutor executor, final IBuffering bufferingManager, final ILogMonitor logMonitor) {
         this.logCollector = logCollector;
         this.logEncoder = logEncoder;
         this.logSender = logSender;
         this.labelSettings = labelSettings;
         this.executor = executor;
+        this.bufferingManager = bufferingManager;
         this.logMonitor = logMonitor;
+
+        this.bufferingManager.configure(this.logCollector, 0, 0, this.executor, this.logMonitor);
+        this.logCollector.configureBufferingManager(this.bufferingManager);
         logSenderSettings.setContentType(this.logCollector.contentType());
         final String contentEncoding = (this.logEncoder == null) ? null : this.logEncoder.contentEncoding();
         logSenderSettings.setContentEncoding(contentEncoding);
@@ -87,10 +93,10 @@ public class LogController implements java.io.Closeable {
      * @param labelSettings     Preferences of the {@link Labels}. See {@link LabelSettings}.
      * @param executor          The {@link IExecutor} implementation.
      * @param logMonitor        Handles diagnostic events from whole library.
-     * @deprecated Use {@link LogController#LogController(ILogCollector, ILogEncoder, LogSenderSettings, ILogSender, LabelSettings, IExecutor, ILogMonitor)} instead, where logEncoder parameter should be specified explicitly.
+     * @deprecated Use {@link LogController#LogController(ILogCollector, ILogEncoder, LogSenderSettings, ILogSender, LabelSettings, IExecutor, IBuffering, ILogMonitor)} instead, where logEncoder parameter should be specified explicitly.
      */
     public LogController(final ILogCollector logCollector, final LogSenderSettings logSenderSettings, final ILogSender logSender, final LabelSettings labelSettings, final IExecutor executor, final ILogMonitor logMonitor) {
-        this(logCollector, null, logSenderSettings, logSender, labelSettings, executor, logMonitor);
+        this(logCollector, null, logSenderSettings, logSender, labelSettings, executor, new BasicBuffering(), logMonitor);
     }
 
     /**
@@ -351,26 +357,31 @@ public class LogController implements java.io.Closeable {
      * @since 0.4.0
      */
     protected void internalProcessLogs() throws InterruptedException {
-        final byte[] logs = logCollector.collect();
-        if (logs == null) {
+        final byte[][] buffers = logCollector.collectAll();
+        if (buffers == null) {
+            logMonitor.logInfo("Buffers count: [0] (null).");
             return;
         }
-        final byte[] toSend;
-        if (logEncoder == null) {
-            toSend = logs;
-        } else {
-            try {
-                toSend = logEncoder.encode(logs);
-            } catch (final IOException e) {
-                throw new RuntimeException("Failed to encode logs.", e);
-            }
-            logMonitor.onEncoded(logs, toSend);
-        }
 
-        try {
-            logSender.send(toSend);
-        } catch (final IOException e) {
-            throw new RuntimeException(e);
+        logMonitor.logInfo("Buffers count: [" + buffers.length + "].");
+        for (final byte[] logs : buffers) {
+            final byte[] toSend;
+            if (logEncoder == null) {
+                toSend = logs;
+            } else {
+                try {
+                    toSend = logEncoder.encode(logs);
+                } catch (final IOException e) {
+                    throw new RuntimeException("Failed to encode logs.", e);
+                }
+                logMonitor.onEncoded(logs, toSend);
+            }
+
+            try {
+                logSender.send(toSend);
+            } catch (final IOException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 

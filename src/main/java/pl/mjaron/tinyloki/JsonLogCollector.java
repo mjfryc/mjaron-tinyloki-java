@@ -13,13 +13,18 @@ public class JsonLogCollector implements ILogCollector {
     public static final String CONTENT_TYPE = "application/json";
 
     private final List<JsonLogStream> streams = new ArrayList<>();
-    private final Object logEntriesLock = new Object();
     private int logEntriesCount = 0;
-    private ILogListener logObserver = null;
+    private ILogListener logListener = null;
+    private IBuffering bufferingManager = null;
 
     @Override
-    public void setLogListener(ILogListener logListener) {
-        this.logObserver = logListener;
+    public void configureLogListener(final ILogListener logListener) {
+        this.logListener = logListener;
+    }
+
+    @Override
+    public void configureBufferingManager(final IBuffering bufferingManager) {
+        this.bufferingManager = bufferingManager;
     }
 
     /**
@@ -45,20 +50,6 @@ public class JsonLogCollector implements ILogCollector {
      */
     synchronized public void onStreamReleased(ILogStream stream) {
         streams.remove((JsonLogStream) stream);
-    }
-
-    /**
-     * Create complete stream chunk in JSON string, stored as UTF-8 bytes.
-     *
-     * @return JSON bytes containing stream chunk.
-     */
-    @Override
-    public byte[] collect() {
-        final String collectedAsString = collectAsString();
-        if (collectedAsString == null) {
-            return null;
-        }
-        return collectedAsString.getBytes(StandardCharsets.UTF_8);
     }
 
     /**
@@ -92,6 +83,24 @@ public class JsonLogCollector implements ILogCollector {
     }
 
     /**
+     * Create complete stream chunk in JSON string, stored as UTF-8 bytes.
+     *
+     * @return JSON UTF-8 bytes containing stream chunk.
+     */
+    @Override
+    public byte[] collect() {
+        final String collectedAsString = collectAsString();
+        if (collectedAsString == null) {
+            return null;
+        }
+        return collectedAsString.getBytes(StandardCharsets.UTF_8);
+    }
+
+    synchronized public byte[][] collectAll() {
+        return bufferingManager.collectAll();
+    }
+
+    /**
      * Used in HTTP Content-Type header. Grafana Loki will interpret content as JSON.
      *
      * @return String complaint with HTTP Content-Type header, telling that content is a JSON data.
@@ -101,16 +110,16 @@ public class JsonLogCollector implements ILogCollector {
         return CONTENT_TYPE;
     }
 
-    /**
-     * Notify log collector that any log has occurred.
-     * Thread safe.
-     */
-    void logOccurred() {
-        synchronized (logEntriesLock) {
-            ++logEntriesCount;
-            logEntriesLock.notify();
-            logObserver.onLog(logEntriesCount);
+    synchronized void logImplementation(JsonLogStream stream, final long timestampMs, final String line) {
+        final int logCandidateSize = 25 + line.length();
+        if (!bufferingManager.beforeLog(logCandidateSize)) {
+            return;
         }
-    }
 
+        final int acceptedLogSize = stream.logUnsafe(timestampMs, line);
+
+        bufferingManager.logAccepted(acceptedLogSize);
+        ++logEntriesCount;
+        logListener.onLog(logEntriesCount);
+    }
 }

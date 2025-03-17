@@ -66,4 +66,23 @@ class BlockingLogListenerTest {
         BlockingLogListener logListener = new BlockingLogListener();
         assertTimeout(Duration.ofMillis(1_000), () -> assertEquals(0, logListener.waitForLogs(500)));
     }
+
+    @Test
+    void flush() throws InterruptedException {
+        BlockingLogListener logListener = new BlockingLogListener();
+        logListener.onLog(100);
+        Thread flushingThread = new Thread(() -> {
+            try {
+                Thread.sleep(100);
+                logListener.flush();
+            } catch (final InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        });
+        flushingThread.start();
+
+        assertTimeout(Duration.ofMillis(500), () -> logListener.waitForLogs(100 * 1000));
+        flushingThread.interrupt();
+        flushingThread.join();
+    }
 }

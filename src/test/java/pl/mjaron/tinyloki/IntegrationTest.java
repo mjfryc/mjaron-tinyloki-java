@@ -17,8 +17,11 @@ public class IntegrationTest {
     }
 
     @Test
-    void tinyLokiTest() throws InterruptedException {
-        LogController logController = TinyLoki.withUrl("http://localhost:3100/loki/api/v1/push").withBasicAuth("user", "pass").withConnectTimeout(5000).start();
+    void shortExample() throws InterruptedException {
+        LogController logController = TinyLoki.withUrl("http://localhost:3100")
+                .withBasicAuth("user", "pass")
+                .start();
+        
         ILogStream stream = logController.stream().info().l("host", "ZEUS").build();
         //Or: ILogStream stream = logController.createStream(TinyLoki.info().l("host", "ZEUS"));
         stream.log("Hello world.");

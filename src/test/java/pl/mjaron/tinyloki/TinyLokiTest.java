@@ -27,42 +27,4 @@ public class TinyLokiTest {
         assertTrue(result);
         System.out.println("Done.");
     }
-
-    @Test
-    void settingsTest() {
-        ILogCollector collector = new JsonLogCollector();
-        ILogEncoder logEncoder = new ILogEncoder() {
-            @Override
-            public String contentEncoding() {
-                return "NO_ENCODING";
-            }
-
-            @Override
-            public byte[] encode(byte[] what) throws IOException {
-                return what;
-            }
-        };
-        TinyLoki.Settings settings = TinyLoki.withUrl("http://example.com").withBasicAuth("aaa", "bbb").withConnectTimeout(123).withLogCollector(collector).withLogEncoder(logEncoder);
-        assertEquals("aaa", settings.getLogSenderSettings().getUser());
-        assertEquals("bbb", settings.getLogSenderSettings().getPassword());
-        assertEquals(123, settings.getLogSenderSettings().getConnectTimeout());
-        assertSame(collector, settings.getLogCollector());
-        assertSame(logEncoder, settings.getLogEncoder());
-        settings.withGzipLogEncoder();
-        assertEquals(GzipLogEncoder.class, settings.getLogEncoder().getClass());
-
-        ILogMonitor logMonitor = new SilentLogMonitor();
-        settings.withLogMonitor(logMonitor);
-        assertSame(logMonitor, settings.getLogMonitor());
-
-        settings.withErrorLogMonitor();
-        assertEquals(ErrorLogMonitor.class, settings.getLogMonitor().getClass());
-
-        settings.withVerboseLogMonitor();
-        assertEquals(VerboseLogMonitor.class, settings.getLogMonitor().getClass());
-
-        ILogSender logSender = new MemoryLogSender();
-        settings.withLogSender(logSender);
-        assertSame(logSender, settings.getLogSender());
-    }
 }

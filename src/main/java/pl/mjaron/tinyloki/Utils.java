@@ -19,7 +19,7 @@ public class Utils {
      *
      * @param throwable The {@link Throwable} object.
      * @return String containing printed stack trace of given {@link Throwable} object.
-     * @since 0.4.0
+     * @since 1.0.0
      */
     public static String stackTraceString(final Throwable throwable) {
         final StringWriter sw = new StringWriter();

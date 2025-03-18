@@ -34,12 +34,12 @@ import pl.mjaron.tinyloki.*;
 public class Sample {
     public static void main(String[] args) {
 
-        LogController logController = TinyLoki
+        LogController tinyLoki = TinyLoki
                 .withUrl("http://localhost/loki/api/v1/push")
                 .withBasicAuth("user", "pass")
                 .start();
 
-        ILogStream stream = logController.stream() // Before v0.3.2 use createStream()
+        ILogStream stream = tinyLoki.stream() // Before v0.3.2 use createStream()
                 .info()
                 .l("host", "MyComputerName")
                 .l("customLabel", "custom_value")
@@ -47,7 +47,7 @@ public class Sample {
 
         stream.log("Hello world.");
 
-        logController.softStop().hardStop();
+        tinyLoki.softStop().hardStop();
     }
 }
 ```
@@ -63,13 +63,13 @@ public class Sample {
         // Initialize log controller instance with URL.
         // Usually creating more than one LogController instance doesn't make sense.
         // LogController owns separate thread which sends logs periodically.
-        LogController logController = TinyLoki
+        LogController tinyLoki = TinyLoki
                 .withUrl("http://localhost/loki/api/v1/push")
                 .withBasicAuth("user", "pass")
                 .start();
 
         // Create streams. It is thread-safe.
-        ILogStream stream = logController.createStream(
+        ILogStream stream = tinyLoki.createStream(
                 // Define stream labels...
                 // Initializing log level to verbose and adding some custom labels.
                 TinyLoki.verbose()
@@ -85,7 +85,7 @@ public class Sample {
         stream.log("Hello world.");
 
         // Optionally flush logs before application exit.
-        logController
+        tinyLoki
                 .softStop()     // Try to send logs last time. Blocking method.
                 .hardStop();    // If it doesn't work (soft timeout) - force stop sending thread.
     }

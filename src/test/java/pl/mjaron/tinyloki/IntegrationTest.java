@@ -9,6 +9,12 @@ import java.util.Random;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+/**
+ * Modify the run configuration by adding environment variable:
+ * <pre>{@code
+ * TINYLOKI_INTEGRATION=1
+ * }</pre>
+ */
 @EnabledIfEnvironmentVariable(named = "TINYLOKI_INTEGRATION", matches = "1")
 public class IntegrationTest {
 
@@ -18,21 +24,27 @@ public class IntegrationTest {
 
     @Test
     void shortExample() throws InterruptedException {
-        LogController logController = TinyLoki.withUrl("http://localhost:3100")
+        TinyLoki loki = TinyLoki.withUrl("http://localhost:3100")
                 .withBasicAuth("user", "pass")
                 .start();
-        
-        ILogStream stream = logController.stream().info().l("host", "ZEUS").build();
-        //Or: ILogStream stream = logController.createStream(TinyLoki.info().l("host", "ZEUS"));
-        stream.log("Hello world.");
-        // ... new streams and other logs here.
-        boolean closedWithSuccess = logController.closeSync(1000);
+
+        ILogStream windowStream = loki.stream().info().l("device", "window").build();
+        ILogStream doorStream = loki.stream().info().l("device", "door").build();
+
+        windowStream.log("The window is open.");
+        doorStream.log("The door is open.");
+
+        // Time for syncing and closing the logs.
+        boolean closedWithSuccess = loki.closeSync(1000);
+
+        System.out.println("Closed with success: " + closedWithSuccess);
+
         assertTrue(closedWithSuccess);
     }
 
     @Test
     void sampleTest() throws InterruptedException {
-        try (LogController loki = TinyLoki.withUrl("http://localhost:3100/loki/api/v1/push").withVerboseLogMonitor().start()) {
+        try (TinyLoki loki = TinyLoki.withUrl("http://localhost:3100/loki/api/v1/push").withVerboseLogMonitor().start()) {
             ILogStream stream = loki.stream().l("color", "white").build();
             stream.log("Hello world.");
             loki.sync();
@@ -79,7 +91,7 @@ public class IntegrationTest {
         final int testRunId = random.nextInt(1000);
         System.out.println("Running test: " + testRunId);
 
-        try (LogController loki = TinyLoki.withUrl("http://localhost:3100/loki/api/v1/push").withVerboseLogMonitor(false).withExecutor(new ThreadExecutor(100000)).start()) {
+        try (TinyLoki loki = TinyLoki.withUrl("http://localhost:3100/loki/api/v1/push").withVerboseLogMonitor(false).withExecutor(new ThreadExecutor(100000)).start()) {
 
             for (int i = 0; i < 100; ++i) {
                 streams.add(loki.stream().l("test_name", "sampleMassiveTest").l("test_run_id", "test_" + testRunId).l(MassiveThread.LABEL_STREAM_IDX, "index_" + i).build());

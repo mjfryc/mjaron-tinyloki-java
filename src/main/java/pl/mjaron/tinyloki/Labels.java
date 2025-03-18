@@ -366,7 +366,7 @@ public class Labels implements Cloneable {
      * Creates a new {@link Labels} object with corrected label values, so such labels will be accepted by Grafana Loki
      * server.
      * <p>
-     * Used by {@link LogController} to pass correct labels to the server.
+     * Used by {@link TinyLoki} to pass correct labels to the server.
      *
      * @param labels        Labels to prettify. Label length limits: <a
      *                      href="https://grafana.com/docs/loki/latest/configuration/">Grafana Loki server
@@ -394,10 +394,20 @@ public class Labels implements Cloneable {
      *
      * @param labels Map with label-name mapped to label-value pairs.
      * @return New instance of {@link Labels}.
-     * @since 0.3.0
+     * @since 1.0.0
      */
-    public static Labels from(Map<String, String> labels) {
+    public static Labels make(final Map<String, String> labels) {
         return new Labels(labels);
+    }
+
+    /**
+     * Creates a new empty labels instance.
+     *
+     * @return New instance of {@link Labels}.
+     * @since 1.0.0
+     */
+    public static Labels make() {
+        return new Labels();
     }
 
     /**

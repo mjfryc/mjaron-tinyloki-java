@@ -14,11 +14,11 @@ import java.util.Map;
  */
 public class StreamBuilder {
 
-    private final LogController logController;
+    private final TinyLoki tinyLoki;
     private final Labels labels = new Labels();
 
-    public StreamBuilder(final LogController logController) {
-        this.logController = logController;
+    public StreamBuilder(final TinyLoki tinyLoki) {
+        this.tinyLoki = tinyLoki;
     }
 
     /**
@@ -27,7 +27,7 @@ public class StreamBuilder {
      * @return New {@link ILogStream} instance.
      */
     public ILogStream build() {
-        return logController.createStream(labels);
+        return tinyLoki.createStream(labels);
     }
 
     /**

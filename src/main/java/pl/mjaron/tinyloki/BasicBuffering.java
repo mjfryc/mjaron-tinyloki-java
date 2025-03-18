@@ -6,7 +6,7 @@ import java.util.List;
 /**
  * Default buffering implementation. Provides a set of buffers which try to keep as mandy messages as possible.
  *
- * @since 0.4.0
+ * @since 1.0.0
  */
 public class BasicBuffering implements IBuffering {
 
@@ -22,7 +22,7 @@ public class BasicBuffering implements IBuffering {
     /**
      * Default constructor.
      *
-     * @since 0.4.0
+     * @since 1.0.0
      */
     public BasicBuffering() {
     }
@@ -32,7 +32,7 @@ public class BasicBuffering implements IBuffering {
      *
      * @param maxMessageSize  Max allowed message size.
      * @param maxBuffersCount Max buffers count.
-     * @since 0.4.0
+     * @since 1.0.0
      */
     public BasicBuffering(final int maxMessageSize, final int maxBuffersCount) {
         if (maxMessageSize > 0) {
@@ -61,7 +61,7 @@ public class BasicBuffering implements IBuffering {
      * This method is not thread safe.
      *
      * @return Container of internal buffers.
-     * @since 0.4.0
+     * @since 1.0.0
      */
     public List<byte[]> getBuffers() {
         return buffers;

@@ -3,7 +3,7 @@ package pl.mjaron.tinyloki;
 /**
  * The dummy log monitor which logs nothing.
  *
- * @since 0.4.0
+ * @since 1.0.0
  */
 public class SilentLogMonitor implements ILogMonitor {
     @Override

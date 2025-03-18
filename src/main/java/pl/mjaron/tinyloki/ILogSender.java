@@ -10,7 +10,7 @@ import java.io.IOException;
 public interface ILogSender {
 
     /**
-     * Configures this sender. Called once by {@link LogController} when all parameters are determined.
+     * Configures this sender. Called once by {@link TinyLoki} when all parameters are determined.
      * <p>
      * This method should be idempotent.
      * <p>
@@ -26,8 +26,9 @@ public interface ILogSender {
      * Calls several {@link ILogMonitor} methods pointing what's the request data and HTTP response result.
      *
      * @param message Data to send in HTTP request content.
-     * @throws RuntimeException On connection error.
+     * @throws RuntimeException     On any undefined, implementation-related exception.
      * @throws InterruptedException When operation is terminated by {@link IExecutor} thread.
+     * @throws IOException          On server connection error.
      */
     void send(final byte[] message) throws InterruptedException, IOException;
 }

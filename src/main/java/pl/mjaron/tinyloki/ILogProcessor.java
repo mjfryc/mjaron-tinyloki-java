@@ -3,7 +3,7 @@ package pl.mjaron.tinyloki;
 /**
  * Provides an implementation of collecting and sending the logs. Called periodically by {@link IExecutor}.
  *
- * @since 0.4.0
+ * @since 1.0.0
  */
 public interface ILogProcessor {
 
@@ -15,7 +15,7 @@ public interface ILogProcessor {
      * The method is not thread safe. Should be called sequentially.
      *
      * @throws InterruptedException When thread is interrupted.
-     * @since 0.4.0
+     * @since 1.0.0
      */
     void processLogs() throws InterruptedException;
 }

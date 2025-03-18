@@ -1,7 +1,7 @@
 package pl.mjaron.tinyloki;
 
 /**
- * Configuration used to create a new {@link LogController} object.
+ * Configuration used to create a new {@link TinyLoki} object.
  *
  * @since 0.3.0
  */
@@ -28,7 +28,7 @@ public class Settings {
      *
      * @param url The server URL. The logs pushing endpoint will be automatically added if missing.
      * @return Normalized URL.
-     * @since 0.4.0
+     * @since 1.0.0
      */
     public static String normalizeUrl(final String url) {
         if (url.endsWith(TinyLoki.API_PUSH)) {
@@ -55,8 +55,8 @@ public class Settings {
      *            See {@link #normalizeUrl(String)} for more details about accepted URL formats.
      * @return New {@link Settings} instance.
      * @see #normalizeUrl(String)
-     * @see #fromArbitraryUrl(String)
-     * @since 0.4.0
+     * @see #fromExactUrl(String)
+     * @since 1.0.0
      */
     public static Settings fromUrl(final String url) {
         return new Settings(normalizeUrl(url));
@@ -70,9 +70,9 @@ public class Settings {
      * @param url Any value used as URL when connecting to the Grafana Loki server.
      * @return New {@link Settings} instance.
      * @see #fromUrl(String)
-     * @since 0.4.0
+     * @since 1.0.0
      */
-    public static Settings fromArbitraryUrl(final String url) {
+    public static Settings fromExactUrl(final String url) {
         return new Settings(url);
     }
 
@@ -121,7 +121,7 @@ public class Settings {
     /**
      * The {@link IExecutor} used to perform background log collecting and sending operations.
      *
-     * @since 0.4.0
+     * @since 1.0.0
      */
     private IExecutor executor = null;
 
@@ -286,7 +286,7 @@ public class Settings {
      *
      * @param executor The {@link IExecutor} instance. The <code>null</code> value causes using the default executor.
      * @return This {@link Settings} object reference.
-     * @since 0.4.0
+     * @since 1.0.0
      */
     public Settings withExecutor(final IExecutor executor) {
         this.executor = executor;
@@ -298,7 +298,7 @@ public class Settings {
      *
      * @param buffering The {@link IBuffering} implementation.
      * @return This {@link Settings} object reference.
-     * @since 0.4.0
+     * @since 1.0.0
      */
     public Settings withBuffering(final IBuffering buffering) {
         this.buffering = buffering;
@@ -314,7 +314,7 @@ public class Settings {
      * @param maxBuffersCount The max buffers count. The value should be tuned to target system capabilities.
      *                        The default value in this library: {@link IBuffering#DEFAULT_MAX_BUFFERS_COUNT}.
      * @return This {@link Settings} object reference.
-     * @since 0.4.0
+     * @since 1.0.0
      */
     public Settings withBasicBuffering(final int maxMessageSize, final int maxBuffersCount) {
         this.buffering = new BasicBuffering(maxMessageSize, maxBuffersCount);
@@ -355,7 +355,7 @@ public class Settings {
      * Getter of {@link IBuffering}.
      *
      * @return Selected {@link IBuffering} or default value if not set.
-     * @since 0.4.0
+     * @since 1.0.0
      */
     public IBuffering getBuffering() {
         if (buffering == null) {
@@ -403,7 +403,7 @@ public class Settings {
      * Provides the {@link IExecutor} instance defined by this library's user or default executor if user hasn't specified the executor.
      *
      * @return Selected {@link IExecutor} instance.
-     * @since 0.4.0
+     * @since 1.0.0
      */
     public IExecutor getExecutor() {
         if (executor == null) {
@@ -413,11 +413,11 @@ public class Settings {
     }
 
     /**
-     * Creates and starts the {@link LogController} instance using parameters defined previously by this settings object.
+     * Creates and starts the {@link TinyLoki} instance using parameters defined previously by this settings object.
      *
-     * @return New {@link LogController} instance.
+     * @return New {@link TinyLoki} instance.
      */
-    public LogController start() {
+    public TinyLoki start() {
         return TinyLoki.createAndStart(this);
     }
 }

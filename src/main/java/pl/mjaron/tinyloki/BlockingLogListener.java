@@ -4,7 +4,7 @@ package pl.mjaron.tinyloki;
  * Helper class which allows waiting actively (blocking) for incoming logs.
  * Supports <code>sync()</code> requests and thread interruption.
  *
- * @since 0.4.0
+ * @since 1.0.0
  */
 class BlockingLogListener implements ILogListener {
 
@@ -112,7 +112,7 @@ class BlockingLogListener implements ILogListener {
     /**
      * Asynchronously request the syncing.
      *
-     * @since 0.4.0
+     * @since 1.0.0
      */
     public void flush() {
         synchronized (cachedLogsMonitor) {

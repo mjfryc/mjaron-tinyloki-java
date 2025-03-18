@@ -4,24 +4,24 @@ package pl.mjaron.tinyloki;
  * Responsible for asynchronous flow of the collecting, encoding and sending the logs.
  * Initializes the asynchronous tread of other execution environment.
  *
- * @since 0.4.0
+ * @since 1.0.0
  */
 public interface IExecutor {
 
     /**
-     * Performs the configuration before using the object. Called internally by the {@link LogController} constructor.
+     * Performs the configuration before using the object. Called internally by the {@link TinyLoki} constructor.
      *
      * @param logCollector Used to observe when new logs occur.
      * @param logProcessor Used to periodically perform the log processing.
      * @param logMonitor   Used to dump diagnostic logger information.
-     * @since 0.4.0
+     * @since 1.0.0
      */
     void configure(ILogCollector logCollector, ILogProcessor logProcessor, ILogMonitor logMonitor);
 
     /**
      * Starts the execution loop.
      *
-     * @since 0.4.0
+     * @since 1.0.0
      */
     void start();
 
@@ -34,14 +34,14 @@ public interface IExecutor {
      * <code>false</code> If timeout has occurred.
      * @throws InterruptedException     When calling thread is interrupted.
      * @throws IllegalArgumentException If the value of <code>timeout</code> is negative.
-     * @since 0.4.0
+     * @since 1.0.0
      */
     boolean sync(int timeout) throws InterruptedException;
 
     /**
      * Try to synchronize logs asynchronously.
      *
-     * @since 0.4.0
+     * @since 1.0.0
      */
     void flush();
 
@@ -58,7 +58,7 @@ public interface IExecutor {
      * <code>false</code> If failed to stop due to timeout.
      * @throws InterruptedException     When calling thread is interrupted.
      * @throws IllegalArgumentException If the value of <code>timeout</code> is negative.
-     * @since 0.4.0
+     * @since 1.0.0
      */
     boolean stop(int timeout) throws InterruptedException;
 
@@ -67,7 +67,7 @@ public interface IExecutor {
      * <p>
      * The {@link #stop(int)} still should be finally called.
      *
-     * @since 0.4.0
+     * @since 1.0.0
      */
     void stopAsync();
 }

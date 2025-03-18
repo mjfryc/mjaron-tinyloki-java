@@ -7,7 +7,7 @@ import java.io.OutputStream;
  * Allows writing the logs directly to the given stream.
  * It doesn't open or close the stream.
  *
- * @since 0.4.0
+ * @since 1.0.0
  */
 public class StreamLogSender implements ILogSender {
 

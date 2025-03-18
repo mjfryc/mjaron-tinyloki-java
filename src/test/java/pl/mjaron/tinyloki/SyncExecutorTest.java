@@ -10,7 +10,7 @@ class SyncExecutorTest {
     @Test
     void basic() throws InterruptedException {
 
-        LogController controller = TinyLoki.withUrl("http://example.com").withExecutor(new SyncExecutor()).withLogSender(new DummyLogSender(100)).withVerboseLogMonitor().start();
+        TinyLoki controller = TinyLoki.withUrl("http://example.com").withExecutor(new SyncExecutor()).withLogSender(new DummyLogSender(100)).withVerboseLogMonitor().start();
         ILogStream stream = controller.stream().l("color", "white").build();
         stream.log("My first log.");
         assertTrue(controller.closeSync());

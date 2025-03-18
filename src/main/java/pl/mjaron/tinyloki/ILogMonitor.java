@@ -32,7 +32,7 @@ public interface ILogMonitor {
     void logError(final String what);
 
     /**
-     * Called when {@link LogController} is set up and ready to work.
+     * Called when {@link TinyLoki} is set up and ready to work.
      *
      * @param contentType     Content type used by {@link ILogCollector}.
      * @param contentEncoding Content encoding used by {@link ILogEncoder}.
@@ -80,14 +80,14 @@ public interface ILogMonitor {
      * Called when sync operation ends.
      *
      * @param isSuccess The sync operation result.
-     * @since 0.4.0
+     * @since 1.0.0
      */
     void onSync(final boolean isSuccess);
 
     /**
      * Called when start operation ends.
      *
-     * @since 0.4.0
+     * @since 1.0.0
      */
     void onStart();
 
@@ -95,7 +95,7 @@ public interface ILogMonitor {
      * Called when stop operation ends.
      *
      * @param isSuccess The stop operation result.
-     * @since 0.4.0
+     * @since 1.0.0
      */
     void onStop(final boolean isSuccess);
 }

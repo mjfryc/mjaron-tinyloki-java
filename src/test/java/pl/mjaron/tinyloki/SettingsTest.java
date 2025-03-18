@@ -57,8 +57,8 @@ class SettingsTest {
     }
 
     @Test
-    void fromArbitraryUrl() {
-        Settings settings = Settings.fromArbitraryUrl("abc");
+    void fromExactUrl() {
+        Settings settings = Settings.fromExactUrl("abc");
         assertEquals("abc", settings.getLogSenderSettings().getUrl());
     }
 }

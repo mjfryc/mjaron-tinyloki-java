@@ -20,6 +20,7 @@ public interface ILogEncoder {
      *
      * @param what Bytes to encode.
      * @return Bytes encoded.
+     * @throws IOException On any encoding error.
      */
     byte[] encode(final byte[] what) throws IOException;
 }

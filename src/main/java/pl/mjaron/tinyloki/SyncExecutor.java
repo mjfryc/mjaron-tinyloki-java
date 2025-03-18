@@ -8,7 +8,7 @@ package pl.mjaron.tinyloki;
  * <p>
  * Note: In case of thread interruption, the {@link RuntimeException} will be thrown.
  *
- * @since 0.4.0
+ * @since 1.0.0
  */
 public class SyncExecutor implements IExecutor {
 

@@ -10,7 +10,7 @@ public interface ILogListener {
      * Create the log listener which does nothing. Mainly for diagnostic purposes.
      *
      * @return The new dummy log listener.
-     * @since 0.4.0
+     * @since 1.0.0
      */
     static ILogListener dummy() {
         //noinspection Convert2Lambda

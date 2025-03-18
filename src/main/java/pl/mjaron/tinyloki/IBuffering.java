@@ -14,7 +14,7 @@ package pl.mjaron.tinyloki;
  * This class is <b>not</b> thread safe and should be called synchronously with implementation of {@link ILogCollector}.
  *
  * @see JsonLogCollector
- * @since 0.4.0
+ * @since 1.0.0
  */
 public interface IBuffering {
 
@@ -36,7 +36,7 @@ public interface IBuffering {
      * @param maxBuffersCount The maximum buffers count. If this buffer count is exceeded, older buffers will be deleted.
      * @param executor        The {@link IExecutor} used to call {@link IExecutor#flush()} when buffer is full.
      * @param logMonitor      The {@link ILogMonitor} for diagnostic purposes.
-     * @since 0.4.0
+     * @since 1.0.0
      */
     void configure(final ILogCollector logCollector, final int maxMessageSize, final int maxBuffersCount, final IExecutor executor, final ILogMonitor logMonitor);
 
@@ -44,8 +44,8 @@ public interface IBuffering {
      * Determines if the log should be accepted by the stream.
      *
      * @param logCandidateSize Size of the message which is about to be logged.
-     * @return <c>true</c> if the message will be processed, <c>false</c> if the message should be ignored.
-     * @since 0.4.0
+     * @return {@code true} if the message will be processed, {@code false} if the message should be ignored.
+     * @since 1.0.0
      */
     boolean beforeLog(int logCandidateSize);
 
@@ -53,7 +53,7 @@ public interface IBuffering {
      * Notify about real accepted log size.
      *
      * @param logSize The final size of the accepted log.
-     * @since 0.4.0
+     * @since 1.0.0
      */
     void logAccepted(int logSize);
 
@@ -61,7 +61,7 @@ public interface IBuffering {
      * Collect all - buffered and not already buffered logs (calls {@link ILogCollector#collect()} internally.
      *
      * @return Array of messages (byte arrays) to be sent.
-     * @since 0.4.0
+     * @since 1.0.0
      */
     byte[][] collectAll();
 }

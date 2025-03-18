@@ -10,7 +10,7 @@ import java.nio.charset.StandardCharsets;
  * If memory is not cleared with {@link #clear()},
  * stores all the logs which may cause potentially a memory leak.
  *
- * @since 0.4.0
+ * @since 1.0.0
  */
 public class MemoryLogSender implements ILogSender {
 

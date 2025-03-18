@@ -9,7 +9,7 @@ public interface ILogCollector {
      * Called before using the object.
      *
      * @param logListener The object used as callback when new log occurs.
-     * @since 0.4.0
+     * @since 1.0.0
      */
     void configureLogListener(ILogListener logListener);
 
@@ -17,7 +17,7 @@ public interface ILogCollector {
      * Called before using the object.
      *
      * @param bufferingManager The object which determines sent data buffering policy.
-     * @since 0.4.0
+     * @since 1.0.0
      */
     void configureBufferingManager(IBuffering bufferingManager);
 
@@ -26,7 +26,7 @@ public interface ILogCollector {
      *
      * @param logListener      The object used as callback when new log occurs.
      * @param bufferingManager The object which determines sent data buffering policy.
-     * @since 0.4.0
+     * @since 1.0.0
      */
     default void configure(ILogListener logListener, IBuffering bufferingManager) {
         configureLogListener(logListener);

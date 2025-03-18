@@ -294,6 +294,35 @@ public class Settings {
     }
 
     /**
+     * Sets the new instance of {@link ThreadExecutor} with custom interval time between sending logs.
+     * <p>
+     * The default log processing interval time is defined by {@link ThreadExecutor#DEFAULT_PROCESSING_INTERVAL_TIME_MS}.
+     *
+     * @param processingIntervalTime Interval time between sending logs in milliseconds.
+     * @return This {@link Settings} object reference.
+     * @see ThreadExecutor#DEFAULT_PROCESSING_INTERVAL_TIME_MS
+     * @since 1.0.0
+     */
+    public Settings withThreadExecutor(final int processingIntervalTime) {
+        return withExecutor(new ThreadExecutor(processingIntervalTime));
+    }
+
+    /**
+     * Sets the new instance of {@link ThreadExecutor} with default interval time between sending logs.
+     * <p>
+     * The default log processing interval time is defined by {@link ThreadExecutor#DEFAULT_PROCESSING_INTERVAL_TIME_MS}.
+     * <p>
+     * The {@link ThreadExecutor} is the default executor if no other executor is set.
+     *
+     * @return This {@link Settings} object reference.
+     * @see ThreadExecutor#DEFAULT_PROCESSING_INTERVAL_TIME_MS
+     * @since 1.0.0
+     */
+    public Settings withThreadExecutor() {
+        return withExecutor(new ThreadExecutor());
+    }
+
+    /**
      * Allows setting the {@link IBuffering} implementation.
      *
      * @param buffering The {@link IBuffering} implementation.
@@ -308,10 +337,15 @@ public class Settings {
     /**
      * Allows to set and configure the {@link BasicBuffering}.
      *
-     * @param maxMessageSize  The max single message size.
+     * @param maxMessageSize  The max single (not encoded) message size.
      *                        This size should be lower than the Grafana Loki server max message size.
+     *                        <p>
      *                        The default value in this library: {@link IBuffering#DEFAULT_MAX_MESSAGE_SIZE}.
+     *                        <p>
+     *                        Note that if this size is exceeded, the server may respond with HTTP error <code>500</code>, e.g:
+     *                        <pre>{@code rpc error: code = ResourceExhausted desc = grpc: received message larger than max (6331143 vs. 4194304)}</pre>
      * @param maxBuffersCount The max buffers count. The value should be tuned to target system capabilities.
+     *                        <p>
      *                        The default value in this library: {@link IBuffering#DEFAULT_MAX_BUFFERS_COUNT}.
      * @return This {@link Settings} object reference.
      * @since 1.0.0

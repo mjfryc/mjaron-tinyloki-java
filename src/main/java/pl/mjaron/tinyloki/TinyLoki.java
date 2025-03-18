@@ -365,13 +365,14 @@ public class TinyLoki implements java.io.Closeable {
     }
 
     /**
-     * Blocking function. BLocks the calling thread until all requested logs are processed (attempted to send) or default timeout occurs, defined as {@link #DEFAULT_SYNC_TIMEOUT}.
+     * Blocking function. Blocks the calling thread until all requested logs are processed (attempted to send)
+     * or default timeout occurs, defined as {@link #DEFAULT_SYNC_TIMEOUT}.
      * <p>
      * <b>Thread safety</b>
      * <p>
      * It may be called from any thread.
      *
-     * @return <code>true</code> If sync operation finished with success.
+     * @return <code>true</code> If sync operation finished, even if the HTTP operation has failed due to IO errors.
      * <p>
      * <code>false</code> If sync operation failed due to timeout.
      * @throws InterruptedException When calling thread is interrupted.

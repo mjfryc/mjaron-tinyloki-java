@@ -24,31 +24,60 @@ public class IntegrationTest {
 
     @Test
     void shortExample() throws InterruptedException {
-        TinyLoki loki = TinyLoki.withUrl("http://localhost:3100")
-                .withBasicAuth("user", "pass")
-                .start();
-
-        ILogStream windowStream = loki.stream().info().l("device", "window").build();
-        ILogStream doorStream = loki.stream().info().l("device", "door").build();
-
-        windowStream.log("The window is open.");
-        doorStream.log("The door is open.");
-
-        // Time for syncing and closing the logs.
-        boolean closedWithSuccess = loki.closeSync(1000);
-
-        System.out.println("Closed with success: " + closedWithSuccess);
-
-        assertTrue(closedWithSuccess);
+        TinyLoki loki = TinyLoki.withUrl("http://localhost:3100").withBasicAuth("user", "pass").start();
+        ILogStream helloStream = loki.stream().info().l("topic", "hello").build();
+        helloStream.log("Hello world!");
+        loki.closeSync();
     }
 
     @Test
-    void sampleTest() throws InterruptedException {
-        try (TinyLoki loki = TinyLoki.withUrl("http://localhost:3100/loki/api/v1/push").withVerboseLogMonitor().start()) {
-            ILogStream stream = loki.stream().l("color", "white").build();
-            stream.log("Hello world.");
-            loki.sync();
-            loki.stop();
+    void verboseTest() throws InterruptedException {
+
+        // Initialize the log controller instance with URL.
+        // The endpoint loki/api/v1/push will be added by default if missing.
+        // Usually creating more than one TinyLoki instance doesn't make sense.
+        // TinyLoki (its default IExecutor implementation) owns separate thread which sends logs periodically.
+        // It may be called inside try-with-resources block, but the default close() method doesn't synchronize the logs,
+        // but just interrupts the background worker thread.
+        try (TinyLoki loki = TinyLoki.withUrl("http://localhost:3100/loki/api/v1/push")
+
+                // Print all diagnostic information coming from the TinyLoki library. For diagnostic purposes only.
+                .withVerboseLogMonitor()
+
+                // Set the custom log processing interval time.
+                // So the executor will try to send the next logs 10 seconds after the previous logs sending operation.
+                .withThreadExecutor(10 * 1000)
+
+                // Set custom time of HTTP connection establishing timeout.
+                .withConnectTimeout(10 * 1000)
+
+                // Encode the logs to limit the size of data sent.
+                .withGzipLogEncoder()
+
+                // The BasicBuffering is set by default, but here the (not encoded) message size limit may be customized.
+                .withBasicBuffering(3 * 1024 * 1024, 10)
+
+                // Initialize the library with above settings.
+                // The ThreadExecutor will create a new thread and start waiting for the logs to be sent.
+                .start()) {
+
+            // Some logs here...
+            ILogStream whiteStream = loki.stream().l("color", "white").build();
+            whiteStream.log("Hello white world.");
+
+            // Blocking method, tries to send the logs ASAP and wait for sending completion.
+            // This method returns false when timeout occurs, but true when sending has completed with success or failure.
+            boolean allHttpSendingOperationsFinished = loki.sync();
+            System.out.println("Are all logs processed: " + allHttpSendingOperationsFinished);
+
+            ILogStream redStream = loki.stream().l("color", "red").build();
+            redStream.log("Hello white world.");
+
+            // Blocking method, tries to synchronize the logs than interrupt and join the execution thread.
+            // Set the custom timeout time for this operation.
+            boolean closedWithSuccess = loki.closeSync(5 * 1000);
+
+            System.out.println("Synced and closed with success: " + closedWithSuccess);
         }
     }
 

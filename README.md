@@ -14,10 +14,8 @@
 ![Coverage](.github/badges/jacoco.svg)
 ![Branches](.github/badges/branches.svg)
 
-[![Milestone](https://img.shields.io/github/milestones/progress-percent/mjfryc/mjaron-tinyloki-java/1?label=Next%20release:%20milestone-v0.4.0)](https://github.com/mjfryc/mjaron-tinyloki-java/milestone/1)
-
-
-Tiny [Grafana Loki](https://grafana.com/oss/loki/) client (log sender) written in pure Java 1.8 without any external dependencies.
+Tiny [Grafana Loki](https://grafana.com/oss/loki/) client (log sender) written in pure Java 1.8 without any external
+dependencies.
 
 * Implements JSON variant of [Loki API](https://grafana.com/docs/loki/latest/api/#post-lokiapiv1push)
 * Works with **Android** and **Java SE**
@@ -28,26 +26,16 @@ Tiny [Grafana Loki](https://grafana.com/oss/loki/) client (log sender) written i
 HTTP sender requires http URL, optionally basic authentication credentials may be set.
 
 Short example:
+
 ```java
 import pl.mjaron.tinyloki.*;
 
 public class Sample {
     public static void main(String[] args) {
-
-        LogController tinyLoki = TinyLoki
-                .withUrl("http://localhost/loki/api/v1/push")
-                .withBasicAuth("user", "pass")
-                .start();
-
-        ILogStream stream = tinyLoki.stream() // Before v0.3.2 use createStream()
-                .info()
-                .l("host", "MyComputerName")
-                .l("customLabel", "custom_value")
-                .build();
-
-        stream.log("Hello world.");
-
-        tinyLoki.softStop().hardStop();
+        TinyLoki loki = TinyLoki.withUrl("http://localhost:3100").withBasicAuth("user", "pass").start();
+        ILogStream helloStream = loki.stream().info().l("topic", "hello").build();
+        helloStream.log("Hello world!");
+        loki.closeSync();
     }
 }
 ```
@@ -60,34 +48,51 @@ import pl.mjaron.tinyloki.*;
 public class Sample {
     public static void main(String[] args) {
 
-        // Initialize log controller instance with URL.
-        // Usually creating more than one LogController instance doesn't make sense.
-        // LogController owns separate thread which sends logs periodically.
-        LogController tinyLoki = TinyLoki
-                .withUrl("http://localhost/loki/api/v1/push")
-                .withBasicAuth("user", "pass")
-                .start();
+        // Initialize the log controller instance with URL.
+        // The endpoint loki/api/v1/push will be added by default if missing.
+        // Usually creating more than one TinyLoki instance doesn't make sense.
+        // TinyLoki (its default IExecutor implementation) owns separate thread which sends logs periodically.
+        // It may be called inside try-with-resources block, but the default close() method doesn't synchronize the logs,
+        // but just interrupts the background worker thread.
+        try (TinyLoki loki = TinyLoki.withUrl("http://localhost:3100/loki/api/v1/push")
+                // Print all diagnostic information coming from the TinyLoki library. For diagnostic purposes only.
+                .withVerboseLogMonitor()
 
-        // Create streams. It is thread-safe.
-        ILogStream stream = tinyLoki.createStream(
-                // Define stream labels...
-                // Initializing log level to verbose and adding some custom labels.
-                TinyLoki.verbose()
-                        .l("host", "MyComputerName")        // Custom static label.
-                        .l("customLabel", "custom_value")   // Custom static label.
-                // Label names should start with letter
-                //     and contain letters, digits and '_' only.
-                // Bad characters will be replaced by '_'.
-                //     If first character is bad, it will be replaced by 'A'.
-        );
+                // Set the custom log processing interval time.
+                // So the executor will try to send the next logs 10 seconds after the previous logs sending operation.
+                .withThreadExecutor(10 * 1000)
 
-        // ... new streams and other logs here (thread-safe, non-blocking).
-        stream.log("Hello world.");
+                // Set custom time of HTTP connection establishing timeout.
+                .withConnectTimeout(10 * 1000)
 
-        // Optionally flush logs before application exit.
-        tinyLoki
-                .softStop()     // Try to send logs last time. Blocking method.
-                .hardStop();    // If it doesn't work (soft timeout) - force stop sending thread.
+                // Encode the logs to limit the size of data sent.
+                .withGzipLogEncoder()
+
+                // The BasicBuffering is set by default, but here the (not encoded) message size limit may be customized.
+                .withBasicBuffering(3 * 1024 * 1024, 10)
+
+                // Initialize the library with above settings.
+                // The ThreadExecutor will create a new thread and start waiting for the logs to be sent.
+                .start()) {
+
+            // Some logs here...
+            ILogStream whiteStream = loki.stream().l("color", "white").build();
+            whiteStream.log("Hello white world.");
+
+            // Blocking method, tries to send the logs ASAP and wait for sending completion.
+            // This method returns false when timeout occurs, but true when sending has completed with success or failure.
+            boolean allHttpSendingOperationsFinished = loki.sync();
+            System.out.println("Are all logs processed: " + allHttpSendingOperationsFinished);
+
+            ILogStream redStream = loki.stream().l("color", "red").build();
+            redStream.log("Hello white world.");
+
+            // Blocking method, tries to synchronize the logs than interrupt and join the execution thread.
+            // Set the custom timeout time for this operation.
+            boolean closedWithSuccess = loki.closeSync(5 * 1000);
+
+            System.out.println("Synced and closed with success: " + closedWithSuccess);
+        }
     }
 }
 ```
@@ -97,11 +102,11 @@ public class Sample {
 ### Maven Central
 
 ```gradle
-    implementation 'io.github.mjfryc:mjaron-tinyloki-java:0.3.11'
+    implementation 'io.github.mjfryc:mjaron-tinyloki-java:1.0.0'
 ```
 
- _[Maven Central page](https://search.maven.org/artifact/io.github.mjfryc/mjaron-tinyloki-java/),_
- _[Maven Central repository URL](https://repo1.maven.org/maven2/io/github/mjfryc/mjaron-tinyloki-java/)_
+_[Maven Central page](https://search.maven.org/artifact/io.github.mjfryc/mjaron-tinyloki-java/),_
+_[Maven Central repository URL](https://repo1.maven.org/maven2/io/github/mjfryc/mjaron-tinyloki-java/)_
 
 ### GitHub Packages
 
@@ -114,10 +119,10 @@ Click the [Packages section](https://github.com/mjfryc?tab=packages&repo_name=mj
 3. Add this jar to project dependencies in build.gradle, e.g:
 
 ```gradle
-    implementation files(project.rootDir.absolutePath + '/libs/mjaron-tinyloki-java-0.3.11.jar')
+    implementation files(project.rootDir.absolutePath + '/libs/mjaron-tinyloki-java-1.0.0.jar')
 ```
 
-## API design
+## API design (outdated)
 
 ```mermaid
 classDiagram

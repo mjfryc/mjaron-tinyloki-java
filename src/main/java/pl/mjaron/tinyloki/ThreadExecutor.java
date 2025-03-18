@@ -2,24 +2,24 @@ package pl.mjaron.tinyloki;
 
 public class ThreadExecutor implements IExecutor, Runnable {
 
-    public static final int DEFAULT_LOG_COLLECTION_PERIOD_MS = 5000;
+    public static final int DEFAULT_PROCESSING_INTERVAL_TIME_MS = 5000;
 
     private final BlockingLogListener logListener = new BlockingLogListener();
     private ILogMonitor logMonitor = null;
     private ILogCollector logCollector = null;
     private ILogProcessor logProcessor = null;
     private Thread workerThread = null;
-    private int logCollectionPeriod = DEFAULT_LOG_COLLECTION_PERIOD_MS;
+    private int processingIntervalTime = DEFAULT_PROCESSING_INTERVAL_TIME_MS;
 
     public ThreadExecutor() {
     }
 
-    public ThreadExecutor(final int logCollectionPeriod) {
-        this.logCollectionPeriod = logCollectionPeriod;
+    public ThreadExecutor(final int processingIntervalTime) {
+        this.processingIntervalTime = processingIntervalTime;
     }
 
-    public int getLogCollectionPeriod() {
-        return logCollectionPeriod;
+    public int getProcessingIntervalTime() {
+        return processingIntervalTime;
     }
 
     @Override
@@ -110,7 +110,7 @@ public class ThreadExecutor implements IExecutor, Runnable {
 
         while (true) {
             try {
-                final int anyLogs = logListener.waitForLogs(logCollectionPeriod);
+                final int anyLogs = logListener.waitForLogs(processingIntervalTime);
                 if (anyLogs > 0) {
                     logProcessor.processLogs();
                 }

@@ -17,7 +17,7 @@ class ThreadExecutorTest {
     @Test
     void basic() throws InterruptedException {
         ThreadExecutor executor = new ThreadExecutor(1000);
-        assertEquals(1000, executor.getLogCollectionPeriod());
+        assertEquals(1000, executor.getProcessingIntervalTime());
         assertThrows(RuntimeException.class, () -> {
             executor.configure(null, new DummyLogProcessor(), new VerboseLogMonitor());
         });

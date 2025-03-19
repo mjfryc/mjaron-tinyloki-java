@@ -489,12 +489,17 @@ public class TinyLoki implements java.io.Closeable {
     }
 
     /**
-     * Requests the executor (worker thread) to stop ASAP. Not synchronized logs are dropped.
+     * Requests the executor (worker thread) to stop ASAP.
+     * <p>
+     * Buffered but not sent logs are dropped.
+     * <p>
+     * <b>Thread safety</b><br/>
+     * It may be called from any thread.
      *
      * @return This reference.
      * @since 1.0.0
      */
-    synchronized public TinyLoki stopAsync() {
+    public TinyLoki stopAsync() {
         executor.stopAsync();
         return this;
     }

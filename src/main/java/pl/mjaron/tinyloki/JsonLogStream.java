@@ -93,8 +93,14 @@ public class JsonLogStream implements ILogStream {
 
     /**
      * Provide stream data and clear old logs.
+     * <p>
+     * Not thread safe.
+     * <p>
+     * For internal use only.
+     * <p>
+     * Called internally by {@link JsonLogCollector} in thread managed by {@link IExecutor}.
      *
-     * @return JSON-formatted String containing single stream logs from last syncAnd operation or from beginning of time.
+     * @return JSON String containing single stream logs from last syncAnd operation or from beginning of time.
      * Null if this stream is empty.
      */
     public String flush() {

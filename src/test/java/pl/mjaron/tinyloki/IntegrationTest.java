@@ -35,7 +35,7 @@ public class IntegrationTest {
 
         // Initialize the log controller instance with URL.
         // The endpoint loki/api/v1/push will be added by default if missing.
-        // Usually creating more than one TinyLoki instance doesn't make sense.
+        // Usually creating more than one TinyLoki instance doesn't of sense.
         // TinyLoki (its default IExecutor implementation) owns separate thread which sends logs periodically.
         // It may be called inside try-with-resources block, but the default close() method doesn't synchronize the logs,
         // but just interrupts the background worker thread.

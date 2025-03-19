@@ -140,7 +140,7 @@ class LabelsTest {
         HashMap<String, String> map = new HashMap<>();
         map.put("abc", "123");
         map.put("def", "456");
-        Labels l = Labels.make(map);
+        Labels l = Labels.of(map);
         assertEquals(l.getMap(), map);
     }
 
@@ -149,7 +149,7 @@ class LabelsTest {
         HashMap<String, String> map = new HashMap<>();
         map.put("abc", "123");
         map.put("def", "456");
-        Labels l = Labels.make(map);
+        Labels l = Labels.of(map);
         assertEquals(l.getMap(), map);
     }
 

@@ -394,19 +394,33 @@ public class Labels implements Cloneable {
      *
      * @param labels Map with label-name mapped to label-value pairs.
      * @return New instance of {@link Labels}.
-     * @since 1.0.0
+     * @since 1.0.1
      */
-    public static Labels make(final Map<String, String> labels) {
+    public static Labels of(final Map<String, String> labels) {
         return new Labels(labels);
     }
 
     /**
-     * Creates a new empty labels instance.
+     * Creates labels containing single name-value pair. Call {@link #l(String, String)} method to add more labels.
+     *
+     * @param name  Label name. Valid label identifier starts with letter and contains only letters, digits or '_'.
+     * @param value Label value. Valid label identifier starts with letter and contains only letters, digits or '_'.
+     * @return New instance of {@link Labels}.
+     * @see #l(String, String)
+     * @since 1.0.1
+     */
+    public static Labels of(final String name, final String value) {
+        return new Labels().l(name, value);
+    }
+
+    /**
+     * Creates a new empty labels instance. Call {@link #l(String, String)} method to add any labels.
      *
      * @return New instance of {@link Labels}.
-     * @since 1.0.0
+     * @see #l(String, String)
+     * @since 1.0.1
      */
-    public static Labels make() {
+    public static Labels of() {
         return new Labels();
     }
 
@@ -479,16 +493,14 @@ public class Labels implements Cloneable {
     /**
      * Add a new label and return this object.
      *
-     * @param labelName  Label name. Valid label identifier starts with letter and contains only letters, digits or
-     *                   '_'.
-     * @param labelValue Label value. Valid label identifier starts with letter and contains only letters, digits or
-     *                   '_'.
+     * @param name  Label name. Valid label identifier starts with letter and contains only letters, digits or '_'.
+     * @param value Label value. Valid label identifier starts with letter and contains only letters, digits or '_'.
      * @return This object with added label.
-     * @throws RuntimeException when given <code>labelName</code> or <code>labelValue</code> is null or empty.
+     * @throws RuntimeException when given <code>name</code> or <code>value</code> is null or empty.
      * @since 0.1.22
      */
-    public Labels l(final String labelName, final String labelValue) {
-        map.put(labelName, labelValue);
+    public Labels l(final String name, final String value) {
+        map.put(name, value);
         return this;
     }
 

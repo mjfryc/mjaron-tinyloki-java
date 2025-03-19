@@ -68,7 +68,7 @@ class JsonLogCollectorTest {
     }
 
     public static byte[] hexStringToByteArray(String hexStr) {
-        System.out.println(hexStr);  // log our input make sure it is what we think it is.
+        System.out.println(hexStr);  // log our input of sure it is what we think it is.
         byte[] bArray = new byte[hexStr.length() / 3];
         int index = 0;
         for (String cell : hexStr.split(" ")) {

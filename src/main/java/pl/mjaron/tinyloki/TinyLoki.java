@@ -239,7 +239,7 @@ public class TinyLoki implements java.io.Closeable {
      */
     @SuppressWarnings("unused")
     public ILogStream createStream(final Map<String, String> labels) {
-        return this.createStream(Labels.make(labels));
+        return this.createStream(Labels.of(labels));
     }
 
     /**

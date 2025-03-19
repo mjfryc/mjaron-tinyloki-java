@@ -493,7 +493,7 @@ public class TinyLoki implements java.io.Closeable {
      * <p>
      * Buffered but not sent logs are dropped.
      * <p>
-     * <b>Thread safety</b><br/>
+     * <b>Thread safety</b><br>
      * It may be called from any thread.
      *
      * @return This reference.

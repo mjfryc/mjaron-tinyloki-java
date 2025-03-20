@@ -23,7 +23,8 @@ public interface ILogStream {
     /**
      * Thread-safe log line with custom time.
      *
-     * @param line Log content.
+     * @param timestampMs Log timestamp in milliseconds.
+     * @param line        Log content.
      * @since 1.1.0
      */
     default void log(final long timestampMs, final String line) {

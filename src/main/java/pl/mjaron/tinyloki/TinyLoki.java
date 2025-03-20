@@ -161,7 +161,7 @@ public class TinyLoki implements java.io.Closeable {
      *                                        Some settings will be overridden by this constructor.
      * @param logSender                       Sends the logs collected by log controller.
      * @param labelSettings                   Preferences of the {@link Labels}. See {@link LabelSettings}.
-     * @param structuredMetadataLabelSettings Structured metadata label restrictions. If <c>null</c>, the structured metadata is not supported.
+     * @param structuredMetadataLabelSettings Structured metadata label restrictions. If <code>null</code>, the structured metadata is not supported.
      * @param executor                        The {@link IExecutor} implementation.
      * @param bufferingManager                The object responsible for buffering strategy.
      * @param logMonitor                      Handles diagnostic events from whole library.

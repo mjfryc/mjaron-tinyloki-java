@@ -36,7 +36,7 @@ public class JsonLogCollector implements ILogCollector {
     /**
      * Provides label settings for structured metadata.
      *
-     * @return Label settings for structured metadata. It may be <c>null</c>.
+     * @return Label settings for structured metadata. It may be <code>null</code>.
      * @since 1.1.0
      */
     public LabelSettings getStructuredMetadataLabelSettings() {

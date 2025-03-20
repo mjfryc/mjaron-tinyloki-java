@@ -474,9 +474,9 @@ public class Settings {
     }
 
     /**
-     * Provides {@link LabelSettings} of structured metadata labels. If <c>null</c>, the structured metadata is not supported.
+     * Provides {@link LabelSettings} of structured metadata labels. If <code>null</code>, the structured metadata is not supported.
      *
-     * @return {@link LabelSettings} of structured metadata labels. If <c>null</c>, the structured metadata is not supported.
+     * @return {@link LabelSettings} of structured metadata labels. If <code>null</code>, the structured metadata is not supported.
      * @since 1.1.0
      */
     public LabelSettings getStructuredMetadataLabelSettings() {

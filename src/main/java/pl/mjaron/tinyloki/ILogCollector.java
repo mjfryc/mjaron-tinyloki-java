@@ -22,7 +22,7 @@ public interface ILogCollector {
     void configureBufferingManager(IBuffering bufferingManager);
 
     /**
-     * If label settings are not <c>null</c>, the structured metadata is supported, else structured metadata should not be collected.
+     * If label settings are not <code>null</code>, the structured metadata is supported, else structured metadata should not be collected.
      *
      * @param structuredMetadataLabelSettings Settings for structured metadata validation.
      * @since 1.1.0

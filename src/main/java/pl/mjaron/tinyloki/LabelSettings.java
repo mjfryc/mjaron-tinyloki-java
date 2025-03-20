@@ -13,7 +13,7 @@ package pl.mjaron.tinyloki;
 public class LabelSettings {
 
     /**
-     * Determines safe length of label name, based on default configuration of loki server at <c>limits_config</c>:
+     * Determines safe length of label name, based on default configuration of loki server at <code>limits_config</code>:
      * <pre>{@code
      * [max_label_name_length: <int> | default = 1024]
      * }</pre>
@@ -24,7 +24,7 @@ public class LabelSettings {
     public static final int DEFAULT_MAX_LABEL_NAME_LENGTH = 1024;
 
     /**
-     * Determines safe length of label value, based on default configuration of loki server at <c>limits_config</c>:
+     * Determines safe length of label value, based on default configuration of loki server at <code>limits_config</code>:
      * <pre>{@code
      * [max_label_value_length: <int> | default = 2048]
      * }</pre>

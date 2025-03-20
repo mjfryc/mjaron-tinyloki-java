@@ -116,6 +116,19 @@ public class IntegrationTest {
         loki.closeSync();
     }
 
+    @Test
+    void streamSetTest() throws InterruptedException {
+        TinyLoki loki = TinyLoki.withUrl("http://localhost:3100").withVerboseLogMonitor(true).withBasicAuth("user", "pass").open();
+        StreamSet stream = loki.streamSet().l("topic", "streamSetTest").l("sampleNumber", 4).open();
+        stream.fatal("Log level: fatal");
+        stream.warning("Log level: warning");
+        stream.info("Log level: info");
+        stream.debug("Log level: debug");
+        stream.verbose("Log level: verbose");
+        stream.unknown("Log level: unknown", Labels.of("structured", "value"));
+        loki.closeSync();
+    }
+
     static class MassiveThread extends Thread {
         static final public String LABEL_STREAM_IDX = "test_stream_index";
 

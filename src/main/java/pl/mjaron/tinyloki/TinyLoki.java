@@ -268,6 +268,36 @@ public class TinyLoki implements java.io.Closeable {
     }
 
     /**
+     * Provides a {@link StreamSetBuilder} to initialize the {@link StreamSet}. E.g:
+     *
+     * <pre>{@code
+     * StreamSet streamSet = logController.streamSet().l("commonLabelName", "value").open();
+     * streamSet.info("My info log");
+     * }</pre>
+     *
+     * @return New instance of {@link StreamSetBuilder}.
+     * @since 1.1.1
+     */
+    public StreamSetBuilder streamSet() {
+        return new StreamSetBuilder(this);
+    }
+
+    /**
+     * Creates a {@link StreamSet} with given {@link Labels}.
+     *
+     * <pre>{@code
+     * StreamSet streamSet = logController.streamSet(Labels.of("commonLabelName", "value"));
+     * streamSet.info("My info log");
+     * }</pre>
+     *
+     * @return New instance of {@link StreamSetBuilder}.
+     * @since 1.1.1
+     */
+    public StreamSet streamSet(final Labels labels) {
+        return new StreamSet(this, labels);
+    }
+
+    /**
      * Starts worker thread which is responsible for collecting and sending logs.
      * <p>
      * <b>Thread safety</b>

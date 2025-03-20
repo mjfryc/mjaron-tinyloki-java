@@ -1,9 +1,15 @@
 # mjaron-tinyloki-java
 
+> [!IMPORTANT]  
+> Please use version [v0.3.11](https://github.com/mjfryc/mjaron-tinyloki-java/tree/v0.3.11)  
+> The current master version `v1.x.x` still in preparation.
+
+Building  
 [![Java CI with Gradle](https://github.com/mjfryc/mjaron-tinyloki-java/actions/workflows/gradle.yml/badge.svg)](https://github.com/mjfryc/mjaron-tinyloki-java/actions/workflows/gradle.yml)
 [![Gradle Package](https://github.com/mjfryc/mjaron-tinyloki-java/actions/workflows/gradle-publish.yml/badge.svg)](https://github.com/mjfryc/mjaron-tinyloki-java/actions/workflows/gradle-publish.yml)
 [![Maven Central](https://img.shields.io/maven-central/v/io.github.mjfryc/mjaron-tinyloki-java?color=dark-green&style=flat)](https://search.maven.org/artifact/io.github.mjfryc/mjaron-tinyloki-java/)
 
+Code quality  
 [![CodeQL](https://github.com/mjfryc/mjaron-tinyloki-java/actions/workflows/codeql.yml/badge.svg)](https://github.com/mjfryc/mjaron-tinyloki-java/actions/workflows/codeql.yml)
 ![snyk.io](https://snyk.io/test/github/mjfryc/mjaron-tinyloki-java/badge.svg)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=mjfryc_mjaron-tinyloki-java&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=mjfryc_mjaron-tinyloki-java)
@@ -11,6 +17,7 @@
 [![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=mjfryc_mjaron-tinyloki-java&metric=security_rating)](https://sonarcloud.io/summary/new_code?id=mjfryc_mjaron-tinyloki-java)
 [![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=mjfryc_mjaron-tinyloki-java&metric=vulnerabilities)](https://sonarcloud.io/summary/new_code?id=mjfryc_mjaron-tinyloki-java)
 
+Unit tests  
 ![Coverage](.github/badges/jacoco.svg)
 ![Branches](.github/badges/branches.svg)
 

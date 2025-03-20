@@ -14,7 +14,7 @@ class LogControllerTest {
     @Test
     void getLogMonitor() {
         final ILogMonitor logMonitor = new SilentLogMonitor();
-        final TinyLoki controller = TinyLoki.withUrl("http://example.com").withLogMonitor(logMonitor).start();
+        final TinyLoki controller = TinyLoki.withUrl("http://example.com").withLogMonitor(logMonitor).open();
         assertSame(logMonitor, controller.getLogMonitor());
 
     }
@@ -22,21 +22,21 @@ class LogControllerTest {
     @Test
     void getLogCollector() {
         final ILogCollector collector = new JsonLogCollector();
-        final TinyLoki controller = TinyLoki.withUrl("http://example.com").withLogCollector(collector).start();
+        final TinyLoki controller = TinyLoki.withUrl("http://example.com").withLogCollector(collector).open();
         assertSame(collector, controller.getLogCollector());
     }
 
     @Test
     void getExecutor() {
         final IExecutor executor = new ThreadExecutor();
-        final TinyLoki controller = TinyLoki.withUrl("http://example.com").withExecutor(executor).start();
+        final TinyLoki controller = TinyLoki.withUrl("http://example.com").withExecutor(executor).open();
         assertSame(executor, controller.getExecutor());
     }
 
     @Test
     void createStreamFromMap() throws InterruptedException {
         MemoryLogSender logSender = new MemoryLogSender();
-        final TinyLoki controller = TinyLoki.withUrl("http://example.com").withLogSender(logSender).start();
+        final TinyLoki controller = TinyLoki.withUrl("http://example.com").withLogSender(logSender).open();
         Map<String, String> map = new HashMap<>();
         map.put("aaa", "bbb");
         ILogStream stream = controller.createStream(map);

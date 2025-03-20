@@ -5,11 +5,11 @@ import java.util.Map;
 /**
  * Helper class for shorter initialization code.
  * <p>
- * call {@link #build()} to initialize {@link ILogStream} with parameters passed to this builder.
+ * call {@link #open()} to initialize {@link ILogStream} with parameters passed to this builder.
  * <p>
  * Example:
  * <pre>{@code
- * ILogStream myStream = logController.stream().info().l("my_custom_label", "value").build();
+ * ILogStream myStream = logController.stream().info().l("my_custom_label", "value").open();
  * }</pre>
  */
 public class StreamBuilder {
@@ -26,7 +26,7 @@ public class StreamBuilder {
      *
      * @return New {@link ILogStream} instance.
      */
-    public ILogStream build() {
+    public ILogStream open() {
         return tinyLoki.createStream(labels);
     }
 

@@ -419,13 +419,96 @@ public class Labels implements Cloneable {
     /**
      * Creates labels containing single name-value pair. Call {@link #l(String, String)} method to add more labels.
      *
-     * @param name  Label name. Valid label identifier starts with letter and contains only letters, digits or '_'.
-     * @param value Label value. Valid label identifier starts with letter and contains only letters, digits or '_'.
+     * @param name  Label name.
+     * @param value Label value.
      * @return New instance of {@link Labels}.
-     * @see #l(String, String)
      * @since 1.0.1
      */
     public static Labels of(final String name, final String value) {
+        return new Labels().l(name, value);
+    }
+
+    /**
+     * Creates labels containing single name-value pair. Call {@link #l(String, String)} method to add more labels.
+     *
+     * @param name  Label name.
+     * @param value Label value.
+     * @return New instance of {@link Labels}.
+     * @since 1.1.0
+     */
+    public static Labels of(final String name, final int value) {
+        return new Labels().l(name, value);
+    }
+
+    /**
+     * Creates labels containing single name-value pair. Call {@link #l(String, String)} method to add more labels.
+     *
+     * @param name  Label name.
+     * @param value Label value.
+     * @return New instance of {@link Labels}.
+     * @since 1.1.0
+     */
+    public static Labels of(final String name, final long value) {
+        return new Labels().l(name, value);
+    }
+
+    /**
+     * Creates labels containing single name-value pair. Call {@link #l(String, String)} method to add more labels.
+     *
+     * @param name  Label name.
+     * @param value Label value.
+     * @return New instance of {@link Labels}.
+     * @since 1.1.0
+     */
+    public static Labels of(final String name, final float value) {
+        return new Labels().l(name, value);
+    }
+
+    /**
+     * Creates labels containing single name-value pair. Call {@link #l(String, String)} method to add more labels.
+     *
+     * @param name  Label name.
+     * @param value Label value.
+     * @return New instance of {@link Labels}.
+     * @since 1.1.0
+     */
+    public static Labels of(final String name, final double value) {
+        return new Labels().l(name, value);
+    }
+
+    /**
+     * Creates labels containing single name-value pair. Call {@link #l(String, String)} method to add more labels.
+     *
+     * @param name  Label name.
+     * @param value Label value.
+     * @return New instance of {@link Labels}.
+     * @since 1.1.0
+     */
+    public static Labels of(final String name, final char value) {
+        return new Labels().l(name, value);
+    }
+
+    /**
+     * Creates labels containing single name-value pair. Call {@link #l(String, String)} method to add more labels.
+     *
+     * @param name  Label name.
+     * @param value Label value.
+     * @return New instance of {@link Labels}.
+     * @since 1.1.0
+     */
+    public static Labels of(final String name, final byte value) {
+        return new Labels().l(name, value);
+    }
+
+    /**
+     * Creates labels containing single name-value pair. Call {@link #l(String, String)} method to add more labels.
+     *
+     * @param name  Label name.
+     * @param value Label value.
+     * @return New instance of {@link Labels}.
+     * @since 1.1.0
+     */
+    public static Labels of(final String name, final short value) {
         return new Labels().l(name, value);
     }
 

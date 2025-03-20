@@ -27,7 +27,7 @@ class ThreadExecutorTest {
         assertThrows(RuntimeException.class, () -> executor.configure(new JsonLogCollector(), new DummyLogProcessor(), null));
         assertTimeout(Duration.ofMillis(100), () -> assertThrows(RuntimeException.class, executor::start));
 
-        TinyLoki controller = TinyLoki.withUrl("dummy").withExecutor(executor).withLogSender(new DummyLogSender()).withoutLogEncoder().start();
+        TinyLoki controller = TinyLoki.withUrl("dummy").withExecutor(executor).withLogSender(new DummyLogSender()).withoutLogEncoder().open();
         assertSame(executor, controller.getExecutor());
         assertThrows(RuntimeException.class, executor::start);
         assertTimeout(Duration.ofMillis(200), () -> assertTrue(controller.stop(100)));

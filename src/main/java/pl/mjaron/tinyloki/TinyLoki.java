@@ -17,10 +17,10 @@ import java.util.Map;
  * <pre>{@code
  *  TinyLoki tinyLoki = TinyLoki.withUrl("http://localhost:3100")
  *      .withBasicAuth("user", "pass")
- *      .start();
+ *      .open();
  *
- *      ILogStream windowStream = tinyLoki.stream().info().l("device", "window").build();
- *      ILogStream doorStream = tinyLoki.stream().info().l("device", "door").build();
+ *      ILogStream windowStream = tinyLoki.stream().info().l("device", "window").open();
+ *      ILogStream doorStream = tinyLoki.stream().info().l("device", "door").open();
  *
  *      windowStream.log("The window is open.");
  *      doorStream.log("The door is open.");
@@ -85,7 +85,7 @@ public class TinyLoki implements java.io.Closeable {
      *             .withConnectTimeout(connectTimeout)
      *             .withLogCollector(logCollector)
      *             .withLogMonitor(logMonitor)
-     *             .start();            // LogController created here.
+     *             .open();            // LogController created here.
      * </pre>
      * <p>
      * Optionally call {@link #withExactUrl(String)} instead to skip URL value normalization
@@ -124,7 +124,7 @@ public class TinyLoki implements java.io.Closeable {
      * @see #withUrl(String)
      * @since 0.3.0
      */
-    public static TinyLoki createAndStart(final Settings settings) {
+    public static TinyLoki open(final Settings settings) {
         return new TinyLoki(settings.getLogCollector(), settings.getLogEncoder(), settings.getLogSenderSettings(), settings.getLogSender(), settings.getLabelSettings(), settings.getStructuredMetadataLabelSettings(), settings.getExecutor(), settings.getBuffering(), settings.getLogMonitor()).start();
     }
 
@@ -135,13 +135,13 @@ public class TinyLoki implements java.io.Closeable {
      * @param user Basic authentication user. If null, BA header will not be sent.
      * @param pass Basic authentication password. If null, BA header will not be sent.
      * @return New {@link TinyLoki LogController} object.
-     * @deprecated Use {@link TinyLoki#withUrl(String)} to initialize settings and finally call {@link Settings#start()}, e.g:
+     * @deprecated Use {@link TinyLoki#withUrl(String)} to initialize settings and finally call {@link Settings#open()}, e.g:
      * <pre>
-     *     TinyLoki.withUrl(url).withBasicAuth(user, pass).start();
+     *     TinyLoki.withUrl(url).withBasicAuth(user, pass).open();
      * </pre>
      */
-    public static TinyLoki createAndStart(final String url, final String user, final String pass) {
-        return TinyLoki.withUrl(url).withBasicAuth(user, pass).start();
+    public static TinyLoki open(final String url, final String user, final String pass) {
+        return TinyLoki.withUrl(url).withBasicAuth(user, pass).open();
     }
 
     private final ILogCollector logCollector;
@@ -258,7 +258,7 @@ public class TinyLoki implements java.io.Closeable {
      * Provides a {@link StreamBuilder} to initialize the stream. E.g:
      *
      * <pre>{@code
-     * ILogStream myStream = logController.stream().info().l("my_custom_label", "value").build();
+     * ILogStream myStream = logController.stream().info().l("my_custom_label", "value").open();
      * }</pre>
      *
      * @return New instance of {@link StreamBuilder}.

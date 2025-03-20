@@ -85,14 +85,14 @@ public interface ILogMonitor {
     void onSync(final boolean isSuccess);
 
     /**
-     * Called when start operation ends.
+     * Called when {@link IExecutor} has started.
      *
      * @since 1.0.0
      */
     void onStart();
 
     /**
-     * Called when stop operation ends.
+     * Called when {@link IExecutor} has stopped.
      *
      * @param isSuccess The stop operation result.
      * @since 1.0.0

@@ -32,9 +32,10 @@ import pl.mjaron.tinyloki.*;
 
 public class Sample {
     public static void main(String[] args) {
-        TinyLoki loki = TinyLoki.withUrl("http://localhost:3100").withBasicAuth("user", "pass").start();
-        ILogStream helloStream = loki.stream().info().l("topic", "hello").build();
-        helloStream.log("Hello world!");
+        TinyLoki loki = TinyLoki.withUrl("http://localhost:3100").withBasicAuth("user", "pass").open();
+        ILogStream logStream = loki.stream().info().l("topic", "shortExample").open();
+        logStream.log("Hello world!");
+        logStream.log("Hello world!", Labels.of("structured_metadata", "My log metadata value."));
         loki.closeSync();
     }
 }

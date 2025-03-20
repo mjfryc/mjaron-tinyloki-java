@@ -501,7 +501,7 @@ public class Settings {
      *
      * @return New {@link TinyLoki} instance.
      */
-    public TinyLoki start() {
-        return TinyLoki.createAndStart(this);
+    public TinyLoki open() {
+        return TinyLoki.open(this);
     }
 }

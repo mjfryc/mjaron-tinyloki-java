@@ -3,22 +3,32 @@ package pl.mjaron.tinyloki;
 /**
  * Defines parameters of label name and value.
  * These parameters allow preparing values accepted by Grafana Loki server.
+ * <p>
+ * Based on: <a href="https://grafana.com/docs/loki/latest/configuration/">Grafana Loki limits_config</a>
  *
+ * @see #DEFAULT_MAX_LABEL_NAME_LENGTH
+ * @see #DEFAULT_MAX_LABEL_VALUE_LENGTH
  * @since 0.3.0
  */
 public class LabelSettings {
 
     /**
-     * Determines safe length of label name, based on default configuration of loki server.
-     * Based on: <a href="https://grafana.com/docs/loki/latest/configuration/">Grafana Loki limits_config</a>
+     * Determines safe length of label name, based on default configuration of loki server at <c>limits_config</c>:
+     * <pre>{@code
+     * [max_label_name_length: <int> | default = 1024]
+     * }</pre>
+     * See: <a href="https://grafana.com/docs/loki/latest/configuration/">Grafana Loki limits_config</a>
      *
      * @since 0.3.0
      */
     public static final int DEFAULT_MAX_LABEL_NAME_LENGTH = 1024;
 
     /**
-     * Determines safe length of label value, based on default configuration of loki server.
-     * Based on: <a href="https://grafana.com/docs/loki/latest/configuration/">Grafana Loki limits_config</a>
+     * Determines safe length of label value, based on default configuration of loki server at <c>limits_config</c>:
+     * <pre>{@code
+     * [max_label_value_length: <int> | default = 2048]
+     * }</pre>
+     * See: <a href="https://grafana.com/docs/loki/latest/configuration/">Grafana Loki limits_config</a>
      *
      * @since 0.3.0
      */
@@ -26,16 +36,18 @@ public class LabelSettings {
 
     /**
      * Determines accepted length of added label name, based on default configuration of loki server.
-     * Based on: <a href="https://grafana.com/docs/loki/latest/configuration/">Grafana Loki limits_config</a>
+     * See: <a href="https://grafana.com/docs/loki/latest/configuration/">Grafana Loki limits_config</a>
      *
+     * @see #DEFAULT_MAX_LABEL_NAME_LENGTH
      * @since 0.3.0
      */
     private int maxLabelNameLength = DEFAULT_MAX_LABEL_NAME_LENGTH;
 
     /**
      * Determines accepted length of added label value, based on default configuration of loki server.
-     * Based on: <a href="https://grafana.com/docs/loki/latest/configuration/">Grafana Loki limits_config</a>
+     * See: <a href="https://grafana.com/docs/loki/latest/configuration/">Grafana Loki limits_config</a>
      *
+     * @see #DEFAULT_MAX_LABEL_VALUE_LENGTH
      * @since 0.3.0
      */
     private int maxLabelValueLength = DEFAULT_MAX_LABEL_VALUE_LENGTH;

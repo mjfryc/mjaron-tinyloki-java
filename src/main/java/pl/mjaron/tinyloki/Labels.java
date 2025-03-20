@@ -4,11 +4,27 @@ import java.util.Map;
 import java.util.TreeMap;
 
 /**
- * Represents label name - label value mappings. Contains common label constants and its values. Log level constants are
- * defined at:
- * <a href="https://grafana.com/docs/grafana/latest/packages_api/data/loglevel/">Grafana API Reference</a>
+ * Represents <a href="https://grafana.com/docs/loki/v3.4.x/get-started/labels">Grafana Loki labels</a>.
+ * Map of label key to label value pairs.
+ * <p>
+ * Used in two cases:
+ * <ol>
+ * <li>When creating a <a href="https://grafana.com/docs/loki/v3.4.x/get-started/overview/#loki-overview">stream</a></li>
+ * <li>When attaching a <a href="https://grafana.com/docs/loki/v3.4.x/get-started/labels/structured-metadata/">structured metadata</a> to particular log entry.</li>
+ * </ol>
+ *
+ * <p>
+ * <b>Valid label characters</b>
+ * <ul>
+ * <li>Valid label name starts with letter and contains only letters, digits or '_'.</li>
+ * <li>Label name and value must match the size limits determined by {@link LabelSettings}.</li>
+ * </ul>
+ * <p>
+ * See <a href="https://grafana.com/docs/loki/v3.4.x/get-started/labels/#label-format">Grafana Loki label format documentation</a>.
+ * <p>
+ * Log level constants are defined at:
+ * <a href="https://github.com/grafana/grafana/blob/main/packages/grafana-data/src/types/logs.ts">Grafana Data Library</a>
  */
-@SuppressWarnings("unused")
 public class Labels implements Cloneable {
 
     /**
@@ -493,10 +509,9 @@ public class Labels implements Cloneable {
     /**
      * Add a new label and return this object.
      *
-     * @param name  Label name. Valid label identifier starts with letter and contains only letters, digits or '_'.
-     * @param value Label value. Valid label identifier starts with letter and contains only letters, digits or '_'.
+     * @param name  Label name.
+     * @param value Label value.
      * @return This object with added label.
-     * @throws RuntimeException when given <code>name</code> or <code>value</code> is null or empty.
      * @since 0.1.22
      */
     public Labels l(final String name, final String value) {
@@ -505,11 +520,101 @@ public class Labels implements Cloneable {
     }
 
     /**
+     * Add a new label and return this object.
+     *
+     * @param name  Label name.
+     * @param value Label value.
+     * @return This object with added label.
+     * @since 1.1.0
+     */
+    public Labels l(final String name, final float value) {
+        map.put(name, Float.toString(value));
+        return this;
+    }
+
+    /**
+     * Add a new label and return this object.
+     *
+     * @param name  Label name.
+     * @param value Label value.
+     * @return This object with added label.
+     * @since 1.1.0
+     */
+    public Labels l(final String name, final double value) {
+        map.put(name, Double.toString(value));
+        return this;
+    }
+
+    /**
+     * Add a new label and return this object.
+     *
+     * @param name  Label name.
+     * @param value Label value.
+     * @return This object with added label.
+     * @since 1.1.0
+     */
+    public Labels l(final String name, final int value) {
+        map.put(name, Integer.toString(value));
+        return this;
+    }
+
+    /**
+     * Add a new label and return this object.
+     *
+     * @param name  Label name.
+     * @param value Label value.
+     * @return This object with added label.
+     * @since 1.1.0
+     */
+    public Labels l(final String name, final long value) {
+        map.put(name, Long.toString(value));
+        return this;
+    }
+
+    /**
+     * Add a new label and return this object.
+     *
+     * @param name  Label name.
+     * @param value Label value.
+     * @return This object with added label.
+     * @since 1.1.0
+     */
+    public Labels l(final String name, final char value) {
+        map.put(name, Character.toString(value));
+        return this;
+    }
+
+    /**
+     * Add a new label and return this object.
+     *
+     * @param name  Label name.
+     * @param value Label value.
+     * @return This object with added label.
+     * @since 1.1.0
+     */
+    public Labels l(final String name, final byte value) {
+        map.put(name, Byte.toString(value));
+        return this;
+    }
+
+    /**
+     * Add a new label and return this object.
+     *
+     * @param name  Label name.
+     * @param value Label value.
+     * @return This object with added label.
+     * @since 1.1.0
+     */
+    public Labels l(final String name, final short value) {
+        map.put(name, Short.toString(value));
+        return this;
+    }
+
+    /**
      * Put a map with labels. Valid label identifier starts with letter and contains only letters, digits or '_'.
      *
      * @param map Map containing label key - value pairs.
      * @return This reference.
-     * @throws RuntimeException when given <code>map</code> contains null or empty keys or values.
      * @since 0.1.22
      */
     public Labels l(final Map<String, String> map) {

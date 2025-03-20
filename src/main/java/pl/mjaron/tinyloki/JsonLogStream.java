@@ -6,10 +6,14 @@ import java.util.Map;
  * Writes logs to JSON-formatted string.
  */
 public class JsonLogStream implements ILogStream {
+
+    private final static String SEQUENCE_OPENING_STREAM = "{\"stream\":{";
+    private final static String SEQUENCE_CLOSING_STREAM = "]}";
+
     private final JsonLogCollector collector;
-    private final StringBuilder b = new StringBuilder("{\"stream\":{");
+    private final StringBuilder b = new StringBuilder(SEQUENCE_OPENING_STREAM);
     private final String initialSequenceWithHeaders;
-    private final String finalSequenceClosingStreams = "]}";
+
     private int cachedLogsCount = 0; // Must be used in synchronized methods only.
 
     /**
@@ -30,9 +34,7 @@ public class JsonLogStream implements ILogStream {
             }
             b.append('"');
             b.append(entry.getKey());
-            b.append('"');
-            b.append(':');
-            b.append('"');
+            b.append("\":\"");
             Utils.escapeJsonString(b, entry.getValue());
             b.append('"');
         }
@@ -40,7 +42,7 @@ public class JsonLogStream implements ILogStream {
         initialSequenceWithHeaders = b.toString();
     }
 
-    int logUnsafe(final long timestampMs, final String line) {
+    int logUnsafe(final long timestampMs, final String line, final Labels structuredMetadata) {
         final int beforeSize = b.length();
         if (cachedLogsCount != 0) {
             b.append(',');
@@ -50,13 +52,34 @@ public class JsonLogStream implements ILogStream {
         b.append(timestampMs);
         b.append("000000\",\"");
         Utils.escapeJsonString(b, line);
-        b.append("\"]");
+        b.append('"');
+
+        if (structuredMetadata != null && collector.getStructuredMetadataLabelSettings() != null) {
+            final Labels prettified = Labels.prettify(structuredMetadata, collector.getStructuredMetadataLabelSettings());
+            b.append(",{");
+            boolean isFirst = true;
+            for (final Map.Entry<String, String> entry : prettified.getMap().entrySet()) {
+                if (isFirst) {
+                    isFirst = false;
+                } else {
+                    b.append(',');
+                }
+                b.append('"');
+                b.append(entry.getKey());
+                b.append("\":\"");
+                Utils.escapeJsonString(b, entry.getValue());
+                b.append('"');
+            }
+            b.append("}");
+        }
+
+        b.append("]");
         return b.length() - beforeSize;
     }
 
     @Override
-    public void log(final long timestampMs, final String line) {
-        collector.logImplementation(this, timestampMs, line);
+    public void log(final long timestampMs, final String line, final Labels structuredMetadata) {
+        collector.logImplementation(this, timestampMs, line, structuredMetadata);
     }
 
     @Override
@@ -68,7 +91,7 @@ public class JsonLogStream implements ILogStream {
      * Appends JSON tags which closes streams array and JSON root object.
      */
     public void closeStreamsEntryTag() {
-        b.append(finalSequenceClosingStreams);
+        b.append(SEQUENCE_CLOSING_STREAM);
     }
 
     /**

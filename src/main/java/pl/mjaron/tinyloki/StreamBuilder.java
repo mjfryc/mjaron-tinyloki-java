@@ -40,16 +40,114 @@ public class StreamBuilder {
     }
 
     /**
-     * Add a new label and return this object.
+     * Add a new label and return this object. See the {@link Labels} documentation for restrictions on label names and values.
      *
-     * @param labelName  Label name. Valid label identifier starts with letter and contains only letters, digits or '_'.
-     * @param labelValue Label value. Valid label identifier starts with letter and contains only letters, digits or '_'.
+     * @param name  Label name.
+     * @param value Label value.
      * @return This object with added label.
-     * @throws RuntimeException when given <code>labelName</code> or <code>labelValue</code> is null or empty.
+     * @throws RuntimeException when given <code>name</code> or <code>value</code> is null or empty.
      * @since 0.3.2
      */
-    public StreamBuilder l(final String labelName, final String labelValue) {
-        labels.l(labelName, labelValue);
+    public StreamBuilder l(final String name, final String value) {
+        labels.l(name, value);
+        return this;
+    }
+
+    /**
+     * Add a new label and return this object. See the {@link Labels} documentation for restrictions on label names and values.
+     *
+     * @param name  Label name.
+     * @param value Label value.
+     * @return This object with added label.
+     * @throws RuntimeException when given <code>name</code> or <code>value</code> is null or empty.
+     * @since 1.1.0
+     */
+    public StreamBuilder l(final String name, final int value) {
+        labels.l(name, value);
+        return this;
+    }
+
+    /**
+     * Add a new label and return this object. See the {@link Labels} documentation for restrictions on label names and values.
+     *
+     * @param name  Label name.
+     * @param value Label value.
+     * @return This object with added label.
+     * @throws RuntimeException when given <code>name</code> or <code>value</code> is null or empty.
+     * @since 1.1.0
+     */
+    public StreamBuilder l(final String name, final long value) {
+        labels.l(name, value);
+        return this;
+    }
+
+    /**
+     * Add a new label and return this object. See the {@link Labels} documentation for restrictions on label names and values.
+     *
+     * @param name  Label name.
+     * @param value Label value.
+     * @return This object with added label.
+     * @throws RuntimeException when given <code>name</code> or <code>value</code> is null or empty.
+     * @since 1.1.0
+     */
+    public StreamBuilder l(final String name, final char value) {
+        labels.l(name, value);
+        return this;
+    }
+
+    /**
+     * Add a new label and return this object. See the {@link Labels} documentation for restrictions on label names and values.
+     *
+     * @param name  Label name.
+     * @param value Label value.
+     * @return This object with added label.
+     * @throws RuntimeException when given <code>name</code> or <code>value</code> is null or empty.
+     * @since 1.1.0
+     */
+    public StreamBuilder l(final String name, final byte value) {
+        labels.l(name, value);
+        return this;
+    }
+
+    /**
+     * Add a new label and return this object. See the {@link Labels} documentation for restrictions on label names and values.
+     *
+     * @param name  Label name.
+     * @param value Label value.
+     * @return This object with added label.
+     * @throws RuntimeException when given <code>name</code> or <code>value</code> is null or empty.
+     * @since 1.1.0
+     */
+    public StreamBuilder l(final String name, final short value) {
+        labels.l(name, value);
+        return this;
+    }
+
+    /**
+     * Add a new label and return this object. See the {@link Labels} documentation for restrictions on label names and values.
+     *
+     * @param name  Label name.
+     * @param value Label value.
+     * @return This object with added label.
+     * @throws RuntimeException when given <code>name</code> or <code>value</code> is null or empty.
+     * @since 1.1.0
+     */
+    public StreamBuilder l(final String name, final float value) {
+        labels.l(name, value);
+        return this;
+    }
+
+    /**
+     * Add a new label and return this object. See the {@link Labels} documentation for restrictions on label names and values.
+     *
+     * @param name  Label name.
+     * @param value Label value.
+     * @return This object with added label.
+     * @throws RuntimeException when given <code>name</code> or <code>value</code> is null or empty.
+     * @since 1.1.0
+     */
+    public StreamBuilder l(final String name, final double value) {
+        labels.l(name, value);
         return this;
     }
 

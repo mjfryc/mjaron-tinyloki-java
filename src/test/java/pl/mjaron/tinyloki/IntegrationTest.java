@@ -7,13 +7,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 /**
- * Modify the run configuration by adding environment variable:
+ * To enable this test, modify the run configuration by adding environment variable:
  * <pre>{@code
  * TINYLOKI_INTEGRATION=1
  * }</pre>
+ * <p>
+ * Integration test server must be enabled to receive logs, see <code>integration-test-server</code> project directory.
  */
 @EnabledIfEnvironmentVariable(named = "TINYLOKI_INTEGRATION", matches = "1")
 public class IntegrationTest {
@@ -79,6 +79,28 @@ public class IntegrationTest {
 
             System.out.println("Synced and closed with success: " + closedWithSuccess);
         }
+    }
+
+    @Test
+    void structuredMetadataTest() throws InterruptedException {
+        TinyLoki loki = TinyLoki.withUrl("http://localhost:3100").withVerboseLogMonitor(true).withBasicAuth("user", "pass").start();
+        ILogStream helloStream = loki.stream().info().l("topic", "structured_metadata").l("Number", 3).build();
+        helloStream.log("Hello world!", Labels.of("struct", "custom label"));
+        loki.closeSync();
+    }
+
+    @Test
+    void logLevelTest() throws InterruptedException {
+        TinyLoki loki = TinyLoki.withUrl("http://localhost:3100").withVerboseLogMonitor(true).withBasicAuth("user", "pass").start();
+        loki.stream().critical().l("topic", "loglevel").build().log("Log level: critical");
+        loki.stream().fatal().l("topic", "loglevel").build().log("Log level: fatal");
+        loki.stream().warning().l("topic", "loglevel").build().log("Log level: warning");
+        loki.stream().info().l("topic", "loglevel").build().log("Log level: info");
+        loki.stream().debug().l("topic", "loglevel").build().log("Log level: debug");
+        loki.stream().verbose().l("topic", "loglevel").build().log("Log level: verbose");
+        loki.stream().trace().l("topic", "loglevel").build().log("Log level: trace");
+        loki.stream().unknown().l("topic", "loglevel").build().log("Log level: unknown");
+        loki.closeSync();
     }
 
 

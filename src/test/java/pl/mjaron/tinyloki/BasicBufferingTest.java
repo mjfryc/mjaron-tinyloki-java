@@ -23,6 +23,11 @@ class BasicBufferingTest {
             }
 
             @Override
+            public void configureStructuredMetadata(LabelSettings structuredMetadataLabelSettings) {
+
+            }
+
+            @Override
             public ILogStream createStream(Labels labels) {
                 return null;
             }
@@ -78,6 +83,11 @@ class BasicBufferingTest {
 
             @Override
             public void configureBufferingManager(IBuffering bufferingManager) {
+            }
+
+            @Override
+            public void configureStructuredMetadata(LabelSettings structuredMetadataLabelSettings) {
+
             }
 
             @Override

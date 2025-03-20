@@ -91,6 +91,13 @@ public class Settings {
      * @see Settings#withLabelLength(int, int)
      */
     private final LabelSettings labelSettings = new LabelSettings();
+
+    /**
+     * If not null, the structured metadata is supported, otherwise, it will be ignored in log streams.
+     *
+     * @since 1.1.0
+     */
+    private LabelSettings structuredMetadataLabelSettings = new LabelSettings();
     /**
      * {@link ILogCollector} which will prepare logs to send it to the Grafana Loki server.
      *
@@ -282,6 +289,39 @@ public class Settings {
     }
 
     /**
+     * Enables structured metadata support.
+     *
+     * @param structuredMetadataLabelSettings Limits of structured metadata identifiers.
+     * @return This {@link Settings} object reference.
+     * @since 1.1.0
+     */
+    public Settings withStructuredMetadata(final LabelSettings structuredMetadataLabelSettings) {
+        this.structuredMetadataLabelSettings = structuredMetadataLabelSettings;
+        return this;
+    }
+
+    /**
+     * Enables structured metadata support with default structured metadata label settings.
+     *
+     * @return This {@link Settings} object reference.
+     * @since 1.1.0
+     */
+    public Settings withStructuredMetadata() {
+        return withStructuredMetadata(new LabelSettings());
+    }
+
+    /**
+     * Disables structured metadata support. It will be not sent to the server.
+     *
+     * @return This {@link Settings} object reference.
+     * @since 1.1.0
+     */
+    public Settings withoutStructuredMetadata() {
+        this.structuredMetadataLabelSettings = null;
+        return this;
+    }
+
+    /**
      * Sets the {@link IExecutor} used to perform background operations like log collecting and sendint.
      *
      * @param executor The {@link IExecutor} instance. The <code>null</code> value causes using the default executor.
@@ -431,6 +471,16 @@ public class Settings {
      */
     public LabelSettings getLabelSettings() {
         return this.labelSettings;
+    }
+
+    /**
+     * Provides {@link LabelSettings} of structured metadata labels. If <c>null</c>, the structured metadata is not supported.
+     *
+     * @return {@link LabelSettings} of structured metadata labels. If <c>null</c>, the structured metadata is not supported.
+     * @since 1.1.0
+     */
+    public LabelSettings getStructuredMetadataLabelSettings() {
+        return this.structuredMetadataLabelSettings;
     }
 
     /**

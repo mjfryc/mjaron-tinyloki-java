@@ -15,7 +15,7 @@
 ![Branches](.github/badges/branches.svg)
 
 Tiny [Grafana Loki](https://grafana.com/oss/loki/) client (log sender) written in pure Java 1.8 without any external
-dependencies.
+dependencies. One of Grafana Loki third-party clients mentioned in [documentation](https://grafana.com/docs/loki/v3.4.x/send-data/).
 
 * Implements JSON variant of [Loki API](https://grafana.com/docs/loki/latest/api/#post-lokiapiv1push)
 * Works with **Android** and **Java SE**
@@ -121,6 +121,14 @@ Click the [Packages section](https://github.com/mjfryc?tab=packages&repo_name=mj
 ```gradle
     implementation files(project.rootDir.absolutePath + '/libs/mjaron-tinyloki-java-1.0.0.jar')
 ```
+
+## Features description
+
+### Structured metadata
+
+The [structured metadata](https://grafana.com/docs/loki/v3.4.x/get-started/labels/structured-metadata/) has been enabled
+by default in [Grafana Loki 3.0.0](https://grafana.com/docs/loki/v3.4.x/setup/upgrade/#loki-300).
+To put structured metadata to the log line, add it as the last argument of logging method.
 
 ## API design (outdated)
 

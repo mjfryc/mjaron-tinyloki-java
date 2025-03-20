@@ -17,7 +17,7 @@ class ILogStreamTest {
         public long timestamp = 0;
 
         @Override
-        public void log(long timestampMs, String line) {
+        public void log(long timestampMs, String line, Labels structuredMetadata) {
             timestamp = timestampMs;
         }
 

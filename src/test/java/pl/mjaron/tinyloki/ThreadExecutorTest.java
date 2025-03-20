@@ -94,6 +94,10 @@ class ThreadExecutorTest {
         }
 
         @Override
+        public void configureStructuredMetadata(LabelSettings structuredMetadataLabelSettings) {
+        }
+
+        @Override
         public ILogStream createStream(Labels labels) {
             return null;
         }

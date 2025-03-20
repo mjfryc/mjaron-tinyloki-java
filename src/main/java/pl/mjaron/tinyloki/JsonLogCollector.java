@@ -16,6 +16,7 @@ public class JsonLogCollector implements ILogCollector {
     private int logEntriesCount = 0;
     private ILogListener logListener = null;
     private IBuffering bufferingManager = null;
+    private LabelSettings structuredMetadataLabelSettings = null;
 
     @Override
     public void configureLogListener(final ILogListener logListener) {
@@ -25,6 +26,21 @@ public class JsonLogCollector implements ILogCollector {
     @Override
     public void configureBufferingManager(final IBuffering bufferingManager) {
         this.bufferingManager = bufferingManager;
+    }
+
+    @Override
+    public void configureStructuredMetadata(LabelSettings structuredMetadataLabelSettings) {
+        this.structuredMetadataLabelSettings = structuredMetadataLabelSettings;
+    }
+
+    /**
+     * Provides label settings for structured metadata.
+     *
+     * @return Label settings for structured metadata. It may be <c>null</c>.
+     * @since 1.1.0
+     */
+    public LabelSettings getStructuredMetadataLabelSettings() {
+        return structuredMetadataLabelSettings;
     }
 
     /**
@@ -110,13 +126,13 @@ public class JsonLogCollector implements ILogCollector {
         return CONTENT_TYPE;
     }
 
-    synchronized void logImplementation(JsonLogStream stream, final long timestampMs, final String line) {
+    synchronized void logImplementation(JsonLogStream stream, final long timestampMs, final String line, final Labels structuredMetadata) {
         final int logCandidateSize = 25 + line.length();
         if (!bufferingManager.beforeLog(logCandidateSize)) {
             return;
         }
 
-        final int acceptedLogSize = stream.logUnsafe(timestampMs, line);
+        final int acceptedLogSize = stream.logUnsafe(timestampMs, line, structuredMetadata);
 
         bufferingManager.logAccepted(acceptedLogSize);
         ++logEntriesCount;

@@ -79,13 +79,13 @@ public class TinyLoki implements java.io.Closeable {
      * <p>
      * Creates a new {@link Settings} object which is used to initialize a new {@link TinyLoki} instance, e.g:
      * <pre>
-     *     LogController logController =
+     *     TinyLoki tinyLoki =
      *         TinyLoki.withUrl(url)    // Settings created here.
      *             .withBasicAuth(user, pass)
      *             .withConnectTimeout(connectTimeout)
      *             .withLogCollector(logCollector)
      *             .withLogMonitor(logMonitor)
-     *             .open();            // LogController created here.
+     *             .open(); // TinyLoki created here.
      * </pre>
      * <p>
      * Optionally call {@link #withExactUrl(String)} instead to skip URL value normalization
@@ -129,12 +129,12 @@ public class TinyLoki implements java.io.Closeable {
     }
 
     /**
-     * Creates a basic configuration of LogController.
+     * Creates a basic configuration of TinyLoki.
      *
      * @param url  URL to Loki HTTP API endpoint, usually ending with <code>/loki/api/v1/push</code>.
      * @param user Basic authentication user. If null, BA header will not be sent.
      * @param pass Basic authentication password. If null, BA header will not be sent.
-     * @return New {@link TinyLoki LogController} object.
+     * @return New {@link TinyLoki} object.
      * @deprecated Use {@link TinyLoki#withUrl(String)} to initialize settings and finally call {@link Settings#open()}, e.g:
      * <pre>
      *     TinyLoki.withUrl(url).withBasicAuth(user, pass).open();
@@ -196,9 +196,9 @@ public class TinyLoki implements java.io.Closeable {
     }
 
     /**
-     * Provides the {@link ILogCollector} instance used to initialize this <code>LogController</code>.
+     * Provides the {@link ILogCollector} set during initialization.
      *
-     * @return The {@link ILogCollector} instance used to initialize this <code>LogController</code>.
+     * @return The {@link ILogCollector} instance set during initialization.
      * @since 1.0.0
      */
     public ILogCollector getLogCollector() {
@@ -206,9 +206,9 @@ public class TinyLoki implements java.io.Closeable {
     }
 
     /**
-     * Provides the {@link IExecutor} instance used to initialize this <code>LogController</code>.
+     * Provides the {@link IExecutor} instance set during initialization.
      *
-     * @return The {@link IExecutor} instance used to initialize this <code>LogController</code>.
+     * @return The {@link IExecutor} instance set during initialization.
      * @since 1.0.0
      */
     public IExecutor getExecutor() {
@@ -240,7 +240,7 @@ public class TinyLoki implements java.io.Closeable {
      * Provides a {@link StreamBuilder} to initialize the stream. E.g:
      *
      * <pre>{@code
-     * ILogStream myStream = logController.stream().info().l("my_custom_label", "value").open();
+     * ILogStream myStream = tinyLoki.stream().info().l("my_custom_label", "value").open();
      * }</pre>
      *
      * @return New instance of {@link StreamBuilder}.

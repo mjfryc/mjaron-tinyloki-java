@@ -9,7 +9,7 @@ import java.util.Map;
  * <p>
  * Example:
  * <pre>{@code
- * ILogStream myStream = logController.stream().info().l("my_custom_label", "value").open();
+ * ILogStream myStream = tinyLoki.stream().info().l("my_custom_label", "value").open();
  * }</pre>
  */
 public class StreamBuilder {

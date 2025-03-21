@@ -46,7 +46,6 @@ public class Sample {
                 .open();
         ILogStream logStream = loki.stream().info().l("topic", "shortExample").open();
         logStream.log("Hello world!");
-        logStream.log("Hello world!", Labels.of("structured_metadata", "value"));
         loki.closeSync();
     }
 }

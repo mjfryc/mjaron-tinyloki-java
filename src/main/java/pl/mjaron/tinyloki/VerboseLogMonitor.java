@@ -31,7 +31,7 @@ public class VerboseLogMonitor implements ILogMonitor {
 
     @Override
     public void onConfigured(final String contentType, final String contentEncoding) {
-        ILogMonitor.printInfo("LogController configured.");
+        ILogMonitor.printInfo("TinyLoki configured.");
         this.contentType = contentType;
         this.contentEncoding = contentEncoding;
     }

@@ -6,7 +6,7 @@ package pl.mjaron.tinyloki;
  *
  * @since 1.0.0
  */
-public interface IExecutor {
+public interface IExecutor extends ILogListener {
 
     /**
      * Performs the configuration before using the object. Called internally by the {@link TinyLoki} constructor.

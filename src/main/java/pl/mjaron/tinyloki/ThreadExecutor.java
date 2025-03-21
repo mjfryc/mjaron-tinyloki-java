@@ -36,9 +36,6 @@ public class ThreadExecutor implements IExecutor, Runnable {
             throw new NullPointerException("Cannot configure ThreadExecutor: Given log monitor is null.");
         }
 
-        // Input parameters are valid - configuration is possible.
-        logCollector.configureLogListener(this.logListener);
-
         // Configuration passed, saving changes.
         this.logMonitor = logMonitor;
         this.logCollector = logCollector;
@@ -121,5 +118,10 @@ public class ThreadExecutor implements IExecutor, Runnable {
                 logMonitor.onException(e);
             }
         }
+    }
+
+    @Override
+    public void onLog(final int cachedLogsCount) {
+        logListener.onLog(cachedLogsCount);
     }
 }

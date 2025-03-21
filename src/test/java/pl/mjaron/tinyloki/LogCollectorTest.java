@@ -8,12 +8,12 @@ class LogCollectorTest {
     @Test
     void basicJson() {
         JsonLogCollector collector = new JsonLogCollector();
-        collector.configure(ILogListener.dummy(), new BasicBuffering());
+        collector.configure(ILogListener.dummy(), new BasicBuffering(), null, null);
         Labels labels = new Labels();
         labels.l("level", "INFO");
         labels.l("host", "ZEUS");
         ILogStream stream = collector.createStream(labels);
-        stream.log(1635710583043L, "Hello world.");
+        stream.log(1635710583043000000L, "Hello world.");
         final String collected = collector.collectAsString();
         System.out.println("Collected:\n" + collected);
         final String expected = "{\"streams\":[{\"stream\":{\"host\":\"ZEUS\",\"level\":\"INFO\"},\"values\":[[\"1635710583043000000\",\"Hello world.\"]]}]}";

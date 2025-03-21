@@ -9,7 +9,7 @@ class JsonLogCollectorTest {
     @Test
     void basic() {
         JsonLogCollector collector = new JsonLogCollector();
-        collector.configure(ILogListener.dummy(), new BasicBuffering());
+        collector.configure(ILogListener.dummy(), new BasicBuffering(), null, null);
         JsonLogStream stream = (JsonLogStream) collector.createStream(new Labels().l("abc", "def"));
         assertNotNull(stream.getStringBuilder());
         stream.log(123, "abc");
@@ -23,7 +23,7 @@ class JsonLogCollectorTest {
     @Test
     void emptyStreams() {
         JsonLogCollector collector = new JsonLogCollector();
-        collector.configure(ILogListener.dummy(), new BasicBuffering());
+        collector.configure(ILogListener.dummy(), new BasicBuffering(), null, null);
         ILogStream stream0 = collector.createStream(new Labels().l("a", "Alpha"));
         ILogStream stream1 = collector.createStream(new Labels().l("b", "Beta"));
         assertNull(collector.collect());
@@ -33,7 +33,7 @@ class JsonLogCollectorTest {
     @Test
     void twoStreams() {
         JsonLogCollector collector = new JsonLogCollector();
-        collector.configure(ILogListener.dummy(), new BasicBuffering());
+        collector.configure(ILogListener.dummy(), new BasicBuffering(), null, null);
         ILogStream stream0 = collector.createStream(new Labels().l("a", "Alpha"));
         ILogStream stream1 = collector.createStream(new Labels().l("b", "Beta"));
         stream0.log("a_line");
@@ -86,7 +86,7 @@ class JsonLogCollectorTest {
 
         final String extended = "🩑"; // "\uD83E\uDE51"
         JsonLogCollector collector = new JsonLogCollector();
-        collector.configure(ILogListener.dummy(), new BasicBuffering());
+        collector.configure(ILogListener.dummy(), new BasicBuffering(), null, ITimestampProviderFactory.current());
         ILogStream stream = collector.createStream(new Labels());
         stream.log(0, extended);
         final String logs = collector.collectAsString();
@@ -99,10 +99,9 @@ class JsonLogCollectorTest {
                 , (byte)0x73, (byte)0x22, (byte)0x3a, (byte)0x5b, (byte)0x7b, (byte)0x22, (byte)0x73, (byte)0x74
                 , (byte)0x72, (byte)0x65, (byte)0x61, (byte)0x6d, (byte)0x22, (byte)0x3a, (byte)0x7b, (byte)0x7d
                 , (byte)0x2c, (byte)0x22, (byte)0x76, (byte)0x61, (byte)0x6c, (byte)0x75, (byte)0x65, (byte)0x73
-                , (byte)0x22, (byte)0x3a, (byte)0x5b, (byte)0x5b, (byte)0x22, (byte)0x30, (byte)0x30, (byte)0x30
-                , (byte)0x30, (byte)0x30, (byte)0x30, (byte)0x30, (byte)0x22, (byte)0x2c, (byte)0x22, (byte)0xf0
-                , (byte)0x9f, (byte)0xa9, (byte)0x91, (byte)0x22, (byte)0x5d, (byte)0x5d, (byte)0x7d, (byte)0x5d
-                , (byte)0x7d
+                , (byte)0x22, (byte)0x3a, (byte)0x5b, (byte)0x5b, (byte)0x22, (byte)0x30, (byte)0x22, (byte)0x2c
+                , (byte)0x22, (byte)0xf0, (byte)0x9f, (byte)0xa9, (byte)0x91, (byte)0x22, (byte)0x5d, (byte)0x5d
+                , (byte)0x7d, (byte)0x5d, (byte)0x7d
         };
         // @formatter:on
 

@@ -12,19 +12,10 @@ class BasicBufferingTest {
     void basic() {
 
         ILogCollector c = new ILogCollector() {
-            @Override
-            public void configureLogListener(ILogListener logListener) {
 
-            }
 
             @Override
-            public void configureBufferingManager(IBuffering bufferingManager) {
-
-            }
-
-            @Override
-            public void configureStructuredMetadata(LabelSettings structuredMetadataLabelSettings) {
-
+            public void configure(ILogListener logListener, IBuffering bufferingManager, LabelSettings structuredMetadataLabelSettings, ITimestampProviderFactory timestampProviderFactory) {
             }
 
             @Override
@@ -77,17 +68,9 @@ class BasicBufferingTest {
     @Test
     void nullCollector() {
         ILogCollector c = new ILogCollector() {
-            @Override
-            public void configureLogListener(ILogListener logListener) {
-            }
 
             @Override
-            public void configureBufferingManager(IBuffering bufferingManager) {
-            }
-
-            @Override
-            public void configureStructuredMetadata(LabelSettings structuredMetadataLabelSettings) {
-
+            public void configure(ILogListener logListener, IBuffering bufferingManager, LabelSettings structuredMetadataLabelSettings, ITimestampProviderFactory timestampProviderFactory) {
             }
 
             @Override

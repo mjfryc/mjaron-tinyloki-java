@@ -28,6 +28,27 @@ public class Utils {
         return sw.toString(); // stack trace as a string
     }
 
+    public static class Nanoseconds {
+
+        public static final long MILLISECOND = 1_000_000;
+
+        public static final long SECOND = 1_000_000_000;
+
+        public static long fromSeconds(long what) {
+            return what * SECOND;
+        }
+
+        /**
+         * Provides current time in nanoseconds.
+         *
+         * @return Current time in nanoseconds.
+         * @since 1.1.3
+         */
+        public static long currentTime() {
+            return System.currentTimeMillis() * MILLISECOND;
+        }
+    }
+
     public static long clamp(final long value, final long min, final long max) {
         return Math.max(min, Math.min(max, value));
     }

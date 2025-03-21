@@ -125,7 +125,7 @@ public class TinyLoki implements java.io.Closeable {
      * @since 0.3.0
      */
     public static TinyLoki open(final Settings settings) {
-        return new TinyLoki(settings.getLogCollector(), settings.getLogEncoder(), settings.getLogSenderSettings(), settings.getLogSender(), settings.getLabelSettings(), settings.getStructuredMetadataLabelSettings(), settings.getExecutor(), settings.getBuffering(), settings.getLogMonitor()).start();
+        return new TinyLoki(settings.getLogCollector(), settings.getLogEncoder(), settings.getLogSenderSettings(), settings.getLogSender(), settings.getLabelSettings(), settings.getStructuredMetadataLabelSettings(), settings.getExecutor(), settings.getBuffering(), settings.getTimestampProviderFactory(), settings.getLogMonitor()).start();
     }
 
     /**
@@ -149,7 +149,6 @@ public class TinyLoki implements java.io.Closeable {
     private final ILogSender logSender;
     private final LabelSettings labelSettings;
     private final IExecutor executor;
-    private final IBuffering bufferingManager;
     private final ILogMonitor logMonitor;
 
     /**
@@ -164,43 +163,26 @@ public class TinyLoki implements java.io.Closeable {
      * @param structuredMetadataLabelSettings Structured metadata label restrictions. If <code>null</code>, the structured metadata is not supported.
      * @param executor                        The {@link IExecutor} implementation.
      * @param bufferingManager                The object responsible for buffering strategy.
+     * @param timestampProviderFactory        Creates timestamp providers. Responsible for timestamp generation policy.
      * @param logMonitor                      Handles diagnostic events from whole library.
-     * @since 0.3.4
+     * @since 1.1.3
      */
-    public TinyLoki(final ILogCollector logCollector, ILogEncoder logEncoder, final LogSenderSettings logSenderSettings, final ILogSender logSender, final LabelSettings labelSettings, final LabelSettings structuredMetadataLabelSettings, final IExecutor executor, final IBuffering bufferingManager, final ILogMonitor logMonitor) {
+    public TinyLoki(final ILogCollector logCollector, ILogEncoder logEncoder, final LogSenderSettings logSenderSettings, final ILogSender logSender, final LabelSettings labelSettings, final LabelSettings structuredMetadataLabelSettings, final IExecutor executor, final IBuffering bufferingManager, final ITimestampProviderFactory timestampProviderFactory, final ILogMonitor logMonitor) {
         this.logCollector = logCollector;
         this.logEncoder = logEncoder;
         this.logSender = logSender;
         this.labelSettings = labelSettings;
         this.executor = executor;
-        this.bufferingManager = bufferingManager;
         this.logMonitor = logMonitor;
 
-        this.bufferingManager.configure(this.logCollector, 0, 0, this.executor, this.logMonitor);
-        this.logCollector.configureBufferingManager(this.bufferingManager);
-        this.logCollector.configureStructuredMetadata(structuredMetadataLabelSettings);
+        bufferingManager.configure(this.logCollector, 0, 0, this.executor, this.logMonitor);
+        this.logCollector.configure(this.executor, bufferingManager, structuredMetadataLabelSettings, timestampProviderFactory);
         logSenderSettings.setContentType(this.logCollector.contentType());
         final String contentEncoding = (this.logEncoder == null) ? null : this.logEncoder.contentEncoding();
         logSenderSettings.setContentEncoding(contentEncoding);
         this.logSender.configure(logSenderSettings, logMonitor);
         this.executor.configure(logCollector, this::internalProcessLogs, logMonitor);
         this.logMonitor.onConfigured(this.logCollector.contentType(), contentEncoding);
-    }
-
-    /**
-     * Maintenance constructor designed for user of this library.
-     *
-     * @param logCollector      ILogCollector implementation, which is responsible for creating new streams and collecting its logs.
-     * @param logSenderSettings {@link LogSenderSettings} used to initialize the {@link ILogSender log sender}.
-     *                          Some settings will be overridden by this constructor.
-     * @param logSender         Sends the logs collected by log controller.
-     * @param labelSettings     Preferences of the {@link Labels}. See {@link LabelSettings}.
-     * @param executor          The {@link IExecutor} implementation.
-     * @param logMonitor        Handles diagnostic events from whole library.
-     * @deprecated Use {@link TinyLoki#TinyLoki(ILogCollector, ILogEncoder, LogSenderSettings, ILogSender, LabelSettings, LabelSettings, IExecutor, IBuffering, ILogMonitor)} instead, where logEncoder parameter should be specified explicitly.
-     */
-    public TinyLoki(final ILogCollector logCollector, final LogSenderSettings logSenderSettings, final ILogSender logSender, final LabelSettings labelSettings, final IExecutor executor, final ILogMonitor logMonitor) {
-        this(logCollector, null, logSenderSettings, logSender, labelSettings, new LabelSettings(), executor, new BasicBuffering(), logMonitor);
     }
 
     /**
@@ -290,6 +272,7 @@ public class TinyLoki implements java.io.Closeable {
      * streamSet.info("My info log");
      * }</pre>
      *
+     * @param labels Common {@link Labels} used when creating all log-level streams.
      * @return New instance of {@link StreamSetBuilder}.
      * @since 1.1.1
      */

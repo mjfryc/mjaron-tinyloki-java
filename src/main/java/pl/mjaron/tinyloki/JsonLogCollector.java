@@ -17,20 +17,14 @@ public class JsonLogCollector implements ILogCollector {
     private ILogListener logListener = null;
     private IBuffering bufferingManager = null;
     private LabelSettings structuredMetadataLabelSettings = null;
+    private ITimestampProvider timestampProvider = null;
 
     @Override
-    public void configureLogListener(final ILogListener logListener) {
+    public void configure(ILogListener logListener, IBuffering bufferingManager, LabelSettings structuredMetadataLabelSettings, ITimestampProviderFactory timestampProviderFactory) {
         this.logListener = logListener;
-    }
-
-    @Override
-    public void configureBufferingManager(final IBuffering bufferingManager) {
         this.bufferingManager = bufferingManager;
-    }
-
-    @Override
-    public void configureStructuredMetadata(LabelSettings structuredMetadataLabelSettings) {
         this.structuredMetadataLabelSettings = structuredMetadataLabelSettings;
+        this.timestampProvider = ITimestampProviderFactory.orDefault(timestampProviderFactory).create();
     }
 
     /**
@@ -126,13 +120,16 @@ public class JsonLogCollector implements ILogCollector {
         return CONTENT_TYPE;
     }
 
-    synchronized void logImplementation(JsonLogStream stream, final long timestampMs, final String line, final Labels structuredMetadata) {
+    synchronized void logImplementation(JsonLogStream stream, long timestamp, final String line, final Labels structuredMetadata) {
         final int logCandidateSize = 25 + line.length();
         if (!bufferingManager.beforeLog(logCandidateSize)) {
             return;
         }
 
-        final int acceptedLogSize = stream.logUnsafe(timestampMs, line, structuredMetadata);
+        if (timestamp == ILogStream.TIMESTAMP_NONE) {
+            timestamp = timestampProvider.next(line);
+        }
+        final int acceptedLogSize = stream.logUnsafe(timestamp, line, structuredMetadata);
 
         bufferingManager.logAccepted(acceptedLogSize);
         ++logEntriesCount;

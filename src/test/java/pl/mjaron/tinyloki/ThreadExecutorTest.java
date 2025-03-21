@@ -51,7 +51,7 @@ class ThreadExecutorTest {
         };
         final ThreadExecutor executor = new ThreadExecutor(1000);
         final ILogCollector logCollector = new JsonLogCollector();
-        logCollector.configureBufferingManager(new BasicBuffering());
+        logCollector.configure(executor, new BasicBuffering(), null, null);
         executor.configure(logCollector, throwingProcessor, new VerboseLogMonitor());
         executor.start();
         final ILogStream stream = logCollector.createStream(new Labels().l("sample", "label"));
@@ -85,16 +85,8 @@ class ThreadExecutorTest {
         }
 
         @Override
-        public void configureLogListener(ILogListener logListener) {
+        public void configure(ILogListener logListener, IBuffering bufferingManager, LabelSettings structuredMetadataLabelSettings, ITimestampProviderFactory timestampProviderFactory) {
             this.logListener = logListener;
-        }
-
-        @Override
-        public void configureBufferingManager(IBuffering bufferingManager) {
-        }
-
-        @Override
-        public void configureStructuredMetadata(LabelSettings structuredMetadataLabelSettings) {
         }
 
         @Override
@@ -155,6 +147,7 @@ class ThreadExecutorTest {
         // 1st second: Thread executor sleeps 1 second waiting for logs...
         ThreadExecutor executor = new ThreadExecutor(1000);
         executor.configure(logCollector, blockingLogProcessor, new SilentLogMonitor());
+        logCollector.configure(executor, null, null, null);
         executor.start();
 
         // 1st second: The log occurs and the blockingLogProcessor hangs the application for 10 seconds.

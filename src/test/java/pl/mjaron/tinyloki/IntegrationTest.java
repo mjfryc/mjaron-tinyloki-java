@@ -129,6 +129,32 @@ public class IntegrationTest {
         loki.closeSync();
     }
 
+    void sameLogTest(final boolean incrementing, final String message) throws InterruptedException {
+        Settings settings = TinyLoki.withUrl("http://localhost:3100").withVerboseLogMonitor(true).withBasicAuth("user", "pass");
+
+        if (incrementing) {
+            settings.withIncrementingTimestampProvider();
+        } else {
+            settings.withCurrentTimestampProvider();
+        }
+
+        TinyLoki loki = settings.open();
+
+        ILogStream stream = loki.stream().info().l("topic", "doubleLogTest").open();
+        stream.log(message);
+        stream.log(message);
+        stream.log(message);
+        stream.log(message);
+        stream.log(message);
+        loki.closeSync();
+    }
+
+    @Test
+    void sameLogTest() throws InterruptedException {
+        sameLogTest(true, "The same log incrementing timestamp.");
+        sameLogTest(false, "The same log current timestamp.");
+    }
+
     static class MassiveThread extends Thread {
         static final public String LABEL_STREAM_IDX = "test_stream_index";
 

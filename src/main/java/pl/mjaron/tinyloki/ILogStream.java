@@ -11,24 +11,31 @@ package pl.mjaron.tinyloki;
 public interface ILogStream {
 
     /**
+     * Specifies that the stream should determine the current timestamp itself.
+     *
+     * @since 1.1.3
+     */
+    long TIMESTAMP_NONE = -1;
+
+    /**
      * Thread-safe method used to write log messages to a stream.
      *
-     * @param timestampMs        Usually System.currentTimeMillis().
+     * @param timestampNs        Log timestamp in <b>nanoseconds</b>.
      * @param line               Log content.
      * @param structuredMetadata The optional (nullable) {@link Labels} containing <a href="https://grafana.com/docs/loki/v3.4.x/get-started/labels/structured-metadata/">structured metadata</a> values.
-     * @since 1.1.0
+     * @since 1.1.3
      */
-    void log(final long timestampMs, final String line, final Labels structuredMetadata);
+    void log(final long timestampNs, final String line, final Labels structuredMetadata);
 
     /**
      * Thread-safe log line with custom time.
      *
-     * @param timestampMs Log timestamp in milliseconds.
+     * @param timestampNs Log timestamp in <b>nanoseconds</b>.
      * @param line        Log content.
-     * @since 1.1.0
+     * @since 1.1.3
      */
-    default void log(final long timestampMs, final String line) {
-        log(timestampMs, line, null);
+    default void log(final long timestampNs, final String line) {
+        log(timestampNs, line, null);
     }
 
     /**
@@ -37,7 +44,7 @@ public interface ILogStream {
      * @param line Log content.
      */
     default void log(final String line) {
-        log(System.currentTimeMillis(), line, null);
+        log(TIMESTAMP_NONE, line, null);
     }
 
     /**
@@ -48,7 +55,7 @@ public interface ILogStream {
      * @since 1.1.0
      */
     default void log(final String line, final Labels structuredMetadata) {
-        log(System.currentTimeMillis(), line, structuredMetadata);
+        log(TIMESTAMP_NONE, line, structuredMetadata);
     }
 
     /**

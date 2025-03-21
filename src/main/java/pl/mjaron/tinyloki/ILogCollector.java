@@ -6,40 +6,15 @@ package pl.mjaron.tinyloki;
 public interface ILogCollector {
 
     /**
-     * Called before using the object.
+     * Called internally by {@link TinyLoki} to configure the object before using it.
      *
-     * @param logListener The object used as callback when new log occurs.
-     * @since 1.0.0
-     */
-    void configureLogListener(ILogListener logListener);
-
-    /**
-     * Called before using the object.
-     *
-     * @param bufferingManager The object which determines sent data buffering policy.
-     * @since 1.0.0
-     */
-    void configureBufferingManager(IBuffering bufferingManager);
-
-    /**
-     * If label settings are not <code>null</code>, the structured metadata is supported, else structured metadata should not be collected.
-     *
+     * @param logListener                     The object used as callback when new log occurs.
+     * @param bufferingManager                The object which determines sent data buffering policy.
      * @param structuredMetadataLabelSettings Settings for structured metadata validation.
-     * @since 1.1.0
+     * @param timestampProviderFactory        The factory creating {@link ITimestampProvider} objects.
+     * @since 1.1.3
      */
-    void configureStructuredMetadata(LabelSettings structuredMetadataLabelSettings);
-
-    /**
-     * Configures all values in single command.
-     *
-     * @param logListener      The object used as callback when new log occurs.
-     * @param bufferingManager The object which determines sent data buffering policy.
-     * @since 1.0.0
-     */
-    default void configure(ILogListener logListener, IBuffering bufferingManager) {
-        configureLogListener(logListener);
-        configureBufferingManager(bufferingManager);
-    }
+    void configure(ILogListener logListener, IBuffering bufferingManager, LabelSettings structuredMetadataLabelSettings, ITimestampProviderFactory timestampProviderFactory);
 
     /**
      * Creates a new stream.

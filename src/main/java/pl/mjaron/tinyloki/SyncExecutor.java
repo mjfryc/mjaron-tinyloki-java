@@ -14,7 +14,8 @@ public class SyncExecutor implements IExecutor {
 
     private ILogProcessor logProcessor = null;
 
-    synchronized void onLog(int cachedLogsCount) {
+    @Override
+    synchronized public void onLog(int cachedLogsCount) {
         try {
             logProcessor.processLogs();
         } catch (InterruptedException e) {
@@ -25,7 +26,6 @@ public class SyncExecutor implements IExecutor {
     @Override
     public void configure(ILogCollector logCollector, ILogProcessor logProcessor, ILogMonitor logMonitor) {
         this.logProcessor = logProcessor;
-        logCollector.configureLogListener(this::onLog);
     }
 
     @Override

@@ -42,15 +42,15 @@ public class JsonLogStream implements ILogStream {
         initialSequenceWithHeaders = b.toString();
     }
 
-    int logUnsafe(final long timestampMs, final String line, final Labels structuredMetadata) {
+    int logUnsafe(final long timestamp, final String line, final Labels structuredMetadata) {
         final int beforeSize = b.length();
         if (cachedLogsCount != 0) {
             b.append(',');
         }
         ++cachedLogsCount;
         b.append("[\"");
-        b.append(timestampMs);
-        b.append("000000\",\"");
+        b.append(timestamp);
+        b.append("\",\"");
         Utils.escapeJsonString(b, line);
         b.append('"');
 
@@ -78,8 +78,8 @@ public class JsonLogStream implements ILogStream {
     }
 
     @Override
-    public void log(final long timestampMs, final String line, final Labels structuredMetadata) {
-        collector.logImplementation(this, timestampMs, line, structuredMetadata);
+    public void log(final long timestampNs, final String line, final Labels structuredMetadata) {
+        collector.logImplementation(this, timestampNs, line, structuredMetadata);
     }
 
     @Override

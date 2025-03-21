@@ -132,6 +132,8 @@ public class Settings {
      */
     private IExecutor executor = null;
 
+    private ITimestampProviderFactory timestampProviderFactory = null;
+
     /**
      * Settings constructor with initial URL value.
      *
@@ -375,6 +377,43 @@ public class Settings {
     }
 
     /**
+     * Determines the log timestamp value policy. See {@link ITimestampProvider} for details.
+     *
+     * @param timestampProviderFactory The factory creating {@link ITimestampProvider}.
+     * @return This {@link Settings} object reference.
+     * @see ITimestampProvider
+     * @since 1.1.3
+     */
+    public Settings withTimestampProvider(final ITimestampProviderFactory timestampProviderFactory) {
+        this.timestampProviderFactory = timestampProviderFactory;
+        return this;
+    }
+
+    /**
+     * Sets the {@link CurrentTimestampProvider}. See {@link ITimestampProvider} for details.
+     * <p>
+     * If {@link ITimestampProviderFactory} is not set, the {@link ITimestampProviderFactory#getDefault()} value will be used.
+     *
+     * @return This {@link Settings} object reference.
+     * @since 1.1.3
+     */
+    public Settings withCurrentTimestampProvider() {
+        return withTimestampProvider(ITimestampProviderFactory.current());
+    }
+
+    /**
+     * Sets the {@link IncrementingTimestampProvider}. See {@link ITimestampProvider} for details.
+     * <p>
+     * If {@link ITimestampProviderFactory} is not set, the {@link ITimestampProviderFactory#getDefault()} value will be used.
+     *
+     * @return This {@link Settings} object reference.
+     * @since 1.1.3
+     */
+    public Settings withIncrementingTimestampProvider() {
+        return withTimestampProvider(ITimestampProviderFactory.incrementing());
+    }
+
+    /**
      * Allows to set and configure the {@link BasicBuffering}.
      *
      * @param maxMessageSize  The max single (not encoded) message size.
@@ -436,6 +475,19 @@ public class Settings {
             buffering = new BasicBuffering();
         }
         return buffering;
+    }
+
+    /**
+     * Getter of {@link ITimestampProviderFactory}. See {@link ITimestampProvider} for details.
+     *
+     * @return Selected {@link ITimestampProviderFactory} or default value if not set.
+     * @since 1.1.3
+     */
+    public ITimestampProviderFactory getTimestampProviderFactory() {
+        if (timestampProviderFactory == null) {
+            timestampProviderFactory = ITimestampProviderFactory.getDefault();
+        }
+        return timestampProviderFactory;
     }
 
     /**

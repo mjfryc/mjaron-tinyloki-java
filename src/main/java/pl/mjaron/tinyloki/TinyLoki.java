@@ -222,8 +222,8 @@ public class TinyLoki implements java.io.Closeable {
      * @return New stream reference.
      */
     @SuppressWarnings("unused")
-    public ILogStream createStream(final Map<String, String> labels) {
-        return this.createStream(Labels.of(labels));
+    public ILogStream openStream(final Map<String, String> labels) {
+        return this.openStream(Labels.of(labels));
     }
 
     /**
@@ -232,7 +232,7 @@ public class TinyLoki implements java.io.Closeable {
      * @param labels Static labels. There shouldn't be many streams with the same labels combination.
      * @return New stream reference.
      */
-    public ILogStream createStream(final Labels labels) {
+    public ILogStream openStream(final Labels labels) {
         return logCollector.createStream(Labels.prettify(labels, labelSettings));
     }
 
@@ -253,7 +253,7 @@ public class TinyLoki implements java.io.Closeable {
      * Provides a {@link StreamSetBuilder} to initialize the {@link StreamSet}. E.g:
      *
      * <pre>{@code
-     * StreamSet streamSet = logController.streamSet().l("commonLabelName", "value").open();
+     * StreamSet streamSet = tinyLoki.streamSet().l("commonLabelName", "value").open();
      * streamSet.info("My info log");
      * }</pre>
      *
@@ -268,15 +268,15 @@ public class TinyLoki implements java.io.Closeable {
      * Creates a {@link StreamSet} with given {@link Labels}.
      *
      * <pre>{@code
-     * StreamSet streamSet = logController.streamSet(Labels.of("commonLabelName", "value"));
-     * streamSet.info("My info log");
+     * StreamSet streamSet = tinyLoki.openStreamSet(Labels.of("commonLabelName", "value"));
+     * streamSet.info("My info log.");
      * }</pre>
      *
      * @param labels Common {@link Labels} used when creating all log-level streams.
      * @return New instance of {@link StreamSetBuilder}.
-     * @since 1.1.1
+     * @since 1.1.4
      */
-    public StreamSet streamSet(final Labels labels) {
+    public StreamSet openStreamSet(final Labels labels) {
         return new StreamSet(this, labels);
     }
 

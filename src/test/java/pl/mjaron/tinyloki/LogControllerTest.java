@@ -39,7 +39,7 @@ class LogControllerTest {
         final TinyLoki controller = TinyLoki.withUrl("http://example.com").withLogSender(logSender).open();
         Map<String, String> map = new HashMap<>();
         map.put("aaa", "bbb");
-        ILogStream stream = controller.createStream(map);
+        ILogStream stream = controller.openStream(map);
         stream.log(0, "line");
         assertTrue(controller.sync());
         assertTrue(controller.stop());

@@ -9,7 +9,7 @@ public class TinyLokiTest {
     @Test
     void dummySendLegacyTest() {
         TinyLoki tinyLoki = TinyLoki.withUrl("http://localhost/loki/api/v1/push").withLogSender(new DummyLogSender(1000)).withLogMonitor(new VerboseLogMonitor()).withLabelLength(1, 1).open();
-        ILogStream abcStream = tinyLoki.createStream(Labels.of().info().l("abc", "bcd"));
+        ILogStream abcStream = tinyLoki.openStream(Labels.of().info().l("abc", "bcd"));
         abcStream.log(1, "Hello world.");
         tinyLoki.softStop().hardStop();
     }

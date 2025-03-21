@@ -27,7 +27,7 @@ public class StreamBuilder {
      * @return New {@link ILogStream} instance.
      */
     public ILogStream open() {
-        return tinyLoki.createStream(labels);
+        return tinyLoki.openStream(labels);
     }
 
     /**

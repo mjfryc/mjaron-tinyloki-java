@@ -27,7 +27,7 @@ public class IntegrationTest {
         TinyLoki loki = TinyLoki.withUrl("http://localhost:3100").withBasicAuth("user", "pass").open();
         ILogStream logStream = loki.stream().info().l("topic", "shortExample").open();
         logStream.log("Hello world!");
-        logStream.log("Hello world!", Labels.of("structured_metadata", "My log metadata value."));
+        logStream.log("Hello world!", Labels.of("structured_metadata", "value"));
         loki.closeSync();
     }
 
@@ -37,17 +37,22 @@ public class IntegrationTest {
         // Initialize the log controller instance with URL.
         // The endpoint loki/api/v1/push will be added by default if missing.
         // Usually creating more than one TinyLoki instance doesn't of sense.
-        // TinyLoki (its default IExecutor implementation) owns separate thread which sends logs periodically.
-        // It may be called inside try-with-resources block, but the default close() method doesn't synchronize the logs,
-        // but just interrupts the background worker thread.
+        // TinyLoki (its default IExecutor implementation) owns separate thread which
+        // sends logs periodically.
+        // It may be called inside try-with-resources block, but the default close()
+        // method doesn't synchronize the logs, but just interrupts the background worker
+        // thread.
         try (TinyLoki loki = TinyLoki.withUrl("http://localhost:3100/loki/api/v1/push")
 
-                // Print all diagnostic information coming from the TinyLoki library. For diagnostic purposes only.
-                // The messages are printed only if there is no log encoder (comment out .withGzipLogEncoder())
+                // Print all diagnostic information coming from the TinyLoki library.
+                // For diagnostic purposes only.
+                // The messages are printed only if there is no log encoder -
+                // let's comment out .withGzipLogEncoder() to skip encoding.
                 .withVerboseLogMonitor(true)
 
                 // Set the custom log processing interval time.
-                // So the executor will try to send the next logs 10 seconds after the previous logs sending operation.
+                // So the executor will try to send the next logs 10 seconds after
+                // the previous logs sending operation.
                 .withThreadExecutor(10 * 1000)
 
                 // Set custom time of HTTP connection establishing timeout.
@@ -56,11 +61,22 @@ public class IntegrationTest {
                 // Encode the logs to limit the size of data sent.
                 // .withGzipLogEncoder()
 
-                // The BasicBuffering is set by default, but here the (not encoded) message size limit may be customized.
+                // The BasicBuffering is set by default, but here the (not encoded)
+                // message size limit may be customized.
                 .withBasicBuffering(3 * 1024 * 1024, 10)
 
+                // The timestamp provider allows deciding what to do with logs having
+                // same labels and same message.
+                // Grafana Loki treats such logs as duplicates and ignores them,
+                // even if structured metadata is different.
+                // To receive duplicated logs, call withIncrementingTimestampProvider()
+                // to set the timestamp provider which always increases the log timestamp
+                // nanosecond value.
+                .withIncrementingTimestampProvider()
+
                 // Initialize the library with above settings.
-                // The ThreadExecutor will create a new thread and start waiting for the logs to be sent.
+                // The ThreadExecutor will create a new thread and start waiting
+                // for the logs to be sent.
                 .open()) {
 
             // Some logs here...
@@ -85,6 +101,10 @@ public class IntegrationTest {
             // In current implementation, the duplicated logs with same log line and timestamp (structured metadata doesn't matter) - is sent but may be dropped by Grafana Loki.
             redStream.log("Hello red world 0", Labels.of("structured_metadata_label", 0).l("other_structured_metadata_label", 'a'));
             redStream.log("Hello red world 1", Labels.of("structured_metadata_label", 9).l("other_structured_metadata_label", 'z'));
+
+            StreamSet streamSet = loki.streamSet().l(topic).l("stream_set_label", "value").open();
+            streamSet.debug().log("The debug level line. It contain the following labels: topic, stream_set_label, level");
+            streamSet.info().log("The info level line.", Labels.of("structured_metadata_label", "Of info stream set log."));
 
             // Blocking method, tries to synchronize the logs than interrupt and join the execution thread.
             // Set the custom timeout time for this operation.

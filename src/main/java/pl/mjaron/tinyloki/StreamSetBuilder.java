@@ -23,7 +23,7 @@ public class StreamSetBuilder {
      * @since 1.1.1
      */
     public StreamSet open() {
-        return new StreamSet(tinyLoki, labels);
+        return tinyLoki.openStreamSet(labels);
     }
 
     /**

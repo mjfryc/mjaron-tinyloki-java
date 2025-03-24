@@ -90,10 +90,23 @@ public class TinyLoki implements java.io.Closeable {
      * <p>
      * Optionally call {@link #withExactUrl(String)} instead to skip URL value normalization
      * and use given URL directly as the endpoint of pushing logs.
+     * <p>
+     * Note that after the {@link #open(Settings) open}, library should be closed with one of the {@link #close() close}
+     * function variant:
+     * <ul>
+     *     <li>{@link #close()}</li>
+     *     <li>{@link #closeSync()}</li>
+     *     <li>{@link #closeSync(int)}</li>
+     *     <li>{@link #closeSync(int, int)}</li>
+     * </ul>
      *
      * @param url URL to Loki HTTP API endpoint, usually ending with <code>/loki/api/v1/push</code>.
+     *            <p>
+     *            If the URL is not ending with <code>/loki/api/v1/push</code>, this path will be appended to the URL.
      * @return New instance of {@link Settings} object, initialized with given <code>url</code>.
      * @see #withExactUrl(String)
+     * @see #API_PUSH
+     * @see #close()
      * @since 0.3.0
      */
     public static Settings withUrl(final String url) {
@@ -122,6 +135,7 @@ public class TinyLoki implements java.io.Closeable {
      * @param settings Configuration of a newly created {@link TinyLoki}.
      * @return New instance of {@link TinyLoki}.
      * @see #withUrl(String)
+     * @see #close()
      * @since 0.3.0
      */
     public static TinyLoki open(final Settings settings) {
@@ -135,6 +149,7 @@ public class TinyLoki implements java.io.Closeable {
      * @param user Basic authentication user. If null, BA header will not be sent.
      * @param pass Basic authentication password. If null, BA header will not be sent.
      * @return New {@link TinyLoki} object.
+     * @see #close()
      * @deprecated Use {@link TinyLoki#withUrl(String)} to initialize settings and finally call {@link Settings#open()}, e.g:
      * <pre>
      *     TinyLoki.withUrl(url).withBasicAuth(user, pass).open();

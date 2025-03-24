@@ -17,7 +17,7 @@ public class StreamSet {
     private ILogStream traceStream;
     private ILogStream unknownStream;
 
-    StreamSet(final TinyLoki loki, final Labels labels) {
+    public StreamSet(final TinyLoki loki, final Labels labels) {
         this.loki = loki;
         this.labels = labels;
     }
@@ -27,7 +27,7 @@ public class StreamSet {
      *
      * @since 1.1.1
      */
-    synchronized void release() {
+    public synchronized void release() {
         if (fatalStream != null) {
             fatalStream.release();
         }
@@ -54,7 +54,7 @@ public class StreamSet {
      * @return Stream with {@link Labels#FATAL} log level.
      * @since 1.1.1
      */
-    synchronized ILogStream fatal() {
+    public synchronized ILogStream fatal() {
         if (fatalStream == null) {
             fatalStream = loki.stream().fatal().l(labels).open();
         }
@@ -67,7 +67,7 @@ public class StreamSet {
      * @return Stream with {@link Labels#WARN} log level.
      * @since 1.1.1
      */
-    synchronized ILogStream warning() {
+    public synchronized ILogStream warning() {
         if (warningStream == null) {
             warningStream = loki.stream().warning().l(labels).open();
         }
@@ -80,7 +80,7 @@ public class StreamSet {
      * @return Stream with {@link Labels#INFO} log level.
      * @since 1.1.1
      */
-    synchronized ILogStream info() {
+    public synchronized ILogStream info() {
         if (infoStream == null) {
             infoStream = loki.stream().info().l(labels).open();
         }
@@ -93,7 +93,7 @@ public class StreamSet {
      * @return Stream with {@link Labels#DEBUG} log level.
      * @since 1.1.1
      */
-    synchronized ILogStream debug() {
+    public synchronized ILogStream debug() {
         if (debugStream == null) {
             debugStream = loki.stream().debug().l(labels).open();
         }
@@ -106,7 +106,7 @@ public class StreamSet {
      * @return Stream with {@link Labels#VERBOSE} log level.
      * @since 1.1.1
      */
-    synchronized ILogStream verbose() {
+    public synchronized ILogStream verbose() {
         if (traceStream == null) {
             traceStream = loki.stream().trace().l(labels).open();
         }
@@ -119,7 +119,7 @@ public class StreamSet {
      * @return Stream with {@link Labels#UNKNOWN} log level.
      * @since 1.1.1
      */
-    synchronized ILogStream unknown() {
+    public synchronized ILogStream unknown() {
         if (unknownStream == null) {
             unknownStream = loki.stream().unknown().l(labels).open();
         }
@@ -132,7 +132,7 @@ public class StreamSet {
      * @param line Log message.
      * @since 1.1.1
      */
-    void fatal(final String line) {
+    public void fatal(final String line) {
         fatal().log(line);
     }
 
@@ -143,7 +143,7 @@ public class StreamSet {
      * @param structuredMetadata Labels related to single log line only.
      * @since 1.1.1
      */
-    void fatal(final String line, final Labels structuredMetadata) {
+    public void fatal(final String line, final Labels structuredMetadata) {
         fatal().log(line, structuredMetadata);
     }
 
@@ -153,7 +153,7 @@ public class StreamSet {
      * @param line Log message.
      * @since 1.1.1
      */
-    void warning(final String line) {
+    public void warning(final String line) {
         warning().log(line);
     }
 
@@ -164,7 +164,7 @@ public class StreamSet {
      * @param structuredMetadata Labels related to single log line only.
      * @since 1.1.1
      */
-    void warning(final String line, final Labels structuredMetadata) {
+    public void warning(final String line, final Labels structuredMetadata) {
         warning().log(line, structuredMetadata);
     }
 
@@ -174,7 +174,7 @@ public class StreamSet {
      * @param line Log message.
      * @since 1.1.1
      */
-    void info(final String line) {
+    public void info(final String line) {
         info().log(line);
     }
 
@@ -185,7 +185,7 @@ public class StreamSet {
      * @param structuredMetadata Labels related to single log line only.
      * @since 1.1.1
      */
-    void info(final String line, final Labels structuredMetadata) {
+    public void info(final String line, final Labels structuredMetadata) {
         info().log(line, structuredMetadata);
     }
 
@@ -195,7 +195,7 @@ public class StreamSet {
      * @param line Log message.
      * @since 1.1.1
      */
-    void debug(final String line) {
+    public void debug(final String line) {
         debug().log(line);
     }
 
@@ -206,7 +206,7 @@ public class StreamSet {
      * @param structuredMetadata Labels related to single log line only.
      * @since 1.1.1
      */
-    void debug(final String line, final Labels structuredMetadata) {
+    public void debug(final String line, final Labels structuredMetadata) {
         debug().log(line, structuredMetadata);
     }
 
@@ -216,7 +216,7 @@ public class StreamSet {
      * @param line Log message.
      * @since 1.1.1
      */
-    void verbose(final String line) {
+    public void verbose(final String line) {
         verbose().log(line);
     }
 
@@ -227,7 +227,7 @@ public class StreamSet {
      * @param structuredMetadata Labels related to single log line only.
      * @since 1.1.1
      */
-    void verbose(final String line, final Labels structuredMetadata) {
+    public void verbose(final String line, final Labels structuredMetadata) {
         verbose().log(line, structuredMetadata);
     }
 
@@ -237,7 +237,7 @@ public class StreamSet {
      * @param line Log message.
      * @since 1.1.1
      */
-    void unknown(final String line) {
+    public void unknown(final String line) {
         unknown().log(line);
     }
 
@@ -248,7 +248,7 @@ public class StreamSet {
      * @param structuredMetadata Labels related to single log line only.
      * @since 1.1.1
      */
-    void unknown(final String line, final Labels structuredMetadata) {
+    public void unknown(final String line, final Labels structuredMetadata) {
         unknown().log(line, structuredMetadata);
     }
 }

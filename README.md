@@ -25,9 +25,7 @@ in [documentation](https://grafana.com/docs/loki/v3.4.x/send-data/).
 * Works with **Android** and **Java SE**
 * Thread safe
 
-## API description
-
-HTTP sender requires http URL, optionally basic authentication credentials may be set.
+## Examples
 
 * See [./integration-test-server/README.md](./integration-test-server/README.md) to start the Grafana Loki server
   collecting the logs from examples.

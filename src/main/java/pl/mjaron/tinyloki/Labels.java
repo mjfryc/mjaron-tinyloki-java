@@ -406,6 +406,17 @@ public class Labels implements Cloneable {
     }
 
     /**
+     * Creates a new instance of {@link Labels} from other labels.
+     *
+     * @param labels Other labels.
+     * @return New instance of {@link Labels}.
+     * @since 1.0.6
+     */
+    public static Labels of(final Labels labels) {
+        return new Labels(labels);
+    }
+
+    /**
      * Creates a new instance of {@link Labels} from given {@link Map} object.
      *
      * @param labels Map with label-name mapped to label-value pairs.

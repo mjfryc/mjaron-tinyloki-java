@@ -19,11 +19,17 @@ Unit tests
 
 Tiny [Grafana Loki](https://grafana.com/oss/loki/) client (log sender) written in pure Java 1.8 without any external
 dependencies. One of Grafana Loki third-party clients mentioned
-in [documentation](https://grafana.com/docs/loki/v3.4.x/send-data/).
+in [documentation](https://grafana.com/docs/loki/v3.4.x/send-data/). It is customizable and easy to integrate
+but is not optimized for performance.
+See other reliable clients mentioned in documentation.
 
 * Implements JSON variant of [Loki API](https://grafana.com/docs/loki/latest/api/#post-lokiapiv1push)
 * Works with **Android** and **Java SE**
 * Thread safe
+* May added to [java.util.logging](https://docs.oracle.com/javase/8/docs/api/java/util/logging/package-summary.html)
+  as a log [Handler](https://docs.oracle.com/javase/8/docs/api/java/util/logging/Handler.html)
+  (and then may be called from [SLF4J](https://www.slf4j.org/)
+  using [slf4j-jdk14 provider](https://www.slf4j.org/manual.html)).
 
 ## Examples
 
@@ -139,6 +145,35 @@ public class Sample {
 }
 ```
 
+### SLF4J with java.util.logging example
+
+```groovy
+dependencies {
+    implementation("org.slf4j:slf4j-jdk14:2.0.17")
+    implementation("org.slf4j:slf4j-api:2.0.17")
+    implementation("io.github.mjfryc:mjaron-tinyloki-java:1.1.6")
+}
+```
+
+```java
+import pl.mjaron.tinyloki.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+public class Sample {
+    public static void main(String[] args) {
+
+        TinyLokiJulHandler.install(TinyLoki
+                .withUrl("http://localhost:3100")
+                .withBasicAuth("user", "pass")
+                .withLabels(Labels.of(Labels.SERVICE_NAME, "integration_test")));
+
+        Logger logger = LoggerFactory.getLogger("julIntegrationTest");
+        logger.info("Hello info.");
+    }
+}
+```
+
 ## Integration
 
 ### Maven Central
@@ -214,7 +249,8 @@ If this size is exceeded, the server may respond with HTTP error `500`, e.g:
 rpc error: code = ResourceExhausted desc = grpc: received message larger than max (6331143 vs. 4194304)
 ```
 
-By default (`BasicBuffering`) The TinyLoki tries to fill the data buffers and if the next log would exceed the size limit,
+By default (`BasicBuffering`) The TinyLoki tries to fill the data buffers and if the next log would exceed the size
+limit,
 new buffer is allocated instead. Custom buffer size may be configured with:
 
 ```java
@@ -299,15 +335,14 @@ classDiagram
 
     VerboseLogMonitor --|> ILogMonitor: implements
     ErrorLogMonitor --|> ILogMonitor: implements
-
     ILogStream <.. ILogCollector: create
     ILogCollector --* TinyLoki
-    Labels <.. ILogCollector : use
+    Labels <.. ILogCollector: use
     ILogSender --* TinyLoki
     GzipLogEncoder --|> ILogEncoder: implements
     ILogEncoder --* TinyLoki
     ILogMonitor --* TinyLoki
-    JsonLogStream --|>  ILogStream: implements
+    JsonLogStream --|> ILogStream: implements
     JsonLogCollector --|> ILogCollector: implements
     JsonLogStream <.. JsonLogCollector: create
     HttpLogSender --|> ILogSender: implements

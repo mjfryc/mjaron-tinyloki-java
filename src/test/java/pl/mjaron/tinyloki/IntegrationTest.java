@@ -74,6 +74,9 @@ public class IntegrationTest {
                 // nanosecond value.
                 .withIncrementingTimestampProvider()
 
+                // Let's define some labels common for few streams.
+                .withLabels(Labels.of("topic", "verboseExample").l(Labels.SERVICE_NAME, "example_service"))
+
                 // Initialize the library with above settings.
                 // The ThreadExecutor will create a new thread and start waiting
                 // for the logs to be sent.
@@ -81,13 +84,10 @@ public class IntegrationTest {
 
             // Some logs here...
 
-            // Let's define some labels common for few streams.
-            Labels topic = Labels.of("topic", "verboseExample");
-
-            ILogStream topicStream = loki.stream().l(topic).open();
+            ILogStream topicStream = loki.stream().open();
             topicStream.log("Hello world.");
 
-            ILogStream whiteStream = loki.stream().l(topic).l("topic", "verboseExample").l("color", "white").open();
+            ILogStream whiteStream = loki.stream().l("color", "white").open();
             whiteStream.log("Hello white world.");
 
             // Blocking method, tries to send the logs ASAP and wait for sending completion.
@@ -95,14 +95,14 @@ public class IntegrationTest {
             boolean allHttpSendingOperationsFinished = loki.sync();
             System.out.println("Are all logs processed: " + allHttpSendingOperationsFinished);
 
-            ILogStream redStream = loki.stream().l(topic).l("color", "red").open();
+            ILogStream redStream = loki.stream().l("color", "red").open();
 
             // Let's attach the Grafana Loki structured metadata.
             // In current implementation, the duplicated logs with same log line and timestamp (structured metadata doesn't matter) - is sent but may be dropped by Grafana Loki.
             redStream.log("Hello red world 0", Labels.of("structured_metadata_label", 0).l("other_structured_metadata_label", 'a'));
             redStream.log("Hello red world 1", Labels.of("structured_metadata_label", 9).l("other_structured_metadata_label", 'z'));
 
-            StreamSet streamSet = loki.streamSet().l(topic).l("stream_set_label", "value").open();
+            StreamSet streamSet = loki.streamSet().l("stream_set_label", "value").open();
             streamSet.debug().log("The debug level line. It contain the following labels: topic, stream_set_label, level");
             streamSet.info().log("The info level line.", Labels.of("structured_metadata_label", "Of info stream set log."));
 

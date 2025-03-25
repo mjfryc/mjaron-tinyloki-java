@@ -66,6 +66,15 @@ public class Labels implements Cloneable {
      * Unknown log level.
      */
     public static final String UNKNOWN = "unknown";
+
+    /**
+     * Common Grafana Loki label.
+     * <p>
+     * See: <a href="https://grafana.com/docs/loki/v3.4.x/get-started/labels/#default-labels-for-all-users">Understand labels / Default labels for all users</a>
+     *
+     * @since 1.1.6
+     */
+    public static final String SERVICE_NAME = "service_name";
     /**
      * Internal labels container.
      */
@@ -94,6 +103,16 @@ public class Labels implements Cloneable {
      */
     public Labels(final Map<String, String> map) {
         this.map = new TreeMap<>(map);
+    }
+
+    /**
+     * Tells if there is no labels set.
+     *
+     * @return True if there is no labels set.
+     * @since 1.1.6
+     */
+    public boolean isEmpty() {
+        return this.map.isEmpty();
     }
 
     /**

@@ -30,7 +30,7 @@ in [documentation](https://grafana.com/docs/loki/v3.4.x/send-data/).
 * See [./integration-test-server/README.md](./integration-test-server/README.md) to start the Grafana Loki server
   collecting the logs from examples.
 * See [IntegrationTest.java](./src/test/java/pl/mjaron/tinyloki/IntegrationTest.java) to see more examples.
-* Gradle: `implementation 'io.github.mjfryc:mjaron-tinyloki-java:1.1.4'`
+* Gradle: `implementation 'io.github.mjfryc:mjaron-tinyloki-java:1.1.6'`
 
 ### Short example
 
@@ -56,6 +56,7 @@ import pl.mjaron.tinyloki.*;
 
 public class Sample {
     public static void main(String[] args) {
+
         // Initialize the log controller instance with URL.
         // The endpoint loki/api/v1/push will be added by default if missing.
         // Usually creating more than one TinyLoki instance doesn't of sense.
@@ -96,6 +97,9 @@ public class Sample {
                 // nanosecond value.
                 .withIncrementingTimestampProvider()
 
+                // Let's define some labels common for few streams.
+                .withLabels(Labels.of("topic", "verboseExample").l(Labels.SERVICE_NAME, "example_service"))
+
                 // Initialize the library with above settings.
                 // The ThreadExecutor will create a new thread and start waiting
                 // for the logs to be sent.
@@ -103,13 +107,10 @@ public class Sample {
 
             // Some logs here...
 
-            // Let's define some labels common for few streams.
-            Labels topic = Labels.of("topic", "verboseExample");
-
-            ILogStream topicStream = loki.stream().l(topic).open();
+            ILogStream topicStream = loki.stream().open();
             topicStream.log("Hello world.");
 
-            ILogStream whiteStream = loki.stream().l(topic).l("topic", "verboseExample").l("color", "white").open();
+            ILogStream whiteStream = loki.stream().l("color", "white").open();
             whiteStream.log("Hello white world.");
 
             // Blocking method, tries to send the logs ASAP and wait for sending completion.
@@ -117,14 +118,14 @@ public class Sample {
             boolean allHttpSendingOperationsFinished = loki.sync();
             System.out.println("Are all logs processed: " + allHttpSendingOperationsFinished);
 
-            ILogStream redStream = loki.stream().l(topic).l("color", "red").open();
+            ILogStream redStream = loki.stream().l("color", "red").open();
 
             // Let's attach the Grafana Loki structured metadata.
             // In current implementation, the duplicated logs with same log line and timestamp (structured metadata doesn't matter) - is sent but may be dropped by Grafana Loki.
             redStream.log("Hello red world 0", Labels.of("structured_metadata_label", 0).l("other_structured_metadata_label", 'a'));
             redStream.log("Hello red world 1", Labels.of("structured_metadata_label", 9).l("other_structured_metadata_label", 'z'));
 
-            StreamSet streamSet = loki.streamSet().l(topic).l("stream_set_label", "value").open();
+            StreamSet streamSet = loki.streamSet().l("stream_set_label", "value").open();
             streamSet.debug().log("The debug level line. It contain the following labels: topic, stream_set_label, level");
             streamSet.info().log("The info level line.", Labels.of("structured_metadata_label", "Of info stream set log."));
 
@@ -143,7 +144,7 @@ public class Sample {
 ### Maven Central
 
 ```gradle
-    implementation 'io.github.mjfryc:mjaron-tinyloki-java:1.1.4'
+    implementation 'io.github.mjfryc:mjaron-tinyloki-java:1.1.6'
 ```
 
 _[Maven Central page](https://search.maven.org/artifact/io.github.mjfryc/mjaron-tinyloki-java/),_
@@ -160,7 +161,7 @@ Click the [Packages section](https://github.com/mjfryc?tab=packages&repo_name=mj
 3. Add this jar to project dependencies in build.gradle, e.g:
 
 ```gradle
-    implementation files(project.rootDir.absolutePath + '/libs/mjaron-tinyloki-java-1.1.4.jar')
+    implementation files(project.rootDir.absolutePath + '/libs/mjaron-tinyloki-java-1.1.6.jar')
 ```
 
 ## Features description
@@ -187,7 +188,7 @@ class Sample {
         // This log may be ignored if the CurrentTimestampProvider
         // will provide the same timestamp for both same logs.
         stream.log("Two same logs.");
-        
+
         loki.closeSync();
     }
 }

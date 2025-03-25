@@ -98,6 +98,14 @@ public class Settings {
      * @since 1.1.0
      */
     private LabelSettings structuredMetadataLabelSettings = new LabelSettings();
+
+    /**
+     * Common static labels used by all streams.
+     *
+     * @since 1.1.6
+     */
+    private Labels staticLabels = Labels.of();
+
     /**
      * {@link ILogCollector} which will prepare logs to send it to the Grafana Loki server.
      *
@@ -435,6 +443,22 @@ public class Settings {
     }
 
     /**
+     * Set the initial static labels used by all streams.
+     *
+     * @param labels Static labels used by all streams.
+     * @return This {@link Settings} object reference.
+     * @since 1.1.6
+     */
+    public Settings withLabels(final Labels labels) {
+        if (labels == null) {
+            this.staticLabels = Labels.of();
+        } else {
+            this.staticLabels.l(labels);
+        }
+        return this;
+    }
+
+    /**
      * Getter of {@link LogSenderSettings}. Used by TinyLoki to initialize the {@link HttpLogSender}.
      *
      * @return Reference to {@link LogSenderSettings} instance in this settings object.
@@ -533,6 +557,16 @@ public class Settings {
      */
     public LabelSettings getStructuredMetadataLabelSettings() {
         return this.structuredMetadataLabelSettings;
+    }
+
+    /**
+     * Provides the static labels which are common for all streams.
+     *
+     * @return Static labels.
+     * since 1.1.5
+     */
+    public Labels getLabels() {
+        return staticLabels;
     }
 
     /**

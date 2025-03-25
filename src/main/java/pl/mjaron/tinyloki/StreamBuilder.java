@@ -15,7 +15,7 @@ import java.util.Map;
 public class StreamBuilder {
 
     private final TinyLoki tinyLoki;
-    private final Labels labels = new Labels();
+    private final Labels labels = Labels.of();
 
     public StreamBuilder(final TinyLoki tinyLoki) {
         this.tinyLoki = tinyLoki;

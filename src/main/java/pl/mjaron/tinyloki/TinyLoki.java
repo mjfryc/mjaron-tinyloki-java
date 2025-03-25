@@ -139,7 +139,7 @@ public class TinyLoki implements java.io.Closeable {
      * @since 0.3.0
      */
     public static TinyLoki open(final Settings settings) {
-        return new TinyLoki(settings.getLogCollector(), settings.getLogEncoder(), settings.getLogSenderSettings(), settings.getLogSender(), settings.getLabelSettings(), settings.getStructuredMetadataLabelSettings(), settings.getExecutor(), settings.getBuffering(), settings.getTimestampProviderFactory(), settings.getLogMonitor()).start();
+        return new TinyLoki(settings.getLogCollector(), settings.getLogEncoder(), settings.getLogSenderSettings(), settings.getLogSender(), settings.getLabelSettings(), settings.getStructuredMetadataLabelSettings(), settings.getExecutor(), settings.getBuffering(), settings.getTimestampProviderFactory(), settings.getLabels(), settings.getLogMonitor()).start();
     }
 
     /**
@@ -164,6 +164,7 @@ public class TinyLoki implements java.io.Closeable {
     private final ILogSender logSender;
     private final LabelSettings labelSettings;
     private final IExecutor executor;
+    private final Labels staticLabels;
     private final ILogMonitor logMonitor;
 
     /**
@@ -179,15 +180,17 @@ public class TinyLoki implements java.io.Closeable {
      * @param executor                        The {@link IExecutor} implementation.
      * @param bufferingManager                The object responsible for buffering strategy.
      * @param timestampProviderFactory        Creates timestamp providers. Responsible for timestamp generation policy.
+     * @param staticLabels                    Labels common for all streams.
      * @param logMonitor                      Handles diagnostic events from whole library.
-     * @since 1.1.3
+     * @since 1.1.6
      */
-    public TinyLoki(final ILogCollector logCollector, ILogEncoder logEncoder, final LogSenderSettings logSenderSettings, final ILogSender logSender, final LabelSettings labelSettings, final LabelSettings structuredMetadataLabelSettings, final IExecutor executor, final IBuffering bufferingManager, final ITimestampProviderFactory timestampProviderFactory, final ILogMonitor logMonitor) {
+    public TinyLoki(final ILogCollector logCollector, ILogEncoder logEncoder, final LogSenderSettings logSenderSettings, final ILogSender logSender, final LabelSettings labelSettings, final LabelSettings structuredMetadataLabelSettings, final IExecutor executor, final IBuffering bufferingManager, final ITimestampProviderFactory timestampProviderFactory, final Labels staticLabels, final ILogMonitor logMonitor) {
         this.logCollector = logCollector;
         this.logEncoder = logEncoder;
         this.logSender = logSender;
         this.labelSettings = labelSettings;
         this.executor = executor;
+        this.staticLabels = staticLabels;
         this.logMonitor = logMonitor;
 
         bufferingManager.configure(this.logCollector, 0, 0, this.executor, this.logMonitor);
@@ -231,6 +234,16 @@ public class TinyLoki implements java.io.Closeable {
     }
 
     /**
+     * Provides static {@link Labels} assigned to each stream when stream is created.
+     *
+     * @return Static {@link Labels}.
+     * @since 1.1.6
+     */
+    public Labels getLabels() {
+        return staticLabels;
+    }
+
+    /**
      * Creates new stream from log collector.
      *
      * @param labels Static labels. There shouldn't be many streams with the same labels combination.
@@ -248,7 +261,15 @@ public class TinyLoki implements java.io.Closeable {
      * @return New stream reference.
      */
     public ILogStream openStream(final Labels labels) {
-        return logCollector.createStream(Labels.prettify(labels, labelSettings));
+        Labels finalLabels;
+        if (this.staticLabels.isEmpty()) {
+            finalLabels = labels;
+        } else if (labels.isEmpty()) {
+            finalLabels = this.staticLabels;
+        } else {
+            finalLabels = Labels.of(staticLabels).l(labels);
+        }
+        return logCollector.createStream(Labels.prettify(finalLabels, labelSettings));
     }
 
     /**

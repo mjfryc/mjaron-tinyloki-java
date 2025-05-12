@@ -6,8 +6,16 @@ package pl.mjaron.tinyloki;
 public class ErrorLogMonitor implements ILogMonitor {
 
     @Override
+    public boolean isVerbose() {
+        return false;
+    }
+
+    @Override
+    public void logVerbose(String what) {
+    }
+
+    @Override
     public void logInfo(final String what) {
-        ILogMonitor.printInfo(what);
     }
 
     @Override

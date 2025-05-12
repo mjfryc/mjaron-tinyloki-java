@@ -11,6 +11,18 @@ public interface ILogMonitor {
      * Used internally by TinyLoki implementation for this library diagnostic purposes.
      *
      * @param what Log content.
+     * @since 1.1.7
+     */
+    static void printVerbose(final String what) {
+        System.out.println("[TinyLoki][" + System.currentTimeMillis() + "][V] " + what);
+    }
+
+    /**
+     * Default meta-logging implementation.
+     * <p>
+     * Used internally by TinyLoki implementation for this library diagnostic purposes.
+     *
+     * @param what Log content.
      */
     static void printInfo(final String what) {
         System.out.println("[TinyLoki][" + System.currentTimeMillis() + "][I] " + what);
@@ -26,6 +38,16 @@ public interface ILogMonitor {
     static void printError(final String what) {
         System.err.println("[TinyLoki][" + System.currentTimeMillis() + "][E] " + what);
     }
+
+    /**
+     * Tells whether verbose messages are logged by this log monitor.
+     *
+     * @return <code>true</code> when verbose messages are processed by this log monitor.
+     * @since 1.1.7
+     */
+    boolean isVerbose();
+
+    void logVerbose(final String what);
 
     void logInfo(final String what);
 

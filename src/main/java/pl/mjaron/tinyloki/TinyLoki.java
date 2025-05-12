@@ -513,11 +513,16 @@ public class TinyLoki implements java.io.Closeable {
     protected void internalProcessLogs() throws InterruptedException {
         final byte[][] buffers = logCollector.collectAll();
         if (buffers == null) {
-            logMonitor.logInfo("Buffers count: [0] (null).");
+            if (logMonitor.isVerbose()) {
+                logMonitor.logVerbose("Buffers count: [0] (null).");
+            }
             return;
         }
 
-        logMonitor.logInfo("Buffers count: [" + buffers.length + "].");
+        if (logMonitor.isVerbose()) {
+            logMonitor.logVerbose("Buffers count: [" + buffers.length + "].");
+        }
+
         for (final byte[] logs : buffers) {
             final byte[] toSend;
             if (logEncoder == null) {

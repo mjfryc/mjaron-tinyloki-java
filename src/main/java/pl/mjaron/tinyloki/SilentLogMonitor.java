@@ -7,6 +7,15 @@ package pl.mjaron.tinyloki;
  */
 public class SilentLogMonitor implements ILogMonitor {
     @Override
+    public boolean isVerbose() {
+        return false;
+    }
+
+    @Override
+    public void logVerbose(String what) {
+    }
+
+    @Override
     public void logInfo(String what) {
     }
 

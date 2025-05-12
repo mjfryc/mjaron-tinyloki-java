@@ -20,6 +20,16 @@ public class VerboseLogMonitor implements ILogMonitor {
     }
 
     @Override
+    public boolean isVerbose() {
+        return true;
+    }
+
+    @Override
+    public void logVerbose(String what) {
+        ILogMonitor.printVerbose(what);
+    }
+
+    @Override
     public void logInfo(String what) {
         ILogMonitor.printInfo(what);
     }

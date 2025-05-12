@@ -1,5 +1,6 @@
 package pl.mjaron.tinyloki;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -15,24 +16,76 @@ import java.util.logging.LogRecord;
 public class TinyLokiJulHandler extends java.util.logging.Handler {
 
     /**
+     * Provides the JUL logger with an empty name.
+     *
+     * @return Root JUL logger.
+     * @since 1.1.6
+     */
+    public static java.util.logging.Logger getJulRootLogger() {
+        return java.util.logging.LogManager.getLogManager().getLogger("");
+    }
+
+    /**
      * Attaches the logger to root logger.
      *
-     * @param settings The {@link TinyLoki} library {@link Settings}.
-     * @return Created {@link TinyLoki} instance.
+     * @param loki The {@link TinyLoki} instance which is already {@link TinyLoki#open(Settings) open}.
+     * @return The same {@link TinyLoki} object provided as argument.
+     * @since 1.1.7
      */
-    public static TinyLoki install(Settings settings) {
-        java.util.logging.Logger rootLogger = java.util.logging.LogManager.getLogManager().getLogger("");
-        TinyLokiJulHandler handler = new TinyLokiJulHandler(settings);
+    public static TinyLoki install(final TinyLoki loki) {
+        final java.util.logging.Logger rootLogger = getJulRootLogger();
+        final TinyLokiJulHandler handler = new TinyLokiJulHandler(loki);
         rootLogger.addHandler(handler);
         return handler.getLoki();
     }
 
-    public static void install(String url) {
+    /**
+     * Attaches the logger to root logger.
+     *
+     * @param settings The {@link TinyLoki} library {@link Settings}.
+     * @return Created {@link TinyLoki} instance.
+     * @since 1.1.7
+     */
+    public static TinyLoki install(final Settings settings) {
+        return install(settings.open());
+    }
+
+    /**
+     * Install the new instance of {@link TinyLoki} with default settings and given URL.
+     *
+     * @param url Destination where to send the logs.
+     * @since 1.1.6
+     */
+    public static void install(final String url) {
         install(TinyLoki.withUrl(url));
     }
 
-    public static void install(String url, String user, String pass) {
+    /**
+     * Install the new instance of {@link TinyLoki} with default settings and given URL and basic auth credentials.
+     *
+     * @param url  Destination where to send the logs.
+     * @param user Basic auth user.
+     * @param pass Basic auth password.
+     * @since 1.1.6
+     */
+    public static void install(final String url, final String user, final String pass) {
         install(TinyLoki.withUrl(url).withBasicAuth(user, pass));
+    }
+
+    /**
+     * Sets the log level of whole JUL framework:
+     * <ul>
+     *     <li>The root logger.</li>
+     *     <li>All log handlers of root logger.</li>
+     * </ul>
+     *
+     * @param newLevel The new level.
+     * @since 1.1.7
+     */
+    public static void setJulLogLevel(final java.util.logging.Level newLevel) {
+        java.util.logging.Logger rootLogger = getJulRootLogger();
+        rootLogger.setLevel(newLevel);
+        Arrays.stream(rootLogger.getHandlers()).forEach(h -> h.setLevel(newLevel));
     }
 
     private static class StreamKey {
@@ -47,7 +100,7 @@ public class TinyLokiJulHandler extends java.util.logging.Handler {
         }
 
         @Override
-        public boolean equals(Object o) {
+        public boolean equals(final Object o) {
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
             StreamKey that = (StreamKey) o;
@@ -60,7 +113,7 @@ public class TinyLokiJulHandler extends java.util.logging.Handler {
         }
     }
 
-    private static String toTinyLokiLogLevel(final Level level) {
+    public static String toTinyLokiLogLevel(final Level level) {
         final int value = level.intValue();
         if (value >= 1000) {        // SEVERE
             return Labels.FATAL;
@@ -76,7 +129,7 @@ public class TinyLokiJulHandler extends java.util.logging.Handler {
     }
 
     private final TinyLoki loki;
-    private Map<StreamKey, ILogStream> streams = new HashMap<>();
+    private final Map<StreamKey, ILogStream> streams = new HashMap<>();
 
     public TinyLokiJulHandler(TinyLoki loki) {
         this.loki = loki;
@@ -91,7 +144,7 @@ public class TinyLokiJulHandler extends java.util.logging.Handler {
     }
 
     @Override
-    synchronized public void publish(LogRecord logRecord) {
+    synchronized public void publish(final LogRecord logRecord) {
         StreamKey key = new StreamKey(logRecord.getLoggerName(), logRecord.getLevel());
         ILogStream stream = streams.get(key);
         if (stream == null) {
@@ -106,7 +159,7 @@ public class TinyLokiJulHandler extends java.util.logging.Handler {
     public void flush() {
         try {
             loki.sync();
-        } catch (InterruptedException ignored) {
+        } catch (final InterruptedException ignored) {
             Thread.currentThread().interrupt();
         }
     }
@@ -115,7 +168,7 @@ public class TinyLokiJulHandler extends java.util.logging.Handler {
     public void close() throws SecurityException {
         try {
             loki.closeSync();
-        } catch (InterruptedException ignored) {
+        } catch (final InterruptedException ignored) {
             Thread.currentThread().interrupt();
         }
     }

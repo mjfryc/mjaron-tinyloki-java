@@ -29,24 +29,24 @@ public class TinyLokiJulHandler extends java.util.logging.Handler {
      * Attaches the logger to root logger.
      *
      * @param loki The {@link TinyLoki} instance which is already {@link TinyLoki#open(Settings) open}.
-     * @return The same {@link TinyLoki} object provided as argument.
+     * @return The same new {@link TinyLokiJulHandler}.
      * @since 1.1.7
      */
-    public static TinyLoki install(final TinyLoki loki) {
+    public static TinyLokiJulHandler install(final TinyLoki loki) {
         final java.util.logging.Logger rootLogger = getJulRootLogger();
         final TinyLokiJulHandler handler = new TinyLokiJulHandler(loki);
         rootLogger.addHandler(handler);
-        return handler.getLoki();
+        return handler;
     }
 
     /**
      * Attaches the logger to root logger.
      *
      * @param settings The {@link TinyLoki} library {@link Settings}.
-     * @return Created {@link TinyLoki} instance.
+     * @return Created {@link TinyLokiJulHandler} instance.
      * @since 1.1.7
      */
-    public static TinyLoki install(final Settings settings) {
+    public static TinyLokiJulHandler install(final Settings settings) {
         return install(settings.open());
     }
 
@@ -54,10 +54,11 @@ public class TinyLokiJulHandler extends java.util.logging.Handler {
      * Install the new instance of {@link TinyLoki} with default settings and given URL.
      *
      * @param url Destination where to send the logs.
+     * @return Created {@link TinyLokiJulHandler} instance.
      * @since 1.1.6
      */
-    public static void install(final String url) {
-        install(TinyLoki.withUrl(url));
+    public static TinyLokiJulHandler install(final String url) {
+        return install(TinyLoki.withUrl(url));
     }
 
     /**
@@ -66,10 +67,20 @@ public class TinyLokiJulHandler extends java.util.logging.Handler {
      * @param url  Destination where to send the logs.
      * @param user Basic auth user.
      * @param pass Basic auth password.
+     * @return Created {@link TinyLokiJulHandler} instance.
      * @since 1.1.6
      */
-    public static void install(final String url, final String user, final String pass) {
-        install(TinyLoki.withUrl(url).withBasicAuth(user, pass));
+    public static TinyLokiJulHandler install(final String url, final String user, final String pass) {
+        return install(TinyLoki.withUrl(url).withBasicAuth(user, pass));
+    }
+
+    /**
+     * Removes this {@link java.util.logging.Handler log handler}.
+     *
+     * @since 1.1.8
+     */
+    public void uninstall() {
+        getJulRootLogger().removeHandler(this);
     }
 
     /**

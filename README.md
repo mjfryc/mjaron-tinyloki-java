@@ -36,7 +36,7 @@ See other reliable clients mentioned in documentation.
 * See [./integration-test-server/README.md](./integration-test-server/README.md) to start the Grafana Loki server
   collecting the logs from examples.
 * See [IntegrationTest.java](./src/test/java/pl/mjaron/tinyloki/IntegrationTest.java) to see more examples.
-* Gradle: `implementation 'io.github.mjfryc:mjaron-tinyloki-java:1.1.6'`
+* Gradle: `implementation 'io.github.mjfryc:mjaron-tinyloki-java:1.1.8'`
 
 ### Short example
 
